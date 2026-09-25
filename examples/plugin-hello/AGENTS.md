@@ -15,7 +15,7 @@ that depends only on `erxes-api-shared`.
 | Project    | Path       | Layer       |
 | ---------- | ---------- | ----------- |
 | `hello_api` | `api/`    | Backend API |
-| `hello_ui`  | `ui/`     | Frontend UI (Milestone 2) |
+| `hello_ui`  | `ui/`     | Frontend UI |
 
 ## api (`hello_api`)
 
@@ -48,13 +48,48 @@ that depends only on `erxes-api-shared`.
 - `erxes-api-shared/*` → `backend/erxes-api-shared/src/*` in dev; the published
   workspace package in `tsconfig.build.json`.
 
+## ui (`hello_ui`)
+
+- Module Federation remote `hello_ui`, built with `@nx/rspack` like every
+  `frontend/plugins/*_ui` project; dev server on **3099**, which matches
+  `hello_api`'s default `uiRemoteEntry`.
+- Exposes (`module-federation.config.ts`):
+  - `./config` → `src/config.tsx`: `CONFIG: IUIConfig` with
+    `name: 'hello'`, `path: 'hello'`, `i18n: true` (loads the `hello`
+    namespace served by `hello_api`'s `localesDir`), and one `hello` module
+    for the navigation entry.
+  - `./hello` → `src/modules/hello/HelloMain.tsx`: named export `Hello`, the
+    route module the host loads at `/hello/*`.
+- `src/modules/hello/HelloPage.tsx` runs `query HelloPing { helloPing }`
+  (`src/modules/hello/graphql/queries.ts`) through the shared Apollo Client
+  and renders loading, error, empty, and result states with `erxes-ui`
+  components.
+- `src/main.ts` is a dynamic `import('./bootstrap')` boundary; `bootstrap.tsx`
+  renders a stub because the remote is mounted through the host.
+- No `package.json`: dependencies resolve from the root install, same as the
+  `frontend/plugins/*_ui` projects.
+
+### Path aliases (tsconfig)
+
+- `~/*` → `src/*`, `@/*` → `src/modules/*`, plus `erxes-ui` →
+  `frontend/libs/erxes-ui/src` and `ui-modules` →
+  `frontend/libs/ui-modules/src` (repo-root-relative, same as
+  `frontend/plugins/*_ui`). The directory form matters: `withNx` turns these
+  paths into rspack aliases, and a file-valued alias would break deep imports
+  like `erxes-ui/hooks`.
+
 ## Validation
 
 - `pnpm nx build hello_api` (runs `^build` first, so `erxes-api-shared`
   rebuilds)
 - `pnpm nx serve hello_api` — dev server on `:3340`
 - `pnpm nx show project hello_api` — project graph resolution
+- `pnpm nx build hello_ui` / `pnpm nx lint hello_ui`
+- `pnpm nx serve hello_ui` — Module Federation dev server on `:3099`
+  (`remoteEntry.js` at `http://localhost:3099/remoteEntry.js`)
 - Smoke: `curl http://localhost:3340/health` → `ok`;
   `curl http://localhost:3340/locales/en/hello.json` → the en translations;
   `{ helloPing }` on `:3340/graphql` and through the gateway on
-  `:4000/graphql` once the plugin has registered.
+  `:4000/graphql` once the plugin has registered; with `hello_ui` serving,
+  core-ui picks the remote up from `GET /get-frontend-plugins` and renders a
+  Hello navigation entry whose page shows `pong`.

@@ -406,7 +406,7 @@ test.
     test for the diff.
 - [ ] 2.3 Delete `erxes-ui` `isEnabled()` and add `ui-modules`
   `useIsPluginEnabled()`.
-- [ ] 2.4 Create `examples/plugin-hello/ui` (Nx project `hello_ui`): a Module
+- [x] 2.4 Create `examples/plugin-hello/ui` (Nx project `hello_ui`): a Module
   Federation remote exposing `./config` (a navigation entry and one page
   that calls `helloPing`) and `./hello`, served on its own port.
 - [ ] 2.5 End-to-end check:

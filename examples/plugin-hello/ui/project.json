@@ -1,0 +1,61 @@
+{
+  "name": "hello_ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/plugin-hello/ui/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/rspack:rspack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "web",
+        "outputPath": "dist/examples/plugin-hello/ui",
+        "main": "examples/plugin-hello/ui/src/main.ts",
+        "tsConfig": "examples/plugin-hello/ui/tsconfig.app.json",
+        "rspackConfig": "examples/plugin-hello/ui/rspack.config.ts",
+        "assets": []
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production",
+          "optimization": true,
+          "sourceMap": false,
+          "rspackConfig": "examples/plugin-hello/ui/rspack.config.prod.ts"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/rspack:module-federation-dev-server",
+      "options": {
+        "buildTarget": "hello_ui:build:development",
+        "port": 3099
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "buildTarget": "hello_ui:build:production"
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/rspack:module-federation-static-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "serveTarget": "hello_ui:serve"
+      },
+      "configurations": {
+        "development": {
+          "serveTarget": "hello_ui:serve:development"
+        },
+        "production": {
+          "serveTarget": "hello_ui:serve:production"
+        }
+      }
+    }
+  }
+}
