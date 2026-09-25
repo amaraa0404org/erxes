@@ -470,7 +470,7 @@ over.
     plugins (for example frontline_ui imports content_ui types; posclient,
     mongolian, loyalty, tourism, accounting and frontline call sales over
     tRPC).
-- [ ] 4.2 Verify each extracted repository: `git log --follow` shows history
+- [x] 4.2 Verify each extracted repository: `git log --follow` shows history
   for a sample file, and every D3 source path is present. **Ask the user**
   whether to create the GitHub repositories (visibility?) and push. Do this
   only if they confirm.
