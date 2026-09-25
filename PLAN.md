@@ -397,7 +397,7 @@ test.
 ### Milestone 2: Frontend runtime remotes (D2)
 
 - [x] 2.1 core-api `GET /get-frontend-plugins` per D2.
-- [ ] 2.2 core-ui:
+- [x] 2.2 core-ui:
   - `init()` in every environment; delete the static remotes and the
     `ENABLED_PLUGINS` define;
   - replace `scripts/start-ui-dev.js` with the root script `dev:ui`, which
@@ -603,6 +603,14 @@ _Append one line per removed or changed core contract:
   `getAvailablePlugins(subdomain)` and uses each plugin manifest's
   `uiRemoteEntry` as `entry`; the `plugins.erxes.io` CDN URL construction
   and the SaaS `agent_ui` append are gone — owner: core/plugins
+- 2.2 core-ui remotes are runtime-only: `module-federation.config.ts` no
+  longer reads `ENABLED_PLUGINS`, the rspack define is gone, and
+  `bootstrap.tsx` calls `init()` in every environment. The host polls
+  `/get-frontend-plugins` every 30 s and on window focus, registering new
+  remotes and dropping `pluginsConfigState` entries for departed ones —
+  owner: core/plugins
+- 2.2 `scripts/start-ui-dev.js` is deleted; root script `dev:ui` replaces
+  `dev:uis` and serves `core-ui` alone — owner: core
 
 ## Open issues
 

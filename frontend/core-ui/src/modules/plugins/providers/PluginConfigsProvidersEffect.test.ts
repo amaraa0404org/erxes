@@ -13,12 +13,17 @@ jest.mock('@module-federation/enhanced/runtime', () => ({
 }));
 
 jest.mock('jotai', () => ({
+  useAtomValue: jest.fn(),
   useSetAtom: jest.fn(),
 }));
 
 jest.mock('ui-modules', () => ({
   loadingPluginsConfigState: {},
   pluginsConfigState: {},
+}));
+
+jest.mock('@/plugins/hooks/usePluginRemoteSync', () => ({
+  usePluginRemoteSync: jest.fn(() => []),
 }));
 
 describe('loadPluginI18nNamespace', () => {

@@ -1,9 +1,14 @@
-import { getInstance, loadRemote } from '@module-federation/enhanced/runtime';
+import { loadRemote } from '@module-federation/enhanced/runtime';
 import type { IUIConfig } from 'erxes-ui';
-import { useSetAtom } from 'jotai';
+import { type SetStateAction, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
-import { loadingPluginsConfigState, pluginsConfigState } from 'ui-modules';
+import {
+  loadingPluginsConfigState,
+  pluginsConfigState,
+  type PluginsConfigState,
+} from 'ui-modules';
 import { i18nInstance } from '~/i18n';
+import { usePluginRemoteSync } from '@/plugins/hooks/usePluginRemoteSync';
 
 type RemoteConfig = {
   CONFIG: IUIConfig;
@@ -30,41 +35,88 @@ export const loadPluginI18nNamespace = async ({
   }
 };
 
+const pendingConfigLoads = new Set<string>();
+
+export const loadPluginConfig = async (
+  remoteName: string,
+  setPluginsConfig: (update: SetStateAction<PluginsConfigState | null>) => void,
+  setLoadingPluginsConfig: (update: SetStateAction<boolean>) => void,
+) => {
+  if (pendingConfigLoads.has(remoteName)) {
+    return;
+  }
+  pendingConfigLoads.add(remoteName);
+
+  try {
+    const remoteConfig = await loadRemote<RemoteConfig>(`${remoteName}/config`);
+    const pluginConfig = remoteConfig?.CONFIG;
+
+    if (!pluginConfig) {
+      throw new Error(`Remote "${remoteName}" did not expose a config`);
+    }
+
+    await loadPluginI18nNamespace(pluginConfig);
+
+    setPluginsConfig((prev) => ({
+      ...prev,
+      [remoteName]: pluginConfig,
+    }));
+    setTimeout(() => {
+      setLoadingPluginsConfig(false);
+    });
+  } catch (error) {
+    console.error(`Failed to load config from ${remoteName}:`, error);
+    setLoadingPluginsConfig(false);
+  } finally {
+    pendingConfigLoads.delete(remoteName);
+  }
+};
+
 export const PluginConfigsProvidersEffect = () => {
-  const instance = getInstance();
-  const remotes = instance?.options.remotes;
+  const remotes = usePluginRemoteSync();
+  const pluginsConfig = useAtomValue(pluginsConfigState);
   const setPluginsConfig = useSetAtom(pluginsConfigState);
   const setLoadingPluginsConfig = useSetAtom(loadingPluginsConfigState);
 
   useEffect(() => {
-    if (remotes && remotes.length > 0) {
-      const loadConfig = async () => {
-        for (const remote of remotes) {
-          try {
-            const remoteConfig = (await loadRemote(
-              `${remote.name}/config`,
-            )) as RemoteConfig;
-            const pluginConfig = remoteConfig.CONFIG;
+    const remoteNames = new Set(remotes.map((remote) => remote.name));
 
-            await loadPluginI18nNamespace(pluginConfig);
+    // Drop configs whose remote left the registry so navigation and routes
+    // disappear without a reload.
+    setPluginsConfig((previous) => {
+      if (!previous) {
+        return previous;
+      }
 
-            setPluginsConfig((prev) => ({
-              ...prev,
-              [remote.name]: pluginConfig,
-            }));
-            setTimeout(() => {
-              setLoadingPluginsConfig(false);
-            });
-          } catch (error) {
-            console.error(`Failed to load config from ${remote.name}:`, error);
-            setLoadingPluginsConfig(false);
-          }
-        }
-      };
+      const staleNames = Object.keys(previous).filter(
+        (name) => !remoteNames.has(name),
+      );
 
-      loadConfig();
+      if (staleNames.length === 0) {
+        return previous;
+      }
+
+      const next = { ...previous };
+      staleNames.forEach((name) => {
+        delete next[name];
+      });
+      return next;
+    });
+
+    remotes.forEach((remote) => {
+      if (!pluginsConfig?.[remote.name]) {
+        loadPluginConfig(
+          remote.name,
+          setPluginsConfig,
+          setLoadingPluginsConfig,
+        );
+      }
+    });
+
+    if (remotes.length === 0) {
+      setLoadingPluginsConfig(false);
     }
-  }, [remotes, setPluginsConfig]);
+  }, [remotes, pluginsConfig, setPluginsConfig, setLoadingPluginsConfig]);
 
   return null;
 };
