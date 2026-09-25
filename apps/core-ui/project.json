@@ -1,7 +1,7 @@
 {
   "name": "core-ui",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "frontend/core-ui/src",
+  "sourceRoot": "apps/core-ui/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -11,11 +11,11 @@
       "defaultConfiguration": "production",
       "options": {
         "target": "web",
-        "outputPath": "dist/frontend/core-ui",
-        "main": "frontend/core-ui/src/main.ts",
-        "tsConfig": "frontend/core-ui/tsconfig.app.json",
-        "rspackConfig": "frontend/core-ui/rspack.config.ts",
-        "assets": ["frontend/core-ui/src/assets"]
+        "outputPath": "dist/apps/core-ui",
+        "main": "apps/core-ui/src/main.ts",
+        "tsConfig": "apps/core-ui/tsconfig.app.json",
+        "rspackConfig": "apps/core-ui/rspack.config.ts",
+        "assets": ["apps/core-ui/src/assets"]
       },
       "configurations": {
         "development": {
@@ -25,7 +25,7 @@
           "mode": "production",
           "optimization": true,
           "sourceMap": false,
-          "rspackConfig": "frontend/core-ui/rspack.config.prod.ts"
+          "rspackConfig": "apps/core-ui/rspack.config.prod.ts"
         }
       }
     },

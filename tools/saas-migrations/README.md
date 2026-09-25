@@ -13,20 +13,20 @@ few use domain-specific overrides such as `CORE_MONGO_URL`). Provide these via a
 
 ```bash
 # Run everything (core first, then the rest)
-tsx backend/saas-migrations/run.ts
+tsx tools/saas-migrations/run.ts
 
 # Only specific domains
-tsx backend/saas-migrations/run.ts core frontline
+tsx tools/saas-migrations/run.ts core frontline
 
 # A single script (by domain/file or bare name)
-tsx backend/saas-migrations/run.ts core/migratePost.ts
-tsx backend/saas-migrations/run.ts migratePost
+tsx tools/saas-migrations/run.ts core/migratePost.ts
+tsx tools/saas-migrations/run.ts migratePost
 
 # Preview the order without running anything
-tsx backend/saas-migrations/run.ts --list
+tsx tools/saas-migrations/run.ts --list
 
 # Keep going past failures instead of stopping on the first
-tsx backend/saas-migrations/run.ts --continue
+tsx tools/saas-migrations/run.ts --continue
 ```
 
 Or via the package scripts (from this directory):
@@ -48,7 +48,7 @@ dry-run, author/ID mapping, recognized KB translations, collision checks and
 resumable insert-only writes. Source collections remain intact.
 
 ```bash
-pnpm exec tsx backend/saas-migrations/content/knowledgebase/migrateKnowledgeBaseToCms.ts
+pnpm exec tsx tools/saas-migrations/content/knowledgebase/migrateKnowledgeBaseToCms.ts
 ```
 
 Run from the repository root after configuring the tenant and portal settings
@@ -80,7 +80,7 @@ SKIP_MEDIA=false
 Run the single TypeScript entry from its directory:
 
 ```bash
-cd backend/saas-migrations/content/wordpress
+cd tools/saas-migrations/content/wordpress
 node --import tsx migrateWordPress.ts
 ```
 
@@ -135,7 +135,7 @@ Optional `.env` tuning values are `BATCH_SIZE` (default `500`),
 `MAX_WXR_BYTES` (default `536870912`), `MAX_MEDIA_BYTES` (default `104857600`),
 `MEDIA_TIMEOUT_MS` (default `30000`), and `MEDIA_CONCURRENCY` (default `3`).
 Validate migration TypeScript with
-`pnpm --dir backend/saas-migrations typecheck`.
+`pnpm --dir tools/saas-migrations typecheck`.
 
 ## How it works
 

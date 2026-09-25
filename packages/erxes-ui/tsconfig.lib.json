@@ -8,7 +8,7 @@
       "@nx/react/typings/image.d.ts"
     ],
     "paths": {
-      "erxes-ui/*": ["frontend/libs/erxes-ui/src/*"]
+      "erxes-ui/*": ["packages/erxes-ui/src/*"]
     }
   },
   "exclude": [

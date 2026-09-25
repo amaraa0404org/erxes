@@ -1,5 +1,6 @@
 packages:
-  - 'backend/**'
-  - 'frontend/**'
+  - 'apps/**'
+  - 'packages/**'
+  - 'tools/**'
   - 'examples/plugin-hello/**'
   - '!**/dist/**'

@@ -99,7 +99,7 @@ is still honored when present.
 
 ## File map (all packages)
 
-**Capture (shared):** `backend/erxes-api-shared/src/utils/mongo/`
+**Capture (shared):** `packages/erxes-api-shared/src/utils/mongo/`
 
 - `revertCapture.ts` — the auto-capture: `installRevertCaptureHooks(schema)`
   (pre/post hooks for delete*/update*/save), `journalDeletes`/`journalUpdates`,
@@ -116,7 +116,7 @@ is still honored when present.
 - `index.ts` — re-exports revertCapture. ⚠️ After editing shared, **`pnpm build`**
   it and **restart** consumers (it's loaded as built dist, not via tsx-watch).
 
-**Journal consumer:** `backend/services/logs/src/bullmq/mongo.ts`
+**Journal consumer:** `apps/logs/src/bullmq/mongo.ts`
 
 - `handleDelete`/`handleDeleteMany`/`handleUpdate`/`handleUpdateBatch` +
   dispatcher. Stores `prevDocument(s)` / `updateDescription` + `mongooseName` +
@@ -125,7 +125,7 @@ is still honored when present.
   single-`update` rows (identical stored shape; only the queue transport is
   collapsed).
 
-**Engine:** `backend/core-api/src/modules/logs/revert/`
+**Engine:** `apps/core-api/src/modules/logs/revert/`
 
 - `revertByProcessId.ts` — orchestrator (load newest-first, dedup, actor-or-admin
   authz, multi-connection guard, plan, conflicts, dry-run/apply, marker).
@@ -141,7 +141,7 @@ is still honored when present.
   column in the System Logs table) · `../../../meta/logs.ts` (optional per-entity
   config) · `erxes-api-shared/.../elasticsearch/saveEs.ts`.
 
-**UI:** `frontend/core-ui/src/modules/logs/`
+**UI:** `apps/core-ui/src/modules/logs/`
 
 - `components/LogRevertPanel.tsx` — the Undo surface in the log-detail sheet (shown
   for Mongo data-change logs AND the GraphQL mutation log of the same request;
@@ -185,7 +185,7 @@ is still honored when present.
 ## Run & test locally
 
 - Stack: Docker Mongo + Redis (+ ES). Services: core-api (`:3300`), logs-service
-  (`cd backend/services/logs && pnpm dev` — NOT in the default `nx serve` set, but
+  (`cd apps/logs && pnpm dev` — NOT in the default `nx serve` set, but
   it's what writes `{subdomain}_logs`), gateway (`:4000`) + apollo-router
   (`:50000`), core-ui (`:3001`).
 - **Cloud-vs-local trap**: root `.env` `MONGO_URL` points at cloud Atlas; force

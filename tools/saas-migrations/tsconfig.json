@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "erxes-api-shared/*": ["../erxes-api-shared/src/*"]
+      "erxes-api-shared/*": ["../packages/erxes-api-shared/src/*"]
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

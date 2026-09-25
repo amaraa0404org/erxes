@@ -1,7 +1,7 @@
 {
   "name": "automations-service",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "backend/services/automations/src",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/automations/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -9,7 +9,7 @@
       "executor": "nx:run-commands",
       "cache": true,
       "options": {
-        "cwd": "backend/services/automations",
+        "cwd": "apps/automations",
         "commands": ["pnpm build"]
       },
       "dependsOn": ["^build", "build:packageJson"]
@@ -18,9 +18,9 @@
     "build:packageJson": {
       "executor": "@nx/js:tsc",
       "options": {
-        "main": "backend/services/automations/dist/src/main.js",
-        "tsConfig": "backend/services/automations/tsconfig.build.json",
-        "outputPath": "backend/services/automations/dist",
+        "main": "apps/automations/dist/src/main.js",
+        "tsConfig": "apps/automations/tsconfig.build.json",
+        "outputPath": "apps/automations/dist",
         "updateBuildableProjectDepsInPackageJson": true,
 
         "buildableProjectDepsInPackageJsonType": "dependencies"
@@ -31,7 +31,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["typecheck", "build"],
       "options": {
-        "cwd": "backend/services/automations",
+        "cwd": "apps/automations",
         "command": "NODE_ENV=development  node dist/src/main.js"
       }
     },
@@ -40,14 +40,14 @@
       "executor": "nx:run-commands",
 
       "options": {
-        "cwd": "backend/services/automations",
+        "cwd": "apps/automations",
         "command": "NODE_ENV=development  pnpm dev"
       }
     },
 
     "docker-build": {
       "dependsOn": ["build"],
-      "command": "docker build -f backend/services/automations/Dockerfile . -t erxes/erxes-next-automations"
+      "command": "docker build -f apps/automations/Dockerfile . -t erxes/erxes-next-automations"
     }
   }
 }

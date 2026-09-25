@@ -1,7 +1,7 @@
 {
   "name": "erxes-api-shared",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "backend/erxes-api-shared/src",
+  "sourceRoot": "packages/erxes-api-shared/src",
   "projectType": "library",
   "tags": [
     "scope:shared"
@@ -27,7 +27,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "backend/erxes-api-shared/jest.config.ts"
+        "jestConfig": "packages/erxes-api-shared/jest.config.ts"
       }
     }
   }

@@ -353,7 +353,7 @@ type ReadRemoteFileStreamParams = {
 const resolveLocalUploadsPath = () => {
   const defaultPrivateUploadsPath = path.join(
     __dirname,
-    'backend/core-api/src/utils/private/uploads',
+    'apps/core-api/src/utils/private/uploads',
   );
 
   return path.resolve(

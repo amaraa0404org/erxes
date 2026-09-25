@@ -7,10 +7,10 @@
     "strict": true,
     "paths": {
       "erxes-ui/*": [
-        "frontend/libs/erxes-ui/src/*"
+        "packages/erxes-ui/src/*"
       ],
       "erxes-ui": [
-        "frontend/libs/erxes-ui/src"
+        "packages/erxes-ui/src"
       ],
       "~/*": [
         "examples/plugin-hello/ui/src/*"
@@ -25,10 +25,10 @@
         "examples/plugin-hello/ui/src/modules"
       ],
       "ui-modules/*": [
-        "frontend/libs/ui-modules/src/*"
+        "packages/ui-modules/src/*"
       ],
       "ui-modules": [
-        "frontend/libs/ui-modules/src"
+        "packages/ui-modules/src"
       ]
     }
   },

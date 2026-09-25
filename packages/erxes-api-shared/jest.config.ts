@@ -14,5 +14,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   testMatch: ['<rootDir>/src/**/*.test.ts'],
-  coverageDirectory: '../../coverage/backend/erxes-api-shared',
+  coverageDirectory: '../../coverage/packages/erxes-api-shared',
 };

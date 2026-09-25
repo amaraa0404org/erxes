@@ -1,19 +1,19 @@
 /**
  * Unified command runner.
  *
- * Discovers every command script under backend/saas-migrations/<domain>/commands/*.ts
+ * Discovers every command script under tools/saas-migrations/<domain>/commands/*.ts
  * (core/commands, frontline/commands, operation/commands, …) and runs each one
  * in its own child process (`node --import tsx`). A child process is required
  * because the scripts self-invoke and call `process.exit()` when they finish —
  * running them in-process would tear down the runner after the first script.
  *
  * Usage (from anywhere; env/.env is resolved by each script's own dotenv):
- *   tsx backend/saas-migrations/run-commands.ts                 # run everything
- *   tsx backend/saas-migrations/run-commands.ts core frontline  # only these domains
- *   tsx backend/saas-migrations/run-commands.ts core/commands/tags.ts  # a single script
- *   tsx backend/saas-migrations/run-commands.ts tags            # bare name also works
- *   tsx backend/saas-migrations/run-commands.ts --list          # show what would run, run nothing
- *   tsx backend/saas-migrations/run-commands.ts --continue      # don't stop on the first failure
+ *   tsx tools/saas-migrations/run-commands.ts                 # run everything
+ *   tsx tools/saas-migrations/run-commands.ts core frontline  # only these domains
+ *   tsx tools/saas-migrations/run-commands.ts core/commands/tags.ts  # a single script
+ *   tsx tools/saas-migrations/run-commands.ts tags            # bare name also works
+ *   tsx tools/saas-migrations/run-commands.ts --list          # show what would run, run nothing
+ *   tsx tools/saas-migrations/run-commands.ts --continue      # don't stop on the first failure
  *
  * Exit code is non-zero if any command fails.
  */

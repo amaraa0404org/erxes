@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectCompany } from 'frontend/libs/ui-modules/src/modules/contacts/components/SelectCompany';
-import { GET_COMPANIES } from 'frontend/libs/ui-modules/src/modules/contacts/graphql/queries/getCompanies';
+import { SelectCompany } from 'packages/ui-modules/src/modules/contacts/components/SelectCompany';
+import { GET_COMPANIES } from 'packages/ui-modules/src/modules/contacts/graphql/queries/getCompanies';
 
 const meta: Meta<typeof SelectCompany> = {
   title: 'Modules/Contacts/SelectCompany',

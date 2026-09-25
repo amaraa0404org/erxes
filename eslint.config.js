@@ -8,7 +8,7 @@ module.exports = [
     ignores: [
       '**/dist',
       '**/node_modules',
-      'apps/client-portal-template/eslint.config.mjs',
+      'examples/client-portal/eslint.config.mjs',
     ],
   },
   {
@@ -22,7 +22,7 @@ module.exports = [
             '^.*/eslint(\\.base)?\\.config\\.[cm]?js$', // Allow ESLint config files
             '^.*/jest\\.config\\.[cm]?js$', // Allow Jest config files
             '^.*/babel\\.config\\.[cm]?js$',
-            'backend/core-api',
+            'apps/core-api',
           ],
           allowCircularSelfDependency: true,
           depConstraints: [

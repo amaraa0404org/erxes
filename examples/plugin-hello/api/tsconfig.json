@@ -27,7 +27,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "@/*": ["./src/modules/*"],
-      "erxes-api-shared/*": ["../../../backend/erxes-api-shared/src/*"]
+      "erxes-api-shared/*": ["../../../packages/erxes-api-shared/src/*"]
     }
   },
   "ts-node": {

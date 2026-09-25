@@ -70,7 +70,7 @@ enum API_METHODS {
 
 type TAPIMethod = keyof typeof API_METHODS;
 
-// Same validation as the gateway's locale route (backend/gateway/src/util/
+// Same validation as the gateway's locale route (apps/gateway/src/util/
 // locales.ts): duplicated here on purpose so plugins do not import gateway
 // code.
 const LNG_PATTERN = /^[a-zA-Z]{2,5}(?:[-_][a-zA-Z0-9]{2,8})?$/;

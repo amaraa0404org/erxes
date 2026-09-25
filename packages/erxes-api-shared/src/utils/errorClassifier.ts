@@ -126,7 +126,7 @@ const EXPECTED_PATTERNS: RegExp[] = [
   /schema validation/i,
   // Auth / permission / session — the dominant Sentry noise.
   // These originate from the core permission chokepoint
-  // (backend/erxes-api-shared/src/core-modules/permissions/utils.ts) and from
+  // (packages/erxes-api-shared/src/core-modules/permissions/utils.ts) and from
   // ad-hoc throws across plugins. SYSTEM patterns are matched first, so these
   // cannot shadow real infrastructure errors.
   /login required/i, // "Login required"

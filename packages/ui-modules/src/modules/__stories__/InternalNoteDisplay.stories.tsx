@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { InternalNoteDisplay } from 'frontend/libs/ui-modules/src/modules/internal-notes/components/InternalNoteDisplay';
+import { InternalNoteDisplay } from 'packages/ui-modules/src/modules/internal-notes/components/InternalNoteDisplay';
 
 const meta: Meta<typeof InternalNoteDisplay> = {
   title: 'Modules/InternalNotes/InternalNoteDisplay',

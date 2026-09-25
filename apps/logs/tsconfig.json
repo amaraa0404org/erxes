@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "module": "commonjs",
@@ -27,7 +27,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "@/*": ["./src/modules/*"],
-      "erxes-api-shared/*": ["../../erxes-api-shared/src/*"]
+      "erxes-api-shared/*": ["../../packages/erxes-api-shared/src/*"]
     }
   },
   "ts-node": {

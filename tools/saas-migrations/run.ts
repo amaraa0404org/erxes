@@ -1,18 +1,18 @@
 /**
  * Unified migration runner.
  *
- * Discovers every migration script under backend/migrations/<domain>/*.ts and
+ * Discovers every migration script under tools/saas-migrations/<domain>/*.ts and
  * runs each one in its own child process (`node --import tsx`). A child process
  * is required because the scripts self-invoke and call `process.exit()` when
  * they finish — running them in-process would tear down the runner after the
  * first script.
  *
  * Usage (from anywhere; env/.env is resolved by each script's own dotenv):
- *   tsx backend/migrations/run.ts                 # run everything
- *   tsx backend/migrations/run.ts core frontline  # only these domains
- *   tsx backend/migrations/run.ts core/migratePost.ts   # a single script
- *   tsx backend/migrations/run.ts --list          # show what would run, run nothing
- *   tsx backend/migrations/run.ts --continue      # don't stop on the first failure
+ *   tsx tools/saas-migrations/run.ts                 # run everything
+ *   tsx tools/saas-migrations/run.ts core frontline  # only these domains
+ *   tsx tools/saas-migrations/run.ts core/migratePost.ts   # a single script
+ *   tsx tools/saas-migrations/run.ts --list          # show what would run, run nothing
+ *   tsx tools/saas-migrations/run.ts --continue      # don't stop on the first failure
  *
  * Exit code is non-zero if any migration fails.
  */

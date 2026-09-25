@@ -6,8 +6,8 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "paths": {
-      "erxes-ui": ["frontend/libs/erxes-ui/src"],
-      "erxes-ui/*": ["frontend/libs/erxes-ui/src/*"]
+      "erxes-ui": ["packages/erxes-ui/src"],
+      "erxes-ui/*": ["packages/erxes-ui/src/*"]
     }
   },
   "files": [],
@@ -23,5 +23,5 @@
       "path": "./tsconfig.storybook.json"
     }
   ],
-  "extends": "../../../tsconfig.base.json"
+  "extends": "../../tsconfig.base.json"
 }

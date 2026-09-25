@@ -14,10 +14,10 @@
   },
   "exclude": [
     "jest.config.ts",
-    "../libs/**/*.spec.ts",
-    "../libs/**/*.test.ts",
-    "../libs/**/*.spec.tsx",
-    "../libs/**/*.test.tsx",
+    "../../packages/**/*.spec.ts",
+    "../../packages/**/*.test.ts",
+    "../../packages/**/*.spec.tsx",
+    "../../packages/**/*.test.tsx",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.tsx",
@@ -30,7 +30,7 @@
   "include": [
     "src/**/*",
     "public",
-    "../libs/erxes-ui/src/**/*",
-    "../libs/ui-modules/src/**/*"
+    "../../packages/erxes-ui/src/**/*",
+    "../../packages/ui-modules/src/**/*"
   ]
 }

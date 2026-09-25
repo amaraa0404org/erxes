@@ -58,7 +58,10 @@ storybook-static
 dump.rdb
 
 # Local runtime upload artifacts
-backend/core-api/src/utils/private/uploads/
+apps/core-api/src/utils/private/uploads/
+
+# pnpm content-addressable store cache (tracked by accident)
+.pnpm-store
 
 # Sentry CLI local auth (token set via SENTRY_AUTH_TOKEN env var)
 .sentryclirc

@@ -43,16 +43,14 @@ that depends only on `erxes-api-shared`.
 
 ### Path aliases (tsconfig)
 
-- `~/*` → `src/*`, `@/*` → `src/modules/*` (same convention as
-  `backend/plugins/*`).
-- `erxes-api-shared/*` → `backend/erxes-api-shared/src/*` in dev; the published
+- `~/*` → `src/*`, `@/*` → `src/modules/*`.
+- `erxes-api-shared/*` → `packages/erxes-api-shared/src/*` in dev; the published
   workspace package in `tsconfig.build.json`.
 
 ## ui (`hello_ui`)
 
-- Module Federation remote `hello_ui`, built with `@nx/rspack` like every
-  `frontend/plugins/*_ui` project; dev server on **3099**, which matches
-  `hello_api`'s default `uiRemoteEntry`.
+- Module Federation remote `hello_ui`, built with `@nx/rspack`; dev server on
+  **3099**, which matches `hello_api`'s default `uiRemoteEntry`.
 - Exposes (`module-federation.config.ts`):
   - `./config` → `src/config.tsx`: `CONFIG: IUIConfig` with
     `name: 'hello'`, `path: 'hello'`, `i18n: true` (loads the `hello`
@@ -66,17 +64,15 @@ that depends only on `erxes-api-shared`.
   components.
 - `src/main.ts` is a dynamic `import('./bootstrap')` boundary; `bootstrap.tsx`
   renders a stub because the remote is mounted through the host.
-- No `package.json`: dependencies resolve from the root install, same as the
-  `frontend/plugins/*_ui` projects.
+- No `package.json`: dependencies resolve from the root install.
 
 ### Path aliases (tsconfig)
 
 - `~/*` → `src/*`, `@/*` → `src/modules/*`, plus `erxes-ui` →
-  `frontend/libs/erxes-ui/src` and `ui-modules` →
-  `frontend/libs/ui-modules/src` (repo-root-relative, same as
-  `frontend/plugins/*_ui`). The directory form matters: `withNx` turns these
-  paths into rspack aliases, and a file-valued alias would break deep imports
-  like `erxes-ui/hooks`.
+  `packages/erxes-ui/src` and `ui-modules` →
+  `packages/ui-modules/src` (repo-root-relative). The directory form matters:
+  `withNx` turns these paths into rspack aliases, and a file-valued alias
+  would break deep imports like `erxes-ui/hooks`.
 
 ## Validation
 
