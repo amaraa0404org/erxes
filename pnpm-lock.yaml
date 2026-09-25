@@ -1472,6 +1472,15 @@ importers:
         specifier: ^2.6.3
         version: 2.8.1
 
+  examples/plugin-hello/api:
+    dependencies:
+      erxes-api-shared:
+        specifier: workspace:*
+        version: link:../../../backend/erxes-api-shared
+      graphql-tag:
+        specifier: ^2.12.6
+        version: 2.12.6(graphql@16.10.0)
+
   frontend/libs/erxes-ui: {}
 
   frontend/libs/ui-modules: {}

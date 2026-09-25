@@ -1,0 +1,25 @@
+{
+  "name": "hello_api",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/plugin-hello/api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "examples/plugin-hello/api",
+        "command": "NODE_ENV=development pnpm dev"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "cwd": "examples/plugin-hello/api",
+        "commands": ["pnpm build"]
+      },
+      "dependsOn": ["^build"]
+    }
+  }
+}

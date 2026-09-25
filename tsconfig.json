@@ -59,6 +59,9 @@
       "path": "./apps/frontline-widgets/tsconfig.json"
     },
     {
+      "path": "./examples/plugin-hello/api/tsconfig.json"
+    },
+    {
       "path": "./frontend/core-ui/tsconfig.json"
     },
     {

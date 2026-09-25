@@ -380,7 +380,7 @@ test.
   and `ENABLED_SERVICES` on the backend. Replace `scripts/start-api-dev.js`
   with a root script `dev:api`, which runs
   `nx run-many -t serve -p core-api gateway automations-service logs-service`.
-- [ ] 1.6 Create `examples/plugin-hello/api` (Nx project `hello_api`):
+- [x] 1.6 Create `examples/plugin-hello/api` (Nx project `hello_api`):
   - a `startPlugin` service with one GraphQL query `helloPing: String!`, one
     tRPC query `hello.ping`, `localesDir`, and a `UI_REMOTE_ENTRY` default for
     its development UI;
