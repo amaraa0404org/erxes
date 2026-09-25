@@ -494,8 +494,8 @@ over.
 
 ### Milestone 5: Restructure directories (D3 target layout)
 
-- [ ] 5.1 Move the files with `git mv`, in one commit containing only moves.
-- [ ] 5.2 Fix every path in a separate commit:
+- [x] 5.1 Move the files with `git mv`, in one commit containing only moves.
+- [x] 5.2 Fix every path in a separate commit:
   - `pnpm-workspace.yaml`
   - `tsconfig.base.json` paths and root `tsconfig.json` references (also fix
     the trailing comma)
@@ -508,13 +508,13 @@ over.
   - the root `package.json` scripts
 
   Leave Dockerfiles and workflows alone; they are out of scope.
-- [ ] 5.3 Hygiene:
+- [x] 5.3 Hygiene:
   - delete the tracked `.pnpm-store/`, the root `index.html`,
     `MERGE_FK_TASK.md`, `HACKTOBERFEST.md` and `.opencode/AGENTS.md`;
   - delete root `core-libraries.ts` if nothing references it;
   - move `backend/README.md` content into `docs/` or delete it if obsolete;
   - add `.pnpm-store` to `.gitignore`.
-- [ ] 5.4 `pnpm install`, then build and test every core project against the
+- [x] 5.4 `pnpm install`, then build and test every core project against the
   baseline, and repeat the end-to-end checks.
 
 ### Milestone 6: Core GraphQL and tRPC types (D4)
