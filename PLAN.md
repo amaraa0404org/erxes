@@ -385,7 +385,7 @@ test.
     tRPC query `hello.ping`, `localesDir`, and a `UI_REMOTE_ENTRY` default for
     its development UI;
   - `examples/plugin-hello/AGENTS.md`, a short guide.
-- [ ] 1.7 End-to-end check. Record the evidence (commands, timings) in the
+- [x] 1.7 End-to-end check. Record the evidence (commands, timings) in the
   commit message body.
   1. Start `dev:api` with no plugins; the gateway boots.
   2. Start `hello_api`. Within about 15 seconds `{ helloPing }` works through
