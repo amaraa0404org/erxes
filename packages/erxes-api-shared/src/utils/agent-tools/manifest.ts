@@ -1,152 +1,218 @@
 import {
-  AgentProcedureMeta,
+  DocumentNode,
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  NamedTypeNode,
+  parse,
+  print,
+  TypeNode,
+} from 'graphql';
+import {
+  AgentToolDeclaration,
   AgentToolDescriptor,
   AgentToolField,
   AgentToolManifest,
-  AgentTrpcProcedure,
-  AgentTrpcRouter,
+  AgentToolsTypeDefs,
 } from './types';
 
-// Zod internals are accessed structurally to stay agnostic to the plugin's
-// zod instance. Zod 3 exposes `_def.typeName` ('ZodObject') and `.shape`;
-// Zod 4 exposes `_zod.def.type` ('object') and `_zod.def.shape`.
-interface ZodLikeSchema {
-  _def?: { typeName?: string; type?: string; shape?: unknown };
-  _zod?: { def?: { type?: string; shape?: unknown } };
-  shape?: Record<string, ZodLikeSchema>;
-  isOptional?: () => boolean;
+const BUILT_IN_SCALARS = ['String', 'Int', 'Float', 'Boolean', 'ID'];
+
+/**
+ * Index over the plugin's parsed SDL: object/interface fields merged across
+ * `type` and `extend type` blocks, plus enum and custom-scalar names for
+ * leaf-type detection.
+ */
+interface SchemaIndex {
+  typeFields: Map<string, Map<string, FieldDefinitionNode>>;
+  enumValues: Map<string, string[]>;
+  scalarNames: Set<string>;
 }
 
-const zodTypeName = (schema: ZodLikeSchema): string | undefined =>
-  schema._def?.typeName || schema._def?.type || schema._zod?.def?.type;
+/** Unwrap NonNull/List wrappers down to the named type. */
+const namedTypeName = (type: TypeNode): string => {
+  let node: TypeNode = type;
 
-const isZodObject = (schema: ZodLikeSchema): boolean => {
-  const typeName = zodTypeName(schema);
+  while (node.kind === Kind.NON_NULL_TYPE || node.kind === Kind.LIST_TYPE) {
+    node = node.type;
+  }
 
-  return typeName === 'ZodObject' || typeName === 'object';
+  return (node as NamedTypeNode).name.value;
 };
 
-const zodShape = (schema: ZodLikeSchema): Record<string, ZodLikeSchema> => {
-  if (schema.shape && typeof schema.shape === 'object') {
-    return schema.shape;
-  }
+const buildSchemaIndex = (documents: DocumentNode[]): SchemaIndex => {
+  const typeFields = new Map<string, Map<string, FieldDefinitionNode>>();
+  const enumValues = new Map<string, string[]>();
+  const scalarNames = new Set<string>(BUILT_IN_SCALARS);
 
-  const defShape = schema._def?.shape ?? schema._zod?.def?.shape;
+  const addFields = (
+    typeName: string,
+    fields: ReadonlyArray<FieldDefinitionNode> | undefined,
+  ) => {
+    if (!fields) {
+      return;
+    }
 
-  if (defShape && typeof defShape === 'object') {
-    return defShape as Record<string, ZodLikeSchema>;
-  }
+    let map = typeFields.get(typeName);
 
-  return {};
-};
+    if (!map) {
+      map = new Map();
+      typeFields.set(typeName, map);
+    }
 
-/** A field is required unless wrapped in an optional/default schema. */
-const isZodRequired = (schema: ZodLikeSchema): boolean => {
-  if (typeof schema.isOptional === 'function') {
-    return !schema.isOptional();
-  }
-
-  const typeName = zodTypeName(schema);
-
-  return typeName !== 'optional' && typeName !== 'default';
-};
-
-/** Extract flat input fields when a procedure's input parser is a Zod object. */
-const extractTrpcInputFields = (
-  proc: AgentTrpcProcedure,
-): AgentToolField[] | null => {
-  const inputSchema = proc?._def?.inputs?.[0] as ZodLikeSchema | undefined;
-
-  if (!inputSchema || typeof inputSchema !== 'object') {
-    return null;
-  }
-
-  if (!isZodObject(inputSchema)) {
-    return null; // free-form object input
-  }
-
-  return Object.entries(zodShape(inputSchema)).map(([name, schema]) => ({
-    name,
-    type: zodTypeName(schema) || 'ZodUnknown',
-    required: isZodRequired(schema),
-  }));
-};
-
-/**
- * Build the tool descriptor for one tRPC procedure, or null when the
- * procedure declares no agent permission — tRPC tools are admit-only via
- * `.meta({ agent: { permission } })` so nothing is callable by default.
- */
-const buildTrpcTool = (
-  plugin: string,
-  path: string,
-  proc: AgentTrpcProcedure,
-): AgentToolDescriptor | null => {
-  // tRPC v11 router internals: `_def.procedures` is a flat path -> procedure
-  // record; procedure type lives at `_def.type`.
-  const procDef = proc?._def;
-  const method: 'query' | 'mutation' =
-    procDef?.type === 'mutation' ? 'mutation' : 'query';
-
-  // Required curation hook: procedures opt in as agent tools via
-  // `.meta({ agent: { description, permission } })`.
-  const agentMeta = (
-    procDef?.meta as { agent?: AgentProcedureMeta } | undefined
-  )?.agent;
-
-  if (!agentMeta?.permission?.action) {
-    return null;
-  }
-
-  return {
-    id: `${plugin}.trpc.${path}`,
-    kind: 'trpc',
-    plugin,
-    module: path.split('.')[0],
-    method,
-    destructive: method === 'mutation',
-    description:
-      agentMeta.description || `Call ${plugin} tRPC procedure ${path}`,
-    inputFields: extractTrpcInputFields(proc),
-    permission: agentMeta.permission,
-    path,
+    for (const field of fields) {
+      map.set(field.name.value, field);
+    }
   };
+
+  for (const document of documents) {
+    for (const definition of document.definitions) {
+      switch (definition.kind) {
+        case Kind.OBJECT_TYPE_DEFINITION:
+        case Kind.OBJECT_TYPE_EXTENSION:
+        case Kind.INTERFACE_TYPE_DEFINITION:
+        case Kind.INTERFACE_TYPE_EXTENSION:
+          addFields(definition.name.value, definition.fields);
+          break;
+        case Kind.ENUM_TYPE_DEFINITION:
+        case Kind.ENUM_TYPE_EXTENSION:
+          enumValues.set(definition.name.value, [
+            ...(enumValues.get(definition.name.value) || []),
+            ...(definition.values || []).map((value) => value.name.value),
+          ]);
+          break;
+        case Kind.SCALAR_TYPE_DEFINITION:
+        case Kind.SCALAR_TYPE_EXTENSION:
+          scalarNames.add(definition.name.value);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  return { typeFields, enumValues, scalarNames };
+};
+
+/** Enum values for an enum-typed argument, undefined otherwise. */
+const argEnumValues = (
+  arg: InputValueDefinitionNode,
+  index: SchemaIndex,
+): string[] | undefined => index.enumValues.get(namedTypeName(arg.type));
+
+/**
+ * Default selection set: every scalar/enum leaf field of the operation's
+ * return type. Returns '' for scalar/JSON returns and for types with no
+ * leaf fields (the executor then sends a bare field, which is only valid
+ * for leaf types — object returns always produce a non-empty selection or
+ * the call fails schema validation with a clear error).
+ */
+const defaultSelection = (
+  returnType: TypeNode,
+  index: SchemaIndex,
+): string => {
+  const typeName = namedTypeName(returnType);
+
+  if (index.scalarNames.has(typeName) || index.enumValues.has(typeName)) {
+    return '';
+  }
+
+  const fields = index.typeFields.get(typeName);
+
+  if (!fields) {
+    return '';
+  }
+
+  const leafFields = [...fields.values()]
+    .filter((field) => {
+      const leafTypeName = namedTypeName(field.type);
+
+      return (
+        index.scalarNames.has(leafTypeName) || index.enumValues.has(leafTypeName)
+      );
+    })
+    .map((field) => field.name.value);
+
+  return leafFields.length ? `{ ${leafFields.join(' ')} }` : '';
 };
 
 /**
- * Derive the agent tool manifest for a plugin. tRPC tools are emitted only
- * for procedures declaring an agent permission; nothing else is exposed.
+ * Derive the agent tool manifest for a plugin from its GraphQL SDL. Only
+ * operations explicitly declared via `agentTools` are exposed — nothing is
+ * callable by default. Declared operations missing from the schema are
+ * warned about and skipped.
  */
 export const buildAgentToolManifest = (opts: {
   plugin: string;
-  trpcRouter?: AgentTrpcRouter;
-  exclude: string[];
+  typeDefs: AgentToolsTypeDefs;
+  agentTools?: AgentToolDeclaration[];
 }): AgentToolManifest => {
-  const { plugin, trpcRouter, exclude } = opts;
+  const { plugin, typeDefs, agentTools = [] } = opts;
+
+  const documents = (Array.isArray(typeDefs) ? typeDefs : [typeDefs]).map(
+    (typeDef) => (typeof typeDef === 'string' ? parse(typeDef) : typeDef),
+  );
+
+  const index = buildSchemaIndex(documents);
   const tools: AgentToolDescriptor[] = [];
+  const declared = new Set<string>();
 
-  const procedures: Record<string, unknown> =
-    trpcRouter?._def?.procedures || {};
+  for (const declaration of agentTools) {
+    if (declared.has(declaration.operation)) {
+      console.warn(
+        `[agent-tools] ${plugin}: duplicate declaration for operation ` +
+          `'${declaration.operation}' skipped`,
+      );
+      continue;
+    }
+    declared.add(declaration.operation);
 
-  for (const [path, rawProc] of Object.entries(procedures)) {
-    // tRPC internals are external to this module; entries are narrowed
-    // structurally and anything without agent metadata is dropped below.
-    const proc = rawProc as AgentTrpcProcedure;
+    const queryField = index.typeFields
+      .get('Query')
+      ?.get(declaration.operation);
+    const mutationField = index.typeFields
+      .get('Mutation')
+      ?.get(declaration.operation);
+    const field = queryField || mutationField;
 
-    if (proc?._def?.type === 'subscription') {
+    if (!field) {
+      console.warn(
+        `[agent-tools] ${plugin}: declared operation ` +
+          `'${declaration.operation}' not found on Query or Mutation — ` +
+          'skipped',
+      );
       continue;
     }
 
-    const tool = buildTrpcTool(plugin, path, proc);
+    const method: 'query' | 'mutation' = queryField ? 'query' : 'mutation';
 
-    if (tool) {
-      tools.push(tool);
-    }
+    const inputFields: AgentToolField[] = (field.arguments || []).map(
+      (arg) => ({
+        name: arg.name.value,
+        type: print(arg.type),
+        required:
+          arg.type.kind === Kind.NON_NULL_TYPE &&
+          arg.defaultValue === undefined,
+        enumValues: argEnumValues(arg, index),
+      }),
+    );
+
+    tools.push({
+      id: `${plugin}.graphql.${declaration.operation}`,
+      kind: 'graphql',
+      plugin,
+      operation: declaration.operation,
+      method,
+      destructive: method === 'mutation',
+      description:
+        declaration.description ||
+        `Call ${plugin} GraphQL ${method} ${declaration.operation}`,
+      permission: declaration.permission,
+      inputFields,
+      selection:
+        declaration.selection || defaultSelection(field.type, index),
+    });
   }
 
-  /** Match a tool against the configured exclude prefixes. */
-  const isExcluded = (tool: AgentToolDescriptor): boolean =>
-    exclude.some((entry) => tool.path.startsWith(entry));
-
-  return { plugin, tools: tools.filter((tool) => !isExcluded(tool)) };
+  return { plugin, tools };
 };

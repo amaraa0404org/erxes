@@ -3,39 +3,56 @@ import {
   Request as ApiRequest,
   Response as ApiResponse,
 } from 'express';
+import { graphql, GraphQLSchema } from 'graphql';
+import { IncomingHttpHeaders } from 'http';
 import { IUserDocument } from '../../core-types';
 import { checkPermissionGroup } from '../../core-modules/permissions/utils';
-import {
-  createPluginTRPCContext,
-  err,
-  ok,
-  sendTRPCMessage,
-  TRPCContext,
-} from '../trpc';
+import { err, ok, sendTRPCMessage } from '../trpc';
+import { setUserHeader } from '../headers';
 import { decodeAgentToolsAuthHeader } from './auth';
 import { buildAgentToolManifest } from './manifest';
+import { buildAgentToolOperation } from './operation';
 import {
   agentToolResponseTooLargeError,
   getAgentToolMaxResponseBytes,
   oversizedAgentToolResultBytes,
 } from './responseLimit';
 import {
+  AgentGraphqlToolDescriptor,
+  AgentToolDeclaration,
   AgentToolManifest,
-  AgentTrpcRouter,
-  AgentTrpcToolDescriptor,
+  AgentToolsTypeDefs,
 } from './types';
 
 export interface AgentToolsOptions {
   plugin: string;
-  // Router and context factory are plugin-defined; typed structurally at this
-  // boundary since plugins construct them dynamically.
-  trpcRouter?: AgentTrpcRouter;
-  createContext?: (
-    subdomain: string,
-    context: TRPCContext,
-  ) => Promise<unknown>;
-  /** Prefixes of tRPC procedure paths to keep out of the manifest. */
-  exclude?: string[];
+  /**
+   * The plugin's executable schema — the same `buildSubgraphSchema` result
+   * Apollo serves, so calls run through the wrapped resolver pipeline
+   * (checkLogin, permission wrappers, logHandler). A thunk lets a service
+   * mount the endpoints before the schema exists; the result is resolved
+   * once and cached.
+   */
+  schema: GraphQLSchema | (() => Promise<GraphQLSchema>);
+  /**
+   * The SDL the schema was built from; the manifest is derived from it.
+   * Accepts the same shapes `startPlugin` receives for `graphql.typeDefs`,
+   * or a thunk.
+   */
+  typeDefs: AgentToolsTypeDefs | (() => Promise<AgentToolsTypeDefs>);
+  /**
+   * The same context factory handed to Apollo's `expressMiddleware`
+   * (`generateApolloContext(apolloServerContext)`), so `subdomain`, `user`,
+   * `models`, `checkPermission` and request-derived fields match a real
+   * request. Called with a synthetic request carrying the `hostname`/`user`
+   * headers the gateway would forward.
+   */
+  contextFactory: (args: {
+    req: ApiRequest;
+    res: ApiResponse;
+  }) => Promise<unknown>;
+  /** Declared GraphQL operations exposed as agent tools. */
+  agentTools?: AgentToolDeclaration[];
 }
 
 const MANIFEST_TTL_MS = 60_000;
@@ -45,15 +62,31 @@ const manifestCache = new Map<
   { manifest: AgentToolManifest; at: number }
 >();
 
-/** Cache key scoped to the tenant and the full mount configuration. */
-const manifestCacheKey = (
-  subdomain: string,
-  options: AgentToolsOptions,
-): string => JSON.stringify([options.plugin, subdomain, options.exclude || []]);
+/** Cache key scoped to the tenant and the plugin. */
+const manifestCacheKey = (subdomain: string, options: AgentToolsOptions) =>
+  JSON.stringify([options.plugin, subdomain]);
+
+/** Lazily resolve a value-or-thunk option once, then reuse the result. */
+const memoize = <T>(source: T | (() => Promise<T>)): (() => Promise<T>) => {
+  let promise: Promise<T> | undefined;
+
+  return () => {
+    if (!promise) {
+      promise = Promise.resolve(
+        typeof source === 'function'
+          ? (source as () => Promise<T>)()
+          : source,
+      );
+    }
+
+    return promise;
+  };
+};
 
 const getManifest = async (
   subdomain: string,
   options: AgentToolsOptions,
+  resolveTypeDefs: () => Promise<AgentToolsTypeDefs>,
 ): Promise<AgentToolManifest> => {
   const cacheKey = manifestCacheKey(subdomain, options);
   const cached = manifestCache.get(cacheKey);
@@ -64,8 +97,8 @@ const getManifest = async (
 
   const manifest = buildAgentToolManifest({
     plugin: options.plugin,
-    trpcRouter: options.trpcRouter,
-    exclude: options.exclude || [],
+    typeDefs: await resolveTypeDefs(),
+    agentTools: options.agentTools || [],
   });
 
   manifestCache.set(cacheKey, { manifest, at: Date.now() });
@@ -73,56 +106,62 @@ const getManifest = async (
   return manifest;
 };
 
-/** Execute a tRPC tool in-process through the plugin's context factory. */
-const executeTrpcTool = async (
+/**
+ * Execute a GraphQL tool in-process against the plugin's own executable
+ * schema. The context is built by the same factory the Apollo mount uses,
+ * fed with a synthetic request carrying the headers the gateway would
+ * forward — so the full resolver pipeline (checkLogin, permission
+ * wrappers, logHandler activity logs) applies unchanged.
+ */
+const executeGraphqlTool = async (
   options: AgentToolsOptions,
+  resolveSchema: () => Promise<GraphQLSchema>,
   subdomain: string,
-  userId: string,
-  descriptor: AgentTrpcToolDescriptor,
+  user: IUserDocument,
+  descriptor: AgentGraphqlToolDescriptor,
   input: Record<string, unknown> | undefined,
+  res: ApiResponse,
 ): Promise<unknown> => {
-  const { trpcRouter, createContext } = options;
+  const schema = await resolveSchema();
+  const { source, variableValues, operationName, processId } =
+    buildAgentToolOperation(descriptor, input);
 
-  if (!trpcRouter || typeof trpcRouter.createCaller !== 'function') {
-    throw new Error('tRPC router is not available on this plugin');
+  // Mirror the gateway-forwarded request shape: `hostname` carries the
+  // tenant (getSubdomain), `user`/`userid` carry the acting user document.
+  const headers: IncomingHttpHeaders = { hostname: subdomain };
+  setUserHeader(headers, user);
+
+  if (processId) {
+    headers['x-erxes-process-id'] = processId;
   }
 
-  // `__processId` is a reserved key used only for context propagation; the
-  // remaining input object is the procedure input itself.
-  const { __processId, ...procedureInput } = input || {};
+  const syntheticReq = {
+    headers,
+    body: { operationName },
+    secure: false,
+    cookies: {},
+  } as unknown as ApiRequest;
 
-  // Reuse the shared /trpc context initialization so request process state
-  // and event handlers behave identically to the public tRPC mount.
-  const pluginContext = await createPluginTRPCContext(
-    subdomain,
-    {
-      userId,
-      processId: typeof __processId === 'string' ? __processId : undefined,
-    },
-    createContext,
-  );
+  const contextValue = await options.contextFactory({
+    req: syntheticReq,
+    res,
+  });
 
-  const caller = trpcRouter.createCaller(pluginContext);
+  const result = await graphql({
+    schema,
+    source,
+    variableValues,
+    contextValue,
+    operationName,
+  });
 
-  // tRPC caller proxies are function-valued at every level, so the navigation
-  // must accept functions as well as plain objects.
-  const procedure = descriptor.path
-    .split('.')
-    .reduce<unknown>(
-      (acc, segment) =>
-        acc && (typeof acc === 'object' || typeof acc === 'function')
-          ? (acc as Record<string, unknown>)[segment]
-          : undefined,
-      caller,
-    );
-
-  if (typeof procedure !== 'function') {
-    throw new TypeError(`tRPC procedure '${descriptor.path}' not found`);
+  if (result.errors?.length) {
+    throw new Error(result.errors[0].message);
   }
 
-  return await (procedure as (input: unknown) => Promise<unknown>)(
-    input ? procedureInput : undefined,
-  );
+  return (result.data as Record<string, unknown> | null)?.[
+    descriptor.operation
+  ];
 };
 
 /**
@@ -134,6 +173,9 @@ export const mountAgentTools = (
   app: Application,
   options: AgentToolsOptions,
 ): void => {
+  const resolveSchema = memoize(options.schema);
+  const resolveTypeDefs = memoize(options.typeDefs);
+
   app.get(
     '/agent-tools/manifest',
     async (req: ApiRequest, res: ApiResponse) => {
@@ -146,7 +188,11 @@ export const mountAgentTools = (
       }
 
       try {
-        const manifest = await getManifest(auth.subdomain, options);
+        const manifest = await getManifest(
+          auth.subdomain,
+          options,
+          resolveTypeDefs,
+        );
 
         return res.json(ok(manifest));
       } catch (error) {
@@ -191,7 +237,7 @@ export const mountAgentTools = (
     }
 
     try {
-      const manifest = await getManifest(subdomain, options);
+      const manifest = await getManifest(subdomain, options, resolveTypeDefs);
       const descriptor = manifest.tools.find((tool) => tool.id === toolId);
 
       if (!descriptor) {
@@ -238,12 +284,14 @@ export const mountAgentTools = (
         return res.status(403).json(err(permissionError));
       }
 
-      const result = await executeTrpcTool(
+      const result = await executeGraphqlTool(
         options,
+        resolveSchema,
         subdomain,
-        userId,
+        user,
         descriptor,
         input,
+        res,
       );
 
       // Oversized payloads stall the agent run and freeze the chat UI; reject
@@ -274,7 +322,13 @@ export const mountAgentTools = (
 
       return res
         .status(500)
-        .json(err(new Error('Agent tool execution failed')));
+        .json(
+          err(
+            error instanceof Error
+              ? error
+              : new Error('Agent tool execution failed'),
+          ),
+        );
     }
   });
 };

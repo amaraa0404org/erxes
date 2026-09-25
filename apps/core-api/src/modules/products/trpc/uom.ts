@@ -1,7 +1,6 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
-import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
@@ -10,12 +9,6 @@ const mongoQuerySchema = z.record(z.unknown());
 export const uomTrpcRouter = t.router({
   productUoms: t.router({
     find: t.procedure
-      .meta(
-        agentMeta(
-          'List units of measure (UOM): { query? }. Use to resolve a UOM code/name to the exact value expected in products.createProduct doc.uom.',
-          { module: 'products', action: 'productsRead' },
-        ),
-      )
       .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
@@ -26,12 +19,6 @@ export const uomTrpcRouter = t.router({
       }),
 
     findOne: t.procedure
-      .meta(
-        agentMeta(
-          'Get a single unit of measure by { _id }, { code }, or any MongoDB-style query. Returns {} when nothing matches.',
-          { module: 'products', action: 'productsRead' },
-        ),
-      )
       .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
         const query = mongoQuerySchema.parse(

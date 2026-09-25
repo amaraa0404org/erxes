@@ -674,6 +674,17 @@ _Append one line per removed or changed core contract:
   `ISaasOrganizationPlanHistory`, `ISaasChargeMap`); `ISaasOrganizationDetail`
   keeps an `[key: string]: any` slot for consumer-attached fields —
   owner: core
+- agent-tools: `/agent-tools/manifest` and `/agent-tools/call` now expose and
+  execute declared GraphQL operations in-process through the wrapped
+  subgraph schema (`checkLogin`, permission wrappers, `logHandler`) instead
+  of tRPC `createCaller`. Declarations move from `.meta(agentMeta(...))` on
+  tRPC procedures (all 50 removed, `agentMeta`/`AgentProcedureMeta` deleted)
+  to an `agentTools` list of
+  `{ operation, permission, description?, selection? }` passed to
+  `startPlugin`/`mountAgentTools`. Breaking for `/agent-tools/call`
+  consumers: tool IDs change from `*.trpc.*` to `*.graphql.*`, and call
+  `input` is filtered to the operation's declared GraphQL arguments —
+  owner: core
 
 ## Open issues
 
@@ -710,6 +721,12 @@ _Append problems that block following this plan as written:
   were repositioned directly above the `any` with the reason kept as prose
   or a `-- ` suffix. Directives in non-scoped files report as unused
   directives (warnings only) until the rule widens in a later phase.
+- 2026-09-25 agent-tools: `JWT_TOKEN_SECRET` is unset in the local `.env`,
+  so `decodeAgentToolsAuthHeader` fails closed and `/agent-tools/*` answers
+  401 on a default dev stack. Verified live on a scratch core-api: once the
+  secret is set, the manifest lists `core.graphql.*` tools and calls execute
+  through the GraphQL pipeline. — open, needs a documented dev default or
+  setup step
 
 ## Carry-over to the next phase
 

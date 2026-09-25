@@ -2,7 +2,6 @@ import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { IBrand } from '@/organization/brand/types';
 import { CoreTRPCContext } from '~/init-trpc';
-import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
@@ -17,12 +16,6 @@ const brandDocSchema = z.custom<IBrand>(
 export const brandTrpcRouter = t.router({
   brands: t.router({
     find: t.procedure
-      .meta(
-        agentMeta(
-          'List brands: { query? }. Brands group channels/integrations (messenger, forms, etc.). Use to resolve a brand name to its _id.',
-          { module: 'brands', action: 'brandsRead' },
-        ),
-      )
       .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
@@ -31,12 +24,6 @@ export const brandTrpcRouter = t.router({
         return await models.Brands.find(query || {});
       }),
     findOne: t.procedure
-      .meta(
-        agentMeta(
-          'Get a single brand by { _id }, { code }, or any MongoDB-style query. Returns {} when nothing matches. Call before brands.updateOne.',
-          { module: 'brands', action: 'brandsRead' },
-        ),
-      )
       .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
         const query = mongoQuerySchema.parse(

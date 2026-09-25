@@ -26,7 +26,13 @@ import * as http from 'http';
 import { IncomingMessage } from 'http';
 import * as path from 'path';
 import { appRouter, CoreTRPCContext } from '~/init-trpc';
-import { initApolloServer } from './apollo/apolloServer';
+import {
+  coreApolloContext,
+  getCoreSchema,
+  getCoreTypeDefs,
+  initApolloServer,
+} from './apollo/apolloServer';
+import { agentTools } from './utils/agentTools';
 import { generateModels } from './connectionResolvers';
 import meta from './meta';
 import { approval } from './meta/approval';
@@ -143,18 +149,15 @@ app.use(
 );
 
 // Core predates startPlugin, so it mounts the agent capability endpoints
-// itself. Only tRPC procedures declaring agent metadata are exposed.
+// itself. Only the GraphQL operations declared in agentTools are exposed;
+// they execute in-process against the same wrapped subgraph schema and
+// context factory Apollo uses.
 mountAgentTools(app, {
   plugin: PLUGIN_NAME,
-  trpcRouter: appRouter,
-  createContext: async (
-    subdomain: string,
-    context: Record<string, unknown>,
-  ) => {
-    const models = await generateModels(subdomain, context);
-
-    return { ...context, models };
-  },
+  schema: getCoreSchema,
+  typeDefs: getCoreTypeDefs,
+  contextFactory: coreApolloContext,
+  agentTools,
 });
 
 app.get('/health', async (_req, res) => {

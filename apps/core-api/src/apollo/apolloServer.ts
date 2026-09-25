@@ -5,47 +5,61 @@ import { buildSubgraphSchema } from '@apollo/subgraph';
 import * as dotenv from 'dotenv';
 import { IMainContext } from 'erxes-api-shared/core-types';
 import {
-  apolloCommonTypes,
   generateApolloContext,
   wrapApolloResolvers,
   expectedErrorPlugin,
 } from 'erxes-api-shared/utils';
-import { gql } from 'graphql-tag';
+import { GraphQLSchema } from 'graphql';
 import { generateModels } from '../connectionResolvers';
 import resolvers from './resolvers';
+import { typeDefs as coreTypeDefs } from './typeDefs';
 
-import * as typeDefDetails from './schema/schema';
 // load environment variables
 dotenv.config();
 
 let apolloServer;
 
+export const getCoreTypeDefs = coreTypeDefs;
+
+let schemaPromise: Promise<GraphQLSchema> | undefined;
+
+/**
+ * The executable subgraph schema — built once and shared by Apollo Server
+ * and the in-process agent-tool executor, so both run the identical
+ * wrapped resolver pipeline (checkLogin, permission wrappers, logHandler).
+ */
+export const getCoreSchema = (): Promise<GraphQLSchema> => {
+  if (!schemaPromise) {
+    schemaPromise = getCoreTypeDefs().then((typeDefs) =>
+      buildSubgraphSchema([
+        {
+          typeDefs,
+          resolvers: wrapApolloResolvers(resolvers),
+        },
+      ]),
+    );
+  }
+
+  return schemaPromise;
+};
+
+/**
+ * The context factory shared by the /graphql express mount and agent-tool
+ * calls, so both build identical request contexts.
+ */
+export const coreApolloContext = generateApolloContext<IMainContext>(
+  async (subdomain, context) => {
+    const models = await generateModels(subdomain, context);
+
+    context.models = models;
+
+    return context;
+  },
+);
+
 export const initApolloServer = async (app, httpServer) => {
-  const { types, queries, mutations } = typeDefDetails;
-
-  const typeDefs = async () => {
-    return gql(`
-
-      ${apolloCommonTypes}
-      ${types}
-
-      extend type Query {
-        ${queries}
-      }
-      
-      extend type Mutation {
-        ${mutations}
-      }
-    `);
-  };
-
   apolloServer = new ApolloServer({
-    schema: buildSubgraphSchema([
-      {
-        typeDefs: await typeDefs(),
-        resolvers: wrapApolloResolvers(resolvers),
-      },
-    ]),
+    schema: await getCoreSchema(),
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       expectedErrorPlugin,
@@ -57,15 +71,7 @@ export const initApolloServer = async (app, httpServer) => {
   app.use(
     '/graphql',
     expressMiddleware(apolloServer, {
-      context: generateApolloContext<IMainContext>(
-        async (subdomain, context) => {
-          const models = await generateModels(subdomain, context);
-
-          context.models = models;
-
-          return context;
-        },
-      ),
+      context: coreApolloContext,
     }),
   );
 

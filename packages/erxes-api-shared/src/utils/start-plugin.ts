@@ -48,7 +48,10 @@ import {
   wrapApolloResolvers,
   expectedErrorPlugin,
 } from './apollo';
-import type { AgentTrpcRouter } from './agent-tools/types';
+import type {
+  AgentToolDeclaration,
+  AgentTrpcRouter,
+} from './agent-tools/types';
 import { BeforeResolversConfig } from './apollo/beforeResolvers';
 import { extractUserFromHeader } from './headers';
 import { AfterProcessConfigs, logHandler, startAfterProcess } from './logs';
@@ -165,13 +168,13 @@ type ConfigTypes = {
     ) => Promise<TRPCContext>;
   };
   /**
-   * tRPC procedure paths to exclude from the agent capability manifest.
-   * Agent-tools endpoints are mounted automatically on every plugin that
-   * supplies a `trpcAppRouter`. Only procedures declaring
-   * `.meta({ agent: { permission } })` appear in the manifest; this list
-   * removes specific annotated procedures when needed.
+   * GraphQL operations exposed as agent-callable tools on the
+   * `/agent-tools/*` endpoints (mounted unconditionally). Each entry names
+   * a Query/Mutation field on this plugin's schema plus the permission
+   * required to call it; execution runs in-process through the same
+   * wrapped resolver pipeline Apollo serves.
    */
-  agentToolsExclude?: string[];
+  agentTools?: AgentToolDeclaration[];
   /**
    * Module Federation remote entry URL for the plugin's UI bundle. Stored in
    * the plugin manifest so the core can serve it to the frontend. Defaults
@@ -206,8 +209,8 @@ export async function startPlugin(
     apolloServerContext,
     trpcAppRouter,
     onServerInit,
-    // agent capability endpoint exclusions
-    agentToolsExclude,
+    // agent capability declarations
+    agentTools,
     // runtime registration metadata
     uiRemoteEntry = process.env.UI_REMOTE_ENTRY,
     localesDir,
@@ -358,18 +361,32 @@ export async function startPlugin(
     );
   }
 
-  // Agent capability endpoints are mounted automatically on every plugin with
-  // a tRPC router. The manifest is admit-only: only procedures declaring
-  // `.meta({ agent: { permission } })` are exposed, so an empty router
-  // produces an empty manifest and zero callable tools.
-  if (trpcAppRouter) {
-    mountAgentTools(app, {
-      plugin: name,
-      trpcRouter: trpcAppRouter.router,
-      createContext: trpcAppRouter.createContext,
-      exclude: agentToolsExclude || [],
-    });
-  }
+  // The executable schema is shared by Apollo Server and the in-process
+  // agent-tool executor, so both run the identical wrapped resolver
+  // pipeline (checkLogin, permission wrappers, logHandler). Built eagerly —
+  // `graphql()` only assembles typeDefs/resolvers.
+  const { typeDefs, resolvers } = await graphql();
+  const schema = buildSubgraphSchema([
+    {
+      typeDefs,
+      resolvers: wrapApolloResolvers(resolvers),
+    },
+  ]);
+  const apolloContext = generateApolloContext<IMainContext>(
+    apolloServerContext,
+  );
+
+  // Agent capability endpoints are mounted on every plugin. The manifest is
+  // admit-only: only operations declared via `agentTools` are exposed, so a
+  // plugin without declarations gets an empty manifest and zero callable
+  // tools.
+  mountAgentTools(app, {
+    plugin: name,
+    schema,
+    typeDefs,
+    contextFactory: apolloContext,
+    agentTools,
+  });
 
   app.use(
     (req: ApiRequest & { rawBody?: Buffer | string }, _res, next) => {
@@ -430,35 +447,21 @@ export async function startPlugin(
     });
   });
 
-  const generateApolloServer = async () => {
-    // const services = await getServices();
-    // debugInfo(`Enabled services .... ${JSON.stringify(services)}`);
+  const apolloServer = new ApolloServer({
+    schema,
 
-    const { typeDefs, resolvers } = await graphql();
-
-    return new ApolloServer({
-      schema: buildSubgraphSchema([
-        {
-          typeDefs,
-          resolvers: wrapApolloResolvers(resolvers),
-        },
-      ]),
-
-      // for graceful shutdown
-      plugins: [
-        ApolloServerPluginDrainHttpServer({ httpServer }),
-        expectedErrorPlugin,
-      ],
-    });
-  };
-
-  const apolloServer = await generateApolloServer();
+    // for graceful shutdown
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      expectedErrorPlugin,
+    ],
+  });
   await apolloServer.start();
 
   app.use(
     '/graphql',
     expressMiddleware(apolloServer, {
-      context: generateApolloContext<IMainContext>(apolloServerContext),
+      context: apolloContext,
     }),
   );
 
