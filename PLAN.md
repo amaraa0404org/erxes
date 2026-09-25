@@ -528,7 +528,7 @@ over.
   `relations/trpc/relation.ts`, `organization/**/trpc/*`, `tags`, `brand`,
   and the rest. Then `automations-service` tRPC (`z.any()` ×4). Type each
   core call site of `sendTRPCMessage`.
-- [ ] 6.3 Set up codegen for core-api (the `codegen` target and generated
+- [x] 6.3 Set up codegen for core-api (the `codegen` target and generated
   types). Check that the generated schema matches the running subgraph SDL.
 - [ ] 6.4 GraphQL nullability and resolver typing, module by module, one commit
   per module. Apply the D4 rules and switch the resolver maps to the

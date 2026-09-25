@@ -29,6 +29,14 @@
       }
     },
 
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/core-api",
+        "command": "pnpm graphql-codegen --config codegen.ts"
+      }
+    },
+
     "start": {
       "executor": "nx:run-commands",
       "dependsOn": ["typecheck", "build"],
