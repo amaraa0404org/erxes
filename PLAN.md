@@ -609,6 +609,14 @@ _Append one line per removed or changed core contract:
 _Append problems that block following this plan as written:
 `- <date> <task>: <problem> — <status>`._
 
+- 2026-09-25 task 1.7: `sales_api` under `tsx watch` does not complete
+  `leaveErxesGateway` on SIGTERM (parent kills it mid-shutdown). The reaper
+  covers it within ~45 s, but `erxes-service-{name}` stays stale. — open,
+  reaper should also DEL the address key
+- 2026-09-25 task 1.7: plugin GraphQL resolvers are wrapped in `checkLogin`
+  by default; `helloPing` requires an authenticated request. Expected, but
+  remember it for 2.5. — noted
+
 ## Carry-over to the next phase
 
 - Optional core → plugin contract calls kept in Milestone 3.3 should become
