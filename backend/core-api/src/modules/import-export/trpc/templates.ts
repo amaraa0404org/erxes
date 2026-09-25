@@ -63,24 +63,6 @@ export const importTemplates: Record<
     ],
   },
 
-  'frontline:ticket.ticket': {
-    filename: 'tickets-template.csv',
-    headers: [
-      'Name',
-      'Description',
-      'Type',
-      'Priority',
-      'Status',
-      'State',
-      'Pipeline ID',
-      'Channel ID',
-      'Assignee ID',
-      'Start Date',
-      'Due Date',
-      'Tags',
-    ],
-  },
-
   'core:organization.users': {
     filename: 'team-members-template.csv',
     headers: [
@@ -101,24 +83,6 @@ export const importTemplates: Record<
       'Brands',
       'Departments',
       'Branches',
-    ],
-  },
-  'accounting:account.account': {
-    filename: 'accounting-account-template.csv',
-    headers: [
-      'Code',
-      'Name',
-      'Category ID',
-      'Parent ID',
-      'Currency',
-      'Kind',
-      'Journal',
-      'Description',
-      'Branch ID',
-      'Department ID',
-      'Status',
-      'Is Temp',
-      'Is Out Balance',
     ],
   },
 };

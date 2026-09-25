@@ -428,7 +428,7 @@ over.
   - remove the `pipelineId` argument and filter from the products queries
     (sales);
   - remove the `clientPortalCheckTokiInvoice` mutation (payment).
-- [ ] 3.2 core-api import-export templates: remove `frontline:ticket.ticket`
+- [x] 3.2 core-api import-export templates: remove `frontline:ticket.ticket`
   and `accounting:account.account` (`modules/import-export/trpc/templates.ts`).
 - [ ] 3.3 Keep the optional contract calls from core to plugins, which degrade
   gracefully when the plugin is absent, and make sure each is gated by
@@ -623,6 +623,10 @@ _Append one line per removed or changed core contract:
   (exclude-category/product filters, initial-category ordering,
   `Product.remainder` pipeline scope) — owner: sales
 - 3.1 `clientPortalCheckTokiInvoice` mutation removed — owner: payment
+- 3.2 import template `frontline:ticket.ticket` removed from
+  `importTemplates` — owner: frontline
+- 3.2 import template `accounting:account.account` removed from
+  `importTemplates` — owner: accounting
 
 ## Open issues
 
