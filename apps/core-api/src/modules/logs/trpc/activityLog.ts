@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from '@trpc/server';
+import { TActivityEntity } from 'erxes-api-shared/core-modules';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 
@@ -12,17 +13,21 @@ export const activityLogRouter = t.router({
           z.object({
             activityType: z.string(),
             sourcePlugin: z.string().optional(),
-            target: z.any(),
+            target: z.record(z.unknown()),
             // Stripped by the parse unless it is declared, and the feed reads
             // it to tell what an entry happened inside of.
             contextType: z.string().optional(),
-            context: z.any().optional(),
+            context: z
+              .custom<TActivityEntity>(
+                (v) => typeof v === 'object' && v !== null,
+              )
+              .optional(),
             action: z.object({
               type: z.string(),
               description: z.string(),
             }),
-            changes: z.any(),
-            metadata: z.any().optional(),
+            changes: z.unknown(),
+            metadata: z.unknown().optional(),
             pluginName: z.string(),
             moduleName: z.string(),
             collectionName: z.string(),

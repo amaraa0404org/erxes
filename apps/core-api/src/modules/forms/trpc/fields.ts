@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 import { fieldsCombinedByContentType } from '~/modules/forms/utils';
+import { IField } from '~/modules/properties/@types/field';
 import {
   generateContactsFields,
   generateFieldsUsers,
@@ -11,6 +12,23 @@ import {
 } from '../fields/utils';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+const mongoQuerySchema = z.record(z.unknown());
+
+const mongoSortSchema = z.record(
+  z.union([
+    z.literal(1),
+    z.literal(-1),
+    z.enum(['asc', 'ascending', 'desc', 'descending']),
+    z.object({ $meta: z.string() }),
+  ]),
+);
+
+/** Field create docs are validated structurally by the Mongoose schema; the
+ *  tRPC boundary only needs to reject non-object payloads. */
+const fieldDocSchema = z.custom<IField>(
+  (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+);
 
 export const fieldsTrpcRouter = t.router({
   fields: t.router({
@@ -21,11 +39,19 @@ export const fieldsTrpcRouter = t.router({
           { module: 'properties', action: 'propertiesRead' },
         ),
       )
-      .input(z.object({ query: z.any(), projection: z.any(), sort: z.any() }))
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          projection: mongoQuerySchema.optional(),
+          sort: mongoSortSchema.optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { query, projection, sort } = input;
         const { models } = ctx;
-        return await models.Fields.find(query, projection).sort(sort).lean();
+        return await models.Fields.find(query || {}, projection)
+          .sort(sort)
+          .lean();
       }),
     findOne: t.procedure
       .meta(
@@ -37,7 +63,7 @@ export const fieldsTrpcRouter = t.router({
       .input(
         z.object({
           _id: z.string().optional(),
-          query: z.record(z.any()).optional(),
+          query: mongoQuerySchema.optional(),
         }),
       )
       .query(async ({ ctx, input }) => {
@@ -49,25 +75,26 @@ export const fieldsTrpcRouter = t.router({
         }
         return await models.Fields.findOne(filter);
       }),
-    create: t.procedure
-      .input(z.record(z.any()))
-      .mutation(async ({ ctx, input }) => {
-        const { models } = ctx;
-        const order = await models.Fields.findOne({
-          contentType: input.contentType,
-        })
-          .sort({ order: -1 })
-          .lean()
-          .then((f) => (f?.order || 0) + 10);
-        return await models.Fields.create({
-          ...input,
-          order,
-          isDefinedByErxes: false,
-        });
-      }),
+    create: t.procedure.input(fieldDocSchema).mutation(async ({ ctx, input }) => {
+      const { models } = ctx;
+      const order = await models.Fields.findOne({
+        contentType: input.contentType,
+      })
+        .sort({ order: -1 })
+        .lean()
+        .then((f) => (f?.order || 0) + 10);
+      return await models.Fields.create({
+        ...input,
+        order,
+        isDefinedByErxes: false,
+      });
+    }),
     updateOne: t.procedure
       .input(
-        z.object({ selector: z.record(z.any()), modifier: z.record(z.any()) }),
+        z.object({
+          selector: mongoQuerySchema,
+          modifier: mongoQuerySchema,
+        }),
       )
       .mutation(async ({ ctx, input }) => {
         const { selector, modifier } = input;
@@ -84,16 +111,19 @@ export const fieldsTrpcRouter = t.router({
           { module: 'properties', action: 'propertiesRead' },
         ),
       )
-      .input(z.array(z.object({ field: z.string(), value: z.any() })))
+      .input(z.array(z.object({ field: z.string(), value: z.unknown() })))
       .mutation(async ({ ctx, input }) => {
         const { models } = ctx;
-        const result: any[] = [];
+        const result: Record<string, unknown>[] = [];
         for (const item of input) {
           const { field: fieldId, value } = item;
           const fieldDoc = await models.Fields.findOne({ _id: fieldId }).lean();
-          const extra: any = {};
+          const extra: Record<string, unknown> = {};
           if (fieldDoc) {
-            const { type, validation } = fieldDoc as any;
+            const { type, validation } = fieldDoc as {
+              type?: string;
+              validation?: string;
+            };
             if (
               type === 'number' ||
               (type === 'input' && validation === 'number')
@@ -112,8 +142,8 @@ export const fieldsTrpcRouter = t.router({
     updateMany: t.procedure
       .input(
         z.object({
-          selector: z.record(z.any()),
-          modifier: z.record(z.any()),
+          selector: mongoQuerySchema,
+          modifier: mongoQuerySchema,
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -135,7 +165,7 @@ export const fieldsTrpcRouter = t.router({
           collectionType: z.string().optional(),
           segmentId: z.string().optional(),
           usageType: z.string().optional(),
-          config: z.record(z.any()).optional(),
+          config: mongoQuerySchema.optional(),
         }),
       )
       .query(async ({ ctx, input }) => {
@@ -165,7 +195,7 @@ export const fieldsTrpcRouter = t.router({
           usageType: z.string().optional(),
           excludedNames: z.array(z.string()).optional(),
           segmentId: z.string().optional(),
-          config: z.any().optional(),
+          config: mongoQuerySchema.optional(),
           onlyDates: z.boolean().optional(),
         }),
       )
@@ -177,7 +207,7 @@ export const fieldsTrpcRouter = t.router({
       .input(
         z.object({
           query: z.object({
-            customData: z.record(z.any()).optional(),
+            customData: mongoQuerySchema.optional(),
             contentType: z.string(),
           }),
         }),
@@ -192,7 +222,7 @@ export const fieldsTrpcRouter = t.router({
         );
       }),
     validateFieldValues: t.procedure
-      .input(z.any())
+      .input(z.object({ data: mongoQuerySchema }))
       .mutation(async ({ ctx, input }) => {
         const { data } = input;
         const { models } = ctx;

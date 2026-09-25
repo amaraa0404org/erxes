@@ -14,7 +14,7 @@ export const logsRouter = t.router({
           { module: 'logs', action: 'logsRead' },
         ),
       )
-      .input(z.any())
+      .input(z.record(z.unknown()))
       .query(async ({ input, ctx }) => {
       const { ...query } = input;
       const { models, userId } = ctx;

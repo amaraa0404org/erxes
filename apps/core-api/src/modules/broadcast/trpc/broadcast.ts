@@ -6,7 +6,9 @@ const t = initTRPC.context<CoreTRPCContext>().create();
 
 export const broadcastRouter = t.router({
   broadcast: t.router({
-    list: t.procedure.input(z.any()).query(async ({ input, ctx }) => {
+    list: t.procedure
+      .input(z.record(z.unknown()))
+      .query(async ({ input, ctx }) => {
       return [];
     }),
 

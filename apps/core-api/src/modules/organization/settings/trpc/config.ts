@@ -1,14 +1,19 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
+import { IConfig } from '@/organization/settings/db/definitions/configs';
 import { getFileUploadConfigs } from '@/organization/settings/utils/configs';
 import { CoreTRPCContext } from '~/init-trpc';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
 export const configTrpcRouter = t.router({
   configs: t.router({
-    findOne: t.procedure.input(z.any()).query(async ({ ctx, input }) => {
-      const query = input?.query || input?.selector || input;
+    findOne: t.procedure.input(mongoQuerySchema).query(async ({ ctx, input }) => {
+      const query = mongoQuerySchema.parse(
+        input.query || input.selector || input,
+      );
       const { models } = ctx;
 
       if (!query || !Object.keys(query).length) {
@@ -18,7 +23,9 @@ export const configTrpcRouter = t.router({
       return await models.Configs.findOne(query).lean();
     }),
     getConfig: t.procedure
-      .input(z.object({ code: z.string(), defaultValue: z.any() }))
+      .input(
+        z.object({ code: z.string(), defaultValue: z.unknown().optional() }),
+      )
       .query(async ({ ctx, input }) => {
         const { code, defaultValue } = input;
         const { models } = ctx;
@@ -32,7 +39,7 @@ export const configTrpcRouter = t.router({
         return await models.Configs.getConfigs(codes);
       }),
     getValues: t.procedure
-      .input(z.object({ query: z.any() }))
+      .input(z.object({ query: mongoQuerySchema }))
       .query(async ({ ctx, input }) => {
         const { models } = ctx;
         const { query } = input;
@@ -42,7 +49,13 @@ export const configTrpcRouter = t.router({
       return await getFileUploadConfigs();
     }),
     createOrUpdateConfig: t.procedure
-      .input(z.object({ data: z.any() }))
+      .input(
+        z.object({
+          data: z.custom<IConfig>(
+            (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+          ),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const { data } = input;
         const { models } = ctx;

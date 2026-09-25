@@ -1,4 +1,5 @@
 import { initTRPC } from '@trpc/server';
+import { IProduct } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
@@ -7,6 +8,23 @@ import { similaritiesTrpcRouter } from '@/products/trpc/similarity';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
+const mongoSortSchema = z.record(
+  z.union([
+    z.literal(1),
+    z.literal(-1),
+    z.enum(['asc', 'ascending', 'desc', 'descending']),
+    z.object({ $meta: z.string() }),
+  ]),
+);
+
+/** Product create/update docs are validated structurally by the Mongoose
+ *  schema; the tRPC boundary only needs to reject non-object payloads. */
+const productDocSchema = z.custom<IProduct>(
+  (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+);
+
 const inventoryKey = (id?: string) => id || '_';
 
 const discountValueSchema = z.object({
@@ -14,7 +32,7 @@ const discountValueSchema = z.object({
   discount: z.number(),
   discountPercent: z.number(),
   prefixes: z.array(z.string()),
-  conditions: z.record(z.any()),
+  conditions: z.record(z.unknown()),
   base: z.boolean().nullable(),
 });
 
@@ -23,62 +41,74 @@ const discountsSchema = z.array(discountValueSchema);
 export const productsTrpcRouter = t.router({
   products: t.router({
     similarities: similaritiesTrpcRouter,
-    find: t.procedure.input(z.any()).query(async ({ ctx, input }) => {
-      const {
-        query: rawQuery,
-        sort,
-        skip,
-        limit,
-        categoryId,
-        categoryIds,
-        fields,
-      } = input;
+    find: t.procedure
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          sort: mongoSortSchema.optional(),
+          skip: z.number().optional(),
+          limit: z.number().optional(),
+          categoryId: z.string().optional(),
+          categoryIds: z.array(z.string()).optional(),
+          fields: mongoQuerySchema.optional(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const {
+          query: rawQuery,
+          sort,
+          skip,
+          limit,
+          categoryId,
+          categoryIds,
+          fields,
+        } = input;
 
-      const { models } = ctx;
+        const { models } = ctx;
 
-      const query = rawQuery || {};
+        const query = rawQuery || {};
 
-      if (categoryIds?.length) {
-        const categories = await models.ProductCategories.find({
-          _id: { $in: categoryIds },
-        }).lean();
+        if (categoryIds?.length) {
+          const categories = await models.ProductCategories.find({
+            _id: { $in: categoryIds },
+          }).lean();
 
-        const orderQry: any[] = categories.map((category: any) => ({
-          order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) },
-        }));
+          const orderQry = categories.map((category) => ({
+            order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) },
+          }));
 
-        const categoriesWithChildren = await models.ProductCategories.find({
-          status: { $nin: ['disabled', 'archived'] },
-          $or: orderQry,
-        }).lean();
+          const categoriesWithChildren = await models.ProductCategories.find({
+            status: { $nin: ['disabled', 'archived'] },
+            $or: orderQry,
+          }).lean();
 
-        query.categoryId = {
-          $in: categoriesWithChildren.map((category: any) => category._id),
-        };
-      }
-
-      if (categoryId) {
-        const category = await models.ProductCategories.findOne({
-          _id: categoryId,
-        }).lean();
-
-        if (!category) {
-          throw new Error(`ProductCategory ${categoryId} not found`);
+          query.categoryId = {
+            $in: categoriesWithChildren.map((category) => category._id),
+          };
         }
 
-        const categories = await models.ProductCategories.find({
-          order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) },
-        }).lean();
+        if (categoryId) {
+          const category = await models.ProductCategories.findOne({
+            _id: categoryId,
+          }).lean();
 
-        query.categoryId = { $in: categories.map((c) => c._id) };
-      }
+          if (!category) {
+            throw new Error(`ProductCategory ${categoryId} not found`);
+          }
 
-      return models.Products.find(query, fields || {})
-        .sort(sort)
-        .skip(skip || 0)
-        .limit(limit || 0)
-        .lean();
-    }),
+          const categories = await models.ProductCategories.find({
+            order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) },
+          }).lean();
+
+          query.categoryId = { $in: categories.map((c) => c._id) };
+        }
+
+        return models.Products.find(query, fields || {})
+          .sort(sort)
+          .skip(skip || 0)
+          .limit(limit || 0)
+          .lean();
+      }),
 
     findOne: t.procedure
       .meta(
@@ -87,9 +117,11 @@ export const productsTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-        const query = input?.query || input?.selector || input;
+        const query = mongoQuerySchema.parse(
+          input.query || input.selector || input,
+        );
         const { models } = ctx;
         if (!query || !Object.keys(query).length) {
           return {};
@@ -99,7 +131,7 @@ export const productsTrpcRouter = t.router({
       }),
 
     createProduct: t.procedure
-      .input(z.any())
+      .input(z.object({ doc: productDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { doc } = input;
         const { models } = ctx;
@@ -108,7 +140,7 @@ export const productsTrpcRouter = t.router({
       }),
 
     updateProduct: t.procedure
-      .input(z.any())
+      .input(z.object({ _id: z.string(), doc: productDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { _id, doc } = input;
         const { models } = ctx;
@@ -117,7 +149,7 @@ export const productsTrpcRouter = t.router({
       }),
 
     updateProducts: t.procedure
-      .input(z.any())
+      .input(z.object({ query: mongoQuerySchema, doc: productDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { query, doc } = input;
         const { models } = ctx;
@@ -126,7 +158,7 @@ export const productsTrpcRouter = t.router({
       }),
 
     removeProducts: t.procedure
-      .input(z.any())
+      .input(z.object({ _ids: z.array(z.string()) }))
       .mutation(async ({ ctx, input }) => {
         const { _ids } = input;
         const { models } = ctx;
@@ -141,7 +173,12 @@ export const productsTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          categoryId: z.string().optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { query: rawQuery, categoryId } = input;
         const { models } = ctx;
@@ -172,7 +209,9 @@ export const productsTrpcRouter = t.router({
             { module: 'products', action: 'productsRead' },
           ),
         )
-        .input(z.any())
+        .input(
+          z.object({ _ids: z.array(z.string()).optional() }).optional(),
+        )
         .query(async ({ ctx, input }) => {
           const { models } = ctx;
           const { _ids = [] } = input || {};
@@ -210,8 +249,8 @@ export const productsTrpcRouter = t.router({
 
         await models.Products.bulkWrite(
           productsInfo.map((info) => {
-            const updateSet = {};
-            const unSet: any = {};
+            const updateSet: Record<string, number> = {};
+            const unSet: Record<string, number> = {};
 
             if (info.remainder) {
               updateSet[`inventories.${branchId}.${departmentId}.remainder`] =

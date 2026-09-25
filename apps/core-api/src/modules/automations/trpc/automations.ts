@@ -4,10 +4,12 @@ import { CoreTRPCContext } from '~/init-trpc';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
 export const automationsRouter = t.router({
   automation: t.router({
     find: t.procedure
-      .input(z.object({ query: z.any() }))
+      .input(z.object({ query: mongoQuerySchema }))
       .query(async ({ input, ctx }) => {
         const { query } = input;
         const { models } = ctx;
@@ -20,7 +22,7 @@ export const automationsRouter = t.router({
       }),
 
     count: t.procedure
-      .input(z.object({ query: z.any() }))
+      .input(z.object({ query: mongoQuerySchema }))
       .query(async ({ input, ctx }) => {
         const { query } = input;
         const { models } = ctx;
@@ -29,7 +31,7 @@ export const automationsRouter = t.router({
   }),
   executions: t.router({
     find: t.procedure
-      .input(z.object({ query: z.any() }))
+      .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ input, ctx }) => {
         const { ...query } = input;
         const { models } = ctx;

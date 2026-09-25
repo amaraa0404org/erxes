@@ -10,9 +10,35 @@ import { sendEmail } from '~/utils/email';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
+const sendEmailInputSchema = z.object({
+  toEmails: z.array(z.string()).optional(),
+  fromEmail: z.string().optional(),
+  title: z.string().optional(),
+  customHtml: z.string().optional(),
+  customHtmlData: z.unknown().optional(),
+  template: z
+    .object({
+      name: z.string().optional(),
+      data: z.record(z.unknown()).optional(),
+    })
+    .optional(),
+  attachments: z.array(z.record(z.unknown())).optional(),
+  transportMethod: z.string().optional(),
+  userId: z.string().optional(),
+});
+
 export const notificationTrpcRouter = t.router({
   notifications: t.router({
-    create: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    create: t.procedure
+      .input(
+        z.object({
+          userIds: z.array(z.string()).optional(),
+          data: mongoQuerySchema.optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
       const { userIds = [], data } = input;
       const { models, subdomain } = ctx;
 
@@ -26,7 +52,10 @@ export const notificationTrpcRouter = t.router({
           ...data,
           userId,
           isRead: false,
-          priorityLevel: PRIORITY_ORDER[priority || 'medium'],
+          priorityLevel:
+            PRIORITY_ORDER[
+              (priority || 'medium') as keyof typeof PRIORITY_ORDER
+            ],
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         };
 
@@ -56,13 +85,15 @@ export const notificationTrpcRouter = t.router({
       return models.Notifications.find({ userId: { $in: userIds } }).lean();
     }),
 
-    sendEmail: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    sendEmail: t.procedure
+      .input(sendEmailInputSchema)
+      .mutation(async ({ ctx, input }) => {
       const { subdomain, models } = ctx;
 
       const DOMAIN = getEnv({ name: 'DOMAIN', subdomain });
 
       // for unsubscribe url
-      const modifier = async (data: any, email: string) => {
+      const modifier = async (data: Record<string, unknown>, email: string) => {
         const user = await models.Users.findOne({ email }).lean();
 
         if (!user) {
@@ -75,22 +106,37 @@ export const notificationTrpcRouter = t.router({
           userId: user._id,
         }).lean();
 
-        if (userNotification && data.notification) {
-          data.notification.link = `${DOMAIN}/my-inbox/${userNotification._id}`;
+        if (
+          userNotification &&
+          data.notification &&
+          typeof data.notification === 'object'
+        ) {
+          (data.notification as Record<string, unknown>).link =
+            `${DOMAIN}/my-inbox/${userNotification._id}`;
         }
       };
 
       await sendEmail(subdomain, { ...input, modifier }, models);
     }),
 
-    settings: t.procedure.input(z.any()).query(async ({ ctx, input }) => {
+    settings: t.procedure
+      .input(z.object({ userIds: z.array(z.string()) }))
+      .query(async ({ ctx, input }) => {
       const { models } = ctx;
       const { userIds } = input;
 
       return models.NotificationSettings.find({ userId: { $in: userIds } });
     }),
     sendMobileNotification: t.procedure
-      .input(z.any())
+      .input(
+        z.object({
+          receivers: z.array(z.string()).optional(),
+          deviceTokens: z.array(z.string()).optional(),
+          title: z.string().optional(),
+          body: z.string().optional(),
+          data: z.record(z.string()).optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const { models } = ctx;
         const { receivers, deviceTokens, title, body, data } = input;

@@ -14,7 +14,12 @@ export const productConfigTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          code: z.string(),
+          defaultValue: z.unknown().optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
       const { code, defaultValue } = input;
       const { models } = ctx;

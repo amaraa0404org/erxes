@@ -15,11 +15,11 @@ export const fieldsGroupsTrpcRouter = t.router({
           { module: 'properties', action: 'propertiesRead' },
         ),
       )
-      .input(z.object({ query: z.any() }))
+      .input(z.object({ query: z.record(z.unknown()).optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
         const { models } = ctx;
-        return await models.FieldsGroups.find(query).lean();
+        return await models.FieldsGroups.find(query || {}).lean();
       }),
   }),
 });

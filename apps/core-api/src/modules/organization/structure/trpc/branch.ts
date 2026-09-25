@@ -1,10 +1,13 @@
 import { initTRPC } from '@trpc/server';
 import { escapeRegExp } from 'erxes-api-shared/utils';
+import { PipelineStage } from 'mongoose';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+const mongoQuerySchema = z.record(z.unknown());
 
 export const branchTrpcRouter = t.router({
   branches: t.router({
@@ -15,12 +18,17 @@ export const branchTrpcRouter = t.router({
           { module: 'organization', action: 'organizationRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          fields: mongoQuerySchema.optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
       const { models } = ctx;
       const { query, fields } = input;
 
-      return await models.Branches.find(query, fields).lean();
+      return await models.Branches.find(query || {}, fields).lean();
     }),
 
     findOne: t.procedure
@@ -30,9 +38,11 @@ export const branchTrpcRouter = t.router({
           { module: 'organization', action: 'organizationRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-      const query = input?.query || input?.selector || input;
+      const query = mongoQuerySchema.parse(
+        input.query || input.selector || input,
+      );
       const { models } = ctx;
 
       if (!query || !Object.keys(query).length) {
@@ -49,18 +59,23 @@ export const branchTrpcRouter = t.router({
           { module: 'organization', action: 'organizationRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          fields: mongoQuerySchema.optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
       const { query, fields } = input;
       const { models } = ctx;
 
-      const branches = await models.Branches.find(query);
+      const branches = await models.Branches.find(query || {});
 
       if (!branches.length) {
         return [];
       }
 
-      const orderQry: any[] = [];
+      const orderQry: Record<string, unknown>[] = [];
 
       for (const branch of branches) {
         orderQry.push({
@@ -78,7 +93,13 @@ export const branchTrpcRouter = t.router({
         .lean();
     }),
 
-    aggregate: t.procedure.input(z.any()).query(async ({ ctx, input }) => {
+    aggregate: t.procedure
+      .input(
+        z.object({
+          pipeline: z.custom<PipelineStage[]>((v) => Array.isArray(v)),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
       const { pipeline } = input;
       const { models } = ctx;
 

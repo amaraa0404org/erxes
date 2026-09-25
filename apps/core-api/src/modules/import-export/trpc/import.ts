@@ -86,7 +86,7 @@ export const importRouter = t.router({
         z.object({
           importId: z.string(),
           headerRow: z.array(z.string()),
-          errorRows: z.array(z.any()),
+          errorRows: z.array(z.record(z.unknown())),
           keyToHeaderMap: z.record(z.string()),
         }),
       )
@@ -119,6 +119,12 @@ export const importRouter = t.router({
       .input(
         z.object({
           entityType: z.string(),
+        }),
+      )
+      .output(
+        z.object({
+          filename: z.string(),
+          headers: z.array(z.string()),
         }),
       )
       .query(({ input }) => {

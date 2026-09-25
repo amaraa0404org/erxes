@@ -10,7 +10,7 @@ import { IModels } from '~/connectionResolvers';
 export interface IProductsConfigModel extends Model<IProductsConfigDocument> {
   getConfig(
     code: string,
-    defaultValue?: string,
+    defaultValue?: unknown,
   ): Promise<IProductsConfigDocument>;
   createOrUpdateConfig({
     code,

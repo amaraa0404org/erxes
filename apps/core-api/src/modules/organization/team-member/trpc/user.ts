@@ -1,9 +1,18 @@
 import { initTRPC } from '@trpc/server';
+import { IUser } from 'erxes-api-shared/core-types';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+const mongoQuerySchema = z.record(z.unknown());
+
+/** User docs are validated structurally by the Mongoose schema; the tRPC
+ *  boundary only needs to reject non-object payloads. */
+const userDocSchema = z.custom<IUser & { notUsePassword?: boolean }>(
+  (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+);
 
 export const userTrpcRouter = t.router({
   users: t.router({
@@ -16,8 +25,8 @@ export const userTrpcRouter = t.router({
       )
       .input(
         z.object({
-          query: z.record(z.any()),
-          fields: z.record(z.any()).optional(),
+          query: mongoQuerySchema,
+          fields: mongoQuerySchema.optional(),
         }),
       )
       .query(async ({ ctx, input }) => {
@@ -33,9 +42,11 @@ export const userTrpcRouter = t.router({
           { module: 'teamMembers', action: 'teamMembersRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-      const query = input?.query || input?.selector || input;
+      const query = mongoQuerySchema.parse(
+        input.query || input.selector || input,
+      );
       const { models } = ctx;
 
       if (!query || !Object.keys(query).length) {
@@ -45,7 +56,14 @@ export const userTrpcRouter = t.router({
       return models.Users.findOne(query);
     }),
 
-    updateOne: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    updateOne: t.procedure
+      .input(
+        z.object({
+          selector: mongoQuerySchema,
+          modifier: mongoQuerySchema,
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
       const { selector, modifier } = input;
       const { models } = ctx;
 
@@ -56,14 +74,23 @@ export const userTrpcRouter = t.router({
       return models.Users.updateOne(selector, modifier);
     }),
 
-    updateMany: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    updateMany: t.procedure
+      .input(
+        z.object({
+          selector: mongoQuerySchema,
+          modifier: mongoQuerySchema,
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
       const { selector, modifier } = input;
       const { models } = ctx;
 
       return models.Users.updateMany(selector, modifier);
     }),
 
-    create: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    create: t.procedure
+      .input(z.object({ data: userDocSchema }))
+      .mutation(async ({ ctx, input }) => {
       const { data } = input;
       const { models } = ctx;
 
@@ -71,7 +98,7 @@ export const userTrpcRouter = t.router({
     }),
 
     setActiveStatus: t.procedure
-      .input(z.any())
+      .input(z.object({ _id: z.string() }))
       .mutation(async ({ ctx, input }) => {
         const { _id } = input;
         const { models } = ctx;
@@ -86,7 +113,7 @@ export const userTrpcRouter = t.router({
           { module: 'teamMembers', action: 'teamMembersRead' },
         ),
       )
-      .input(z.any())
+      .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
       const { query } = input;
       const { models } = ctx;
@@ -95,7 +122,12 @@ export const userTrpcRouter = t.router({
     }),
 
     comparePassword: t.procedure
-      .input(z.any())
+      .input(
+        z.object({
+          password: z.string(),
+          userPassword: z.string(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { password, userPassword } = input;
         const { models } = ctx;

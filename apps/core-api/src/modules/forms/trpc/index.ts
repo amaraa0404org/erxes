@@ -9,7 +9,7 @@ const t = initTRPC.context<CoreTRPCContext>().create();
 const formsRouter = t.router({
   forms: t.router({
     findOne: t.procedure
-      .input(z.object({ query: z.record(z.any()).optional() }))
+      .input(z.object({ query: z.record(z.unknown()).optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
         const { models } = ctx;

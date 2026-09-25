@@ -1,10 +1,19 @@
 import { initTRPC } from '@trpc/server';
+import { ITag } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+const mongoQuerySchema = z.record(z.unknown());
+
+/** Tag docs are validated structurally by the Mongoose schema; the tRPC
+ *  boundary only needs to reject non-object payloads. */
+const tagDocSchema = z.custom<ITag>(
+  (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+);
 
 export const tagTrpcRouter = t.router({
   tags: t.router({
@@ -15,12 +24,12 @@ export const tagTrpcRouter = t.router({
           { module: 'tags', action: 'tagsRead' },
         ),
       )
-      .input(z.any())
+      .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
         const { models } = ctx;
 
-        return await models.Tags.find(query).lean();
+        return await models.Tags.find(query || {}).lean();
       }),
 
     findOne: t.procedure
@@ -30,9 +39,11 @@ export const tagTrpcRouter = t.router({
           { module: 'tags', action: 'tagsRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-        const query = input?.query || input?.selector || input;
+        const query = mongoQuerySchema.parse(
+          input.query || input.selector || input,
+        );
         const { models } = ctx;
 
         if (!query || !Object.keys(query).length) {
@@ -49,18 +60,23 @@ export const tagTrpcRouter = t.router({
           { module: 'tags', action: 'tagsRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          fields: mongoQuerySchema.optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { query, fields } = input;
         const { models } = ctx;
 
-        const tags = await models.Tags.find(query).lean();
+        const tags = await models.Tags.find(query || {}).lean();
 
         if (!tags.length) {
           return [];
         }
 
-        const orderQry: any[] = [];
+        const orderQry: Record<string, unknown>[] = [];
         for (const tag of tags) {
           orderQry.push({
             order: { $regex: new RegExp(`^${escapeRegExp(tag.order || '')}`) },
@@ -76,7 +92,9 @@ export const tagTrpcRouter = t.router({
           .sort({ order: 1 })
           .lean();
       }),
-    create: t.procedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    create: t.procedure
+      .input(z.object({ data: tagDocSchema }))
+      .mutation(async ({ ctx, input }) => {
       const { data } = input;
       const { models } = ctx;
 

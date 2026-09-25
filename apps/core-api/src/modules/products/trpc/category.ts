@@ -1,10 +1,28 @@
 import { initTRPC } from '@trpc/server';
+import { IProductCategory } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
 import { z } from 'zod';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+const mongoQuerySchema = z.record(z.unknown());
+
+const mongoSortSchema = z.record(
+  z.union([
+    z.literal(1),
+    z.literal(-1),
+    z.enum(['asc', 'ascending', 'desc', 'descending']),
+    z.object({ $meta: z.string() }),
+  ]),
+);
+
+/** Category create/update docs are validated structurally by the Mongoose
+ *  schema; the tRPC boundary only needs to reject non-object payloads. */
+const categoryDocSchema = z.custom<IProductCategory>(
+  (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+);
 
 export const productCategoryTrpcRouter = t.router({
   productCategories: t.router({
@@ -15,7 +33,13 @@ export const productCategoryTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          sort: mongoSortSchema.optional(),
+          regData: z.string().optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { query, sort, regData } = input;
         const { models } = ctx;
@@ -27,7 +51,7 @@ export const productCategoryTrpcRouter = t.router({
           }).sort(sort);
         }
 
-        return models.ProductCategories.find(query).sort(sort).lean();
+        return models.ProductCategories.find(query || {}).sort(sort).lean();
       }),
 
     findOne: t.procedure
@@ -37,9 +61,11 @@ export const productCategoryTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-        const query = input?.query || input?.selector || input;
+        const query = mongoQuerySchema.parse(
+          input.query || input.selector || input,
+        );
         const { models } = ctx;
         if (!query || !Object.keys(query).length) {
           return {};
@@ -58,7 +84,7 @@ export const productCategoryTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(z.object({ ids: z.array(z.string()) }))
       .query(async ({ ctx, input }) => {
         const { ids } = input;
         const { models } = ctx;
@@ -70,7 +96,7 @@ export const productCategoryTrpcRouter = t.router({
       }),
 
     createProductCategory: t.procedure
-      .input(z.any())
+      .input(z.object({ doc: categoryDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { doc } = input;
         const { models } = ctx;
@@ -79,7 +105,7 @@ export const productCategoryTrpcRouter = t.router({
       }),
 
     updateProductCategory: t.procedure
-      .input(z.any())
+      .input(z.object({ _id: z.string(), doc: categoryDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { _id, doc } = input;
         const { models } = ctx;
@@ -88,7 +114,7 @@ export const productCategoryTrpcRouter = t.router({
       }),
 
     removeProductCategory: t.procedure
-      .input(z.any())
+      .input(z.object({ _id: z.string() }))
       .mutation(async ({ ctx, input }) => {
         const { _id } = input;
         const { models } = ctx;
@@ -103,7 +129,7 @@ export const productCategoryTrpcRouter = t.router({
           action: 'productsRead',
         }),
       )
-      .input(z.any())
+      .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
         const { models } = ctx;

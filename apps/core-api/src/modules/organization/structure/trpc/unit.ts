@@ -5,6 +5,8 @@ import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
 export const unitTrpcRouter = t.router({
   units: t.router({
     find: t.procedure
@@ -14,12 +16,17 @@ export const unitTrpcRouter = t.router({
           { module: 'organization', action: 'organizationRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoQuerySchema.optional(),
+          fields: mongoQuerySchema.optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
       const { models } = ctx;
       const { query, fields } = input;
 
-      return await models.Units.find(query, fields).lean();
+      return await models.Units.find(query || {}, fields).lean();
     }),
 
     findOne: t.procedure
@@ -29,9 +36,11 @@ export const unitTrpcRouter = t.router({
           { module: 'organization', action: 'organizationRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-      const query = input?.query || input?.selector || input;
+      const query = mongoQuerySchema.parse(
+        input.query || input.selector || input,
+      );
       const { models } = ctx;
 
       if (!query || !Object.keys(query).length) {

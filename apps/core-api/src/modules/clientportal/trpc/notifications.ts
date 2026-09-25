@@ -13,7 +13,7 @@ const notificationDataSchema = z.object({
   contentType: z.string().optional(),
   contentTypeId: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
-  metadata: z.any().optional(),
+  metadata: z.record(z.unknown()).optional(),
   action: z.string().optional(),
   kind: z.enum(['system', 'user']).optional(),
   allowMultiple: z.boolean().optional(),

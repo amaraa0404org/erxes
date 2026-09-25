@@ -5,6 +5,8 @@ import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
 
+const mongoQuerySchema = z.record(z.unknown());
+
 export const uomTrpcRouter = t.router({
   productUoms: t.router({
     find: t.procedure
@@ -14,14 +16,14 @@ export const uomTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(z.object({ query: mongoQuerySchema.optional() }))
       .query(async ({ ctx, input }) => {
-      const { query } = input;
+        const { query } = input;
 
-      const { models } = ctx;
+        const { models } = ctx;
 
-      return models.Uoms.find(query).lean();
-    }),
+        return models.Uoms.find(query || {}).lean();
+      }),
 
     findOne: t.procedure
       .meta(
@@ -30,17 +32,19 @@ export const uomTrpcRouter = t.router({
           { module: 'products', action: 'productsRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoQuerySchema)
       .query(async ({ ctx, input }) => {
-      const query = input?.query || input?.selector || input;
+        const query = mongoQuerySchema.parse(
+          input.query || input.selector || input,
+        );
 
-      const { models } = ctx;
+        const { models } = ctx;
 
-      if (!query || !Object.keys(query).length) {
-        return {};
-      }
+        if (!query || !Object.keys(query).length) {
+          return {};
+        }
 
-      return models.Uoms.findOne(query).lean();
-    }),
+        return models.Uoms.findOne(query).lean();
+      }),
   }),
 });
