@@ -545,7 +545,7 @@ over.
 
 - [ ] 7.1 `.env.sample`: remove the plugin-list keys, and document
   `SERVICE_ADDRESS` and `UI_REMOTE_ENTRY` (both for plugin processes).
-- [ ] 7.2 `docs/plugin-runtime.md`: the plugin contract, covering the manifest,
+- [x] 7.2 `docs/plugin-runtime.md`: the plugin contract, covering the manifest,
   heartbeat and TTL, the pub/sub channel, the UI remote entry, `localesDir`,
   `/get-frontend-plugins`, and how to run `plugin-hello`.
 - [ ] 7.3 `README.md` and `CONTRIBUTING.md`: update the development
