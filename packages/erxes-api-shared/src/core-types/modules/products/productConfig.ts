@@ -2,8 +2,8 @@ import { Document } from 'mongoose';
 
 export interface IProductsConfig {
   code: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — config value
-  // shape is variant-typed per `code` in the owning service
+  // Config value shape is variant-typed per `code` in the owning service.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
 

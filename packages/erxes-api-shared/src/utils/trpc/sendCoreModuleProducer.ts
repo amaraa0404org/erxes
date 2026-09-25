@@ -55,10 +55,10 @@ type TCoreModuleProducer<
     keyof TModuleProducerInputMap,
   TProducerName extends keyof TModuleProducerInputMap[TModuleName] =
     keyof TModuleProducerInputMap[TModuleName],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — dynamic
-  // cross-service producer boundary: producers are discovered at runtime, so
-  // `any` keeps existing callers compiling; an explicit `TOutput` remains
-  // available for caller-declared outputs.
+  // Dynamic cross-service producer boundary: producers are discovered at
+  // runtime, so `any` keeps existing callers compiling; an explicit `TOutput`
+  // remains available for caller-declared outputs.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TOutput = any,
 > = {
   subdomain: string;
@@ -79,9 +79,8 @@ export const sendCoreModuleProducer = async <
     keyof TModuleProducerInputMap,
   TProducerName extends keyof TModuleProducerInputMap[TModuleName] =
     keyof TModuleProducerInputMap[TModuleName],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see
-  // TCoreModuleProducer: dynamic boundary, `TOutput` available for
-  // caller-declared outputs.
+  // See TCoreModuleProducer: dynamic boundary, `TOutput` is caller-declarable.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TOutput = any,
 >({
   subdomain,

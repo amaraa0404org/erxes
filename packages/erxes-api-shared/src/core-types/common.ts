@@ -62,9 +62,9 @@ export interface IStringMap {
 
 export interface ICustomField {
   field: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — custom-field
-  // values are variant-shaped (string | number | Date | arrays | objects) by
-  // design; consumers coerce per the field's `type`.
+  // Custom-field values are variant-shaped (string | number | Date | arrays
+  // | objects) by design; consumers coerce per the field's `type`.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   stringValue?: string;
   numberValue?: number;
@@ -130,7 +130,7 @@ export interface IRequestInfo {
  */
 export type HeaderDoc = { _id: string } & Record<
   string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see HeaderDoc
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see HeaderDoc
   any
 >;
 
@@ -189,9 +189,10 @@ export interface IResolverSymbol {
 
 export type Resolver<
   Parent = unknown,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — bare
-  // `Resolver` is used for field maps whose args live only in the declaring
-  // module's GraphQL schema; `unknown` breaks unannotated `params` callers.
+  // Bare `Resolver` is used for field maps whose args live only in the
+  // declaring module's GraphQL schema; `unknown` breaks unannotated `params`
+  // callers.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Args = Record<string, any>,
   Context = { subdomain: string } & IMainContext,
   Result = unknown,
@@ -213,11 +214,11 @@ export type Resolver<
  * service contexts such as core-api's `IContext`.
  */
 export type AnyResolver = Resolver<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see AnyResolver doc
   any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see AnyResolver doc
   any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see AnyResolver doc
   any,
   unknown
 >;

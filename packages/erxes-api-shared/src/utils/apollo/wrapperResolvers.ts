@@ -176,15 +176,15 @@ export const wrapApolloResolvers = (
 type TResolverMap<TContext = unknown> = Record<
   string,
   Resolver<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
-    // parent type at the resolver-map boundary (see AnyResolver).
+    // Erased parent type at the resolver-map boundary (see AnyResolver).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
-    // args type at the resolver-map boundary (see AnyResolver).
+    // Erased args type at the resolver-map boundary (see AnyResolver).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
     TContext & { subdomain: string } & IMainContext,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
-    // result type at the resolver-map boundary (see AnyResolver).
+    // Erased result type at the resolver-map boundary (see AnyResolver).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any
   >
 >;

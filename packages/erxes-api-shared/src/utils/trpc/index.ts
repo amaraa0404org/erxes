@@ -13,10 +13,10 @@ import { generateRequestProcess, getEnv } from '../utils';
 import { setEventHandlerRuntimeContext } from '../../core-modules/common/eventHandlers/runtimeContext';
 
 export type MessageProps<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — dynamic
-  // cross-service boundary: the untyped tRPC client erases output types, so
-  // `any` keeps existing callers compiling; `sendTRPCMessage<T>` remains
-  // available for caller-declared outputs.
+  // Dynamic cross-service boundary: the untyped tRPC client erases output
+  // types, so `any` keeps existing callers compiling; `sendTRPCMessage<T>`
+  // remains available for caller-declared outputs.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TOutput = any,
 > = {
   subdomain: string;
@@ -115,14 +115,14 @@ export function decodeTRPCContextHeader(headers: IncomingHttpHeaders): {
     } & CommonTRPCContext;
     const { subdomain, method, ...context } = decoded;
     return { subdomain, method, context };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
 export const sendTRPCMessage = async <
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see
-  // MessageProps: dynamic boundary, `T` available for caller-declared output.
+  // See MessageProps: dynamic boundary, `TOutput` is caller-declarable.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TOutput = any,
 >({
   subdomain,

@@ -12,7 +12,7 @@ export interface IFieldsQuery {
   isDefinedByErxes?: boolean;
   searchable?: boolean;
   isVisibleToCreate?: boolean;
-  groupId?: any;
+  groupId?: string | { $in: string[] };
 }
 
 const fieldQueries = {
@@ -282,7 +282,7 @@ const fieldsGroupQueries = {
     { contentType }: { contentType: string },
     { models }: IContext,
   ) {
-    const query: any = {};
+    const query: { contentType?: string; isDefinedByErxes?: boolean } = {};
 
     // querying by content type
     query.contentType = contentType;

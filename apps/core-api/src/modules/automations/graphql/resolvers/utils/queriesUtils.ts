@@ -693,8 +693,15 @@ const toAutomationReferenceField = (
   };
 };
 
-const toCustomReferenceField = (field: any): TAutomationOutputVariable => ({
-  key: `propertiesData.${field._id.toString()}`,
+const toCustomReferenceField = (field: {
+  _id: unknown;
+  label?: string;
+  text?: string;
+  name: string;
+  code: string;
+  type: string;
+}): TAutomationOutputVariable => ({
+  key: `propertiesData.${String(field._id)}`,
   label: field.label || field.text || field.name || field.code,
   type: field.type,
 });

@@ -535,7 +535,7 @@ over.
   generated types. Update the mirrored frontend interfaces in the same commit.
 - [x] 6.5 Gateway and `logs-service`: remove the `any` in GraphQL, tRPC and
   subscription code.
-- [ ] 6.6 Enforcement, per D4: backend eslint configs and scoped
+- [x] 6.6 Enforcement, per D4: backend eslint configs and scoped
   `no-explicit-any: error`. `pnpm nx lint` passes for every core project.
 - [ ] 6.7 Build and test every core project against the baseline, and run the
   end-to-end checks. Boot with zero plugins; the gateway must compose with no
@@ -702,6 +702,14 @@ _Append problems that block following this plan as written:
   signature) plus Sentry `Event` fixture casts in
   `errorClassifier.test.ts`. Revisit when 6.6 enables scoped
   `no-explicit-any: error`. — open
+- 2026-09-26 task 6.6: eslint configs added to the six backend projects with
+  `no-explicit-any: error` scoped to `**/trpc/**`, `**/graphql/**`,
+  `**/apollo/**`. The 6.1-era `eslint-disable-next-line — reason` comments
+  used an em dash, which ESLint parses as part of the rule name ("rule not
+  found" errors) and sat above prose lines rather than the `any` line; all
+  were repositioned directly above the `any` with the reason kept as prose
+  or a `-- ` suffix. Directives in non-scoped files report as unused
+  directives (warnings only) until the rule widens in a later phase.
 
 ## Carry-over to the next phase
 
