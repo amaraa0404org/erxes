@@ -543,12 +543,12 @@ over.
 
 ### Milestone 7: Docs and rules
 
-- [ ] 7.1 `.env.sample`: remove the plugin-list keys, and document
+- [x] 7.1 `.env.sample`: remove the plugin-list keys, and document
   `SERVICE_ADDRESS` and `UI_REMOTE_ENTRY` (both for plugin processes).
 - [x] 7.2 `docs/plugin-runtime.md`: the plugin contract, covering the manifest,
   heartbeat and TTL, the pub/sub channel, the UI remote entry, `localesDir`,
   `/get-frontend-plugins`, and how to run `plugin-hello`.
-- [ ] 7.3 `README.md` and `CONTRIBUTING.md`: update the development
+- [x] 7.3 `README.md` and `CONTRIBUTING.md`: update the development
   instructions to the new layout and scripts, and link the external plugin
   repositories.
 - [ ] 7.4 `AGENTS.md`: update the structure, paths and plugin sections for

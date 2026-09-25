@@ -8,13 +8,13 @@ prepare a pull request that can be reviewed and merged safely.
 
 ## Before You Start
 
-- Search [existing issues](https://github.com/erxes/erxes/issues) and pull
-  requests before opening a duplicate.
+- Search [existing issues](https://github.com/amaraa0404org/erxes/issues) and
+  pull requests before opening a duplicate.
 - For bugs and scoped improvements, open or select an issue before writing code.
 - For large features, architectural changes, or new dependencies, discuss the
   proposal with the maintainers first.
-- Use [GitHub Issues](https://github.com/erxes/erxes/issues) for technical
-  questions, or join the
+- Use [GitHub Issues](https://github.com/amaraa0404org/erxes/issues) for
+  technical questions, or join the
   [erxes Discord community](https://discord.com/invite/aaGzy3gQK5).
 - Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 - Report vulnerabilities through the process in [SECURITY.md](SECURITY.md), not
@@ -22,30 +22,33 @@ prepare a pull request that can be reviewed and merged safely.
 
 ## Repository Overview
 
-erxes is an Nx-powered pnpm monorepo. Backend services are independent
-microservices; frontend features are delivered through Module Federation
-micro-frontends.
+erxes is an Nx-powered pnpm monorepo containing the **plugin-free core**.
+Backend services are independent microservices; the frontend is a Module
+Federation host. Plugins live in external repositories
+(`amaraa0404org/erxes-plugin-<name>`) and register themselves at runtime — see
+[`docs/plugin-runtime.md`](docs/plugin-runtime.md). Changes to a plugin belong
+in that plugin's repository, not here.
 
 ```text
-backend/
-  gateway/             API gateway
+apps/
   core-api/            Core backend modules and GraphQL API
-  erxes-api-shared/    Shared backend types and utilities
-  plugins/<name>_api/  Backend plugin services
-  services/            Background services
-frontend/
+  gateway/             API gateway
+  automations/         Background service
+  logs/                Background service
   core-ui/             Module Federation host
-  libs/erxes-ui/       Shared UI primitives
-  libs/ui-modules/     Shared business UI modules
-  plugins/<name>_ui/   Frontend plugin remotes
-apps/                  Standalone applications
-scripts/               Development and generation scripts
+packages/
+  erxes-api-shared/    Shared backend types, utilities, plugin contract
+  erxes-ui/            Shared UI primitives
+  ui-modules/          Shared business UI modules
+tools/                 SaaS migrations and other tooling
+examples/              plugin-hello (reference plugin), client-portal
+docs/                  Architecture and contract docs
 ```
 
 Before adding code, identify which project owns the behavior. Do not move logic
-into `core-ui`, a shared library, or another plugin merely because it is
-convenient. Shared code belongs in a shared library only when multiple projects
-have a real, current need for it.
+into `core-ui` or a shared library merely because it is convenient. Shared code
+belongs in a shared library only when multiple projects have a real, current
+need for it.
 
 ## Development Requirements
 
@@ -65,20 +68,21 @@ configuration.
 ```bash
 git clone https://github.com/<your-github-username>/erxes.git
 cd erxes
-git remote add upstream https://github.com/erxes/erxes.git
+git remote add upstream https://github.com/amaraa0404org/erxes.git
 pnpm install
 cp .env.sample .env
 ```
 
-Update `.env` for your local services and enable only the plugins needed for the
-change.
+Update `.env` for your local services (`MONGO_URL`, `REDIS_HOST`, …). Plugins
+are external processes, not env flags — run the ones you need from their own
+repositories and they register themselves.
 
 ### Common development commands
 
 ```bash
-pnpm dev:core-api            # Gateway and Core API
-pnpm dev:apis                # APIs enabled in .env
-pnpm dev:uis                 # Enabled frontend plugins
+pnpm dev:api                 # core-api + gateway + automations + logs
+pnpm dev:core-api            # just core-api + gateway
+pnpm dev:ui                  # core-ui host
 
 pnpm nx serve <project>
 pnpm nx lint <project>
@@ -86,9 +90,9 @@ pnpm nx build <project>
 pnpm nx test <project>
 ```
 
-Examples of project names include `core-api`, `sales_api`, and `sales_ui`.
-Backend projects that consume `erxes-api-shared` may require the shared library
-to be built first:
+Examples of project names include `core-api`, `gateway`, `core-ui`, and the
+example plugin `hello_api`/`hello_ui`. Backend projects that consume
+`erxes-api-shared` may require the shared library to be built first:
 
 ```bash
 pnpm nx build erxes-api-shared
@@ -98,23 +102,23 @@ pnpm nx build erxes-api-shared
 
 ### 1. Choose an issue
 
-Use an [existing issue](https://github.com/erxes/erxes/issues) or
-[open a new one](https://github.com/erxes/erxes/issues/new/choose). Describe the
-current behavior, expected behavior, and enough context to reproduce or assess
-the request.
+Use an [existing issue](https://github.com/amaraa0404org/erxes/issues) or
+[open a new one](https://github.com/amaraa0404org/erxes/issues/new/choose).
+Describe the current behavior, expected behavior, and enough context to
+reproduce or assess the request.
 
 Keep one pull request focused on one issue or one cohesive outcome. Unrelated
 cleanup makes review harder and should be submitted separately.
 
 ### 2. Fork and branch
 
-Fork the repository, clone your fork, and create a branch from the latest
-upstream `develop` branch.
+Fork `amaraa0404org/erxes`, clone your fork, and create a branch from the
+latest upstream `main` branch.
 
 ```bash
 git fetch upstream
-git switch develop
-git pull --ff-only upstream develop
+git switch main
+git pull --ff-only upstream main
 git switch -c <prefix>/<short-description>
 ```
 
@@ -180,8 +184,9 @@ implementations, debug logs, or untracked TODOs.
 - Preserve tenant isolation. Every request and model operation must honor the
   request subdomain.
 - Check authentication and permissions before mutations or sensitive reads.
-- Define new Mongoose schemas with `new Schema(...)` and explicit fields. Do not
-  introduce new `schemaWrapper` usage.
+- Define Mongoose schemas with `new Schema(...)` and explicit fields, following
+  the owning module's established pattern — including `schemaWrapper`, which is
+  the established helper for shared schema behavior.
 - Keep resolver methods thin; put reusable business behavior in the module's
   established service or model layer.
 - Rebuild `erxes-api-shared` before validating consumers when shared backend
@@ -201,18 +206,21 @@ implementations, debug logs, or untracked TODOs.
 
 ### Plugin boundaries
 
-Plugins must remain isolated. Do not import source code directly from another
-plugin.
+Plugins live in separate `amaraa0404org/erxes-plugin-<name>` repositories and
+must remain isolated: no importing source code directly from another plugin.
+The runtime contract they implement is documented in
+[`docs/plugin-runtime.md`](docs/plugin-runtime.md); use
+[`examples/plugin-hello`](examples/plugin-hello/) as the reference shape when
+starting a new plugin.
 
-Use these shared locations when behavior genuinely belongs across projects:
+Shared code consumed by both core and plugins lives in:
 
-- `frontend/libs/erxes-ui` for reusable UI primitives
-- `frontend/libs/ui-modules` for reusable business UI
-- `backend/erxes-api-shared` for shared backend contracts and utilities
+- `packages/erxes-ui` for reusable UI primitives
+- `packages/ui-modules` for reusable business UI
+- `packages/erxes-api-shared` for shared backend contracts and utilities
 
-When generating a plugin with `pnpm create-plugin`, treat generated output as a
-starting point. Replace placeholders, add real types and validation, and make
-all exposed behavior production-ready before submitting it.
+Until those are published as SDK packages (a later phase), plugin repositories
+consume them as source dependencies.
 
 ## Tests and Verification
 
@@ -260,7 +268,8 @@ or unrelated formatting changes unless the repository explicitly tracks them.
 
 ## Pull Requests
 
-Open pull requests against `develop`. Link the issue and include:
+Open pull requests against `main` on `amaraa0404org/erxes`. Link the issue and
+include:
 
 - **What:** the behavior or contract changed
 - **Why:** the problem being solved
@@ -300,6 +309,6 @@ hard-coded. Existing translations are managed through
 If repository behavior or ownership is unclear, ask before implementing a new
 pattern:
 
-- [GitHub Issues](https://github.com/erxes/erxes/issues)
+- [GitHub Issues](https://github.com/amaraa0404org/erxes/issues)
 - [Official documentation](https://erxes.io/docs/introduction)
 - [Discord community](https://discord.com/invite/aaGzy3gQK5)
