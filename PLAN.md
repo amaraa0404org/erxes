@@ -409,7 +409,7 @@ test.
 - [x] 2.4 Create `examples/plugin-hello/ui` (Nx project `hello_ui`): a Module
   Federation remote exposing `./config` (a navigation entry and one page
   that calls `helloPing`) and `./hello`, served on its own port.
-- [ ] 2.5 End-to-end check:
+- [x] 2.5 End-to-end check:
   1. Open core-ui with only core running.
   2. Start `hello_api` and `hello_ui`. Within about 30 seconds the Hello
      navigation item appears and the page renders `helloPing`, with no reload
@@ -422,7 +422,7 @@ Remove plugin knowledge from core. Log every removed field, argument, template
 or constant in the *Contract changes log*, naming the plugin that must take it
 over.
 
-- [ ] 3.1 core-api GraphQL:
+- [x] 3.1 core-api GraphQL:
   - remove the `Customer.conversations` field (frontline should extend
     `Customer` through federation);
   - remove the `pipelineId` argument and filter from the products queries
@@ -614,6 +614,15 @@ _Append one line per removed or changed core contract:
 - 2.3 `erxes-ui` `isEnabled()` (build-time `ENABLED_PLUGINS` check) is
   deleted; plugins must use `useIsPluginEnabled(name)` from `ui-modules`,
   backed by `pluginsConfigState` — owner: plugins
+- 3.1 `Customer.conversations` resolver deleted (the field was never declared
+  in the core contacts schema); frontline should extend `Customer` through
+  federation `@key` — owner: frontline
+- 3.1 `pipelineId` argument removed from the products queries
+  (`productsMain`, `products`, `productsTotalCount`, `cpProducts`) and from
+  `Product.discount`, together with the sales `pipeline.findOne` lookups
+  (exclude-category/product filters, initial-category ordering,
+  `Product.remainder` pipeline scope) — owner: sales
+- 3.1 `clientPortalCheckTokiInvoice` mutation removed — owner: payment
 
 ## Open issues
 
