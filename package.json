@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev:core-api": "npx nx run-many -t serve -p core-api gateway",
-    "dev:apis": "dotenv -e .env -- node scripts/start-api-dev.js",
+    "dev:api": "nx run-many -t serve -p core-api gateway automations-service logs-service",
     "dev:uis": "dotenv -e .env -- node scripts/start-ui-dev.js",
     "create-plugin": "node scripts/create-plugin.js",
     "release": "release-it"

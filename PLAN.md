@@ -376,7 +376,7 @@ test.
   - `--hot-reload`;
   - the dynamic subscription schema;
   - delete the `update-apollo-router` job and the development poll.
-- [ ] 1.5 Remove every reader of `ENABLED_PLUGINS`, `ENABLED_PLUGINS_ONLY_API`
+- [x] 1.5 Remove every reader of `ENABLED_PLUGINS`, `ENABLED_PLUGINS_ONLY_API`
   and `ENABLED_SERVICES` on the backend. Replace `scripts/start-api-dev.js`
   with a root script `dev:api`, which runs
   `nx run-many -t serve -p core-api gateway automations-service logs-service`.
@@ -597,6 +597,8 @@ _Append one line per removed or changed core contract:
 - 1.4 The BullMQ `update-apollo-router` job/worker and the development
   supergraph poll are deleted; the router always runs with `--hot-reload` and
   picks up recomposed supergraph files itself — owner: core/gateway
+- 1.5 `scripts/start-api-dev.js` is deleted; root script `dev:api` serves
+  `core-api gateway automations-service logs-service` directly — owner: core
 - 2.1 `GET /get-frontend-plugins` builds the remote list from
   `getAvailablePlugins(subdomain)` and uses each plugin manifest's
   `uiRemoteEntry` as `entry`; the `plugins.erxes.io` CDN URL construction
