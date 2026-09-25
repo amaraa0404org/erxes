@@ -39,7 +39,7 @@ const dependentSegments = async (
   subdomain: string,
   input: { contentTypes?: string[]; ids?: string[] },
 ): Promise<DependentSegment[]> =>
-  sendTRPCMessage({
+  sendTRPCMessage<DependentSegment[]>({
     subdomain,
     pluginName: 'core',
     module: 'segment',
@@ -90,7 +90,7 @@ const subjectsToRecheck = async (
       continue;
     }
 
-    const found: string[] = await sendTRPCMessage({
+    const found = await sendTRPCMessage<string[]>({
       subdomain,
       pluginName: 'core',
       module: 'segment',
@@ -139,7 +139,11 @@ const dispatchSourceReaders = async (
     let dispatched = 0;
 
     do {
-      const page: SegmentMemberPage = await sendCoreModuleProducer({
+      const page = await sendCoreModuleProducer<
+        'segments',
+        TSegmentProducers.LIST_MEMBERS,
+        SegmentMemberPage
+      >({
         subdomain,
         moduleName: 'segments',
         pluginName: pluginOf(link.subjectType),
@@ -199,16 +203,19 @@ const applyMembership = async (
     return { counts: {}, transitions: [] };
   }
 
-  const result: SegmentApplyMembershipResult | null =
-    await sendCoreModuleProducer({
-      subdomain,
-      moduleName: 'segments',
-      pluginName: pluginOf(contentType),
-      producerName: TSegmentProducers.APPLY_MEMBERSHIP,
-      method: 'mutation',
-      input: { contentType, updates, countFor: [] },
-      defaultValue: null,
-    });
+  const result = await sendCoreModuleProducer<
+    'segments',
+    TSegmentProducers.APPLY_MEMBERSHIP,
+    SegmentApplyMembershipResult | null
+  >({
+    subdomain,
+    moduleName: 'segments',
+    pluginName: pluginOf(contentType),
+    producerName: TSegmentProducers.APPLY_MEMBERSHIP,
+    method: 'mutation',
+    input: { contentType, updates, countFor: [] },
+    defaultValue: null,
+  });
 
   if (!result) {
     throw new Error(`${contentType} did not answer the membership write`);

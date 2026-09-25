@@ -1,7 +1,27 @@
 import { graphqlPubsub } from 'erxes-api-shared/utils';
 import { generateModels } from '~/connectionResolvers';
 
-export const activityLogHandler = async (data: any) => {
+/** One queued activity-log entry. Fields mirror the ActivityLogs schema. */
+interface IActivityLogInput {
+  activityType: string;
+  target?: Record<string, unknown>;
+  contextType?: string;
+  context?: unknown;
+  action?: unknown;
+  changes?: unknown;
+  metadata?: unknown;
+  pluginName?: string;
+  moduleName?: string;
+  collectionName?: string;
+}
+
+interface IActivityLogJobData {
+  subdomain: string;
+  reqContext: { userId?: string };
+  inputData: IActivityLogInput | IActivityLogInput[];
+}
+
+export const activityLogHandler = async (data: IActivityLogJobData) => {
   const { subdomain, reqContext, inputData } = data;
   const { userId } = reqContext;
 
@@ -39,9 +59,12 @@ export const activityLogHandler = async (data: any) => {
 
     // Publish subscription for activity log insertion
     if (targetId) {
-      graphqlPubsub.publish(`activityLogInserted:${subdomain}:${targetId}`, {
-        activityLogInserted: activityLog.toObject(),
-      });
+      graphqlPubsub.publish(
+        `activityLogInserted:${subdomain}:${String(targetId)}`,
+        {
+          activityLogInserted: activityLog.toObject(),
+        },
+      );
     }
   }
 };

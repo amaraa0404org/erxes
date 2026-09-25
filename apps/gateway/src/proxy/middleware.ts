@@ -1,9 +1,12 @@
 import * as dotenv from 'dotenv';
-import { Express } from 'express';
+import { Express, Request, Response } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
-import { Agent } from 'http';
+import { Agent, ClientRequest, IncomingMessage } from 'http';
+import { Socket } from 'net';
+import { TLSSocket } from 'tls';
 import { apolloRouterPort } from '~/apollo-router';
 import { ErxesProxyTarget } from '~/proxy/targets';
+import { IGatewayRequest } from '~/connectionResolver';
 
 dotenv.config();
 
@@ -17,7 +20,7 @@ const proxyAgent = new Agent({
   timeout: 60000,
 });
 
-export const proxyReq = (proxyReq, req: any) => {
+export const proxyReq = (proxyReq: ClientRequest, req: IGatewayRequest) => {
   if (proxyReq.headersSent) {
     return;
   }
@@ -29,7 +32,7 @@ export const proxyReq = (proxyReq, req: any) => {
   };
 
   safeSetHeader('hostname', req.hostname || '');
-  safeSetHeader('userid', req.user?._id || '');
+  safeSetHeader('userid', String(req.user?._id || ''));
 
   if (DEBUG_GATEWAY_AUTH && req.originalUrl?.startsWith('/graphql')) {
     console.log(
@@ -67,7 +70,7 @@ export const proxyReq = (proxyReq, req: any) => {
   );
   safeSetHeader(
     'x-forwarded-proto',
-    req.protocol || (req.socket?.encrypted ? 'https' : 'http'),
+    req.protocol || ((req.socket as TLSSocket)?.encrypted ? 'https' : 'http'),
   );
 
   if (!proxyReq.headersSent) {
@@ -75,7 +78,7 @@ export const proxyReq = (proxyReq, req: any) => {
   }
 };
 
-export const proxyRes = (proxyRes, req: any) => {
+export const proxyRes = (proxyRes: IncomingMessage, req: IGatewayRequest) => {
   if (DEBUG_GATEWAY_AUTH && req.originalUrl?.startsWith('/graphql')) {
     console.log(
       JSON.stringify({
@@ -92,7 +95,15 @@ export const proxyRes = (proxyRes, req: any) => {
   }
 };
 
-export const proxyError = (error, req: any, res?: any) => {
+export const proxyError = (
+  error: Error,
+  req: IGatewayRequest,
+  res?: Response | Socket,
+) => {
+  // http-proxy delivers a `net.Socket` for upgrade failures; web request
+  // failures get the express `Response` instance.
+  const errorCode = (error as NodeJS.ErrnoException).code;
+
   if (DEBUG_GATEWAY_AUTH && req.originalUrl?.startsWith('/graphql')) {
     console.log(
       JSON.stringify({
@@ -100,7 +111,7 @@ export const proxyError = (error, req: any, res?: any) => {
         event: 'proxy-graphql-error',
         method: req.method,
         path: req.originalUrl,
-        code: error?.code,
+        code: errorCode,
         message: error?.message,
         hasUser: Boolean(req.user?._id),
         userId: req.user?._id || '',
@@ -109,10 +120,10 @@ export const proxyError = (error, req: any, res?: any) => {
     );
   }
 
-  if (res && !res.headersSent) {
+  if (res && !(res instanceof Socket) && !res.headersSent) {
     res.status(502).json({
       error: 'Gateway proxy error',
-      code: error?.code,
+      code: errorCode,
     });
   }
 };
@@ -120,7 +131,7 @@ export const proxyError = (error, req: any, res?: any) => {
 export function applyProxiesCoreless(app: Express) {
   app.use(
     '^/graphql',
-    createProxyMiddleware({
+    createProxyMiddleware<Request, Response>({
       pathRewrite: { '^/graphql': '/' },
       target: `http://127.0.0.1:${apolloRouterPort}`,
       on: {
@@ -140,7 +151,7 @@ export function applyProxyToCore(app: Express, targets: ErxesProxyTarget[]) {
 
   app.use(
     '/',
-    createProxyMiddleware({
+    createProxyMiddleware<Request, Response>({
       target:
         NODE_ENV === 'production' ? core.address : 'http://localhost:3300',
       agent: proxyAgent,

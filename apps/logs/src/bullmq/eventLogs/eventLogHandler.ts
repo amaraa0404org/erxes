@@ -65,8 +65,12 @@ export const eventLogHandler = async (
         );
       });
     }
-  } catch (error: any) {
-    console.error(`Error processing job ${jobId}: ${error.message}`);
+  } catch (error) {
+    console.error(
+      `Error processing job ${jobId}: ${
+        error instanceof Error ? error.message : error
+      }`,
+    );
     throw error;
   }
 };

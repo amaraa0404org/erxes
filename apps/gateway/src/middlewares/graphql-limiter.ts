@@ -12,6 +12,7 @@ import { envelop, useSchema, useEngine } from '@envelop/core';
 
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { Express, json } from 'express';
+import { IGatewayRequest } from '~/connectionResolver';
 import * as fs from 'fs';
 import { supergraphPath } from '~/apollo-router/paths';
 import { gql } from '@apollo/client/core';
@@ -25,7 +26,7 @@ const { GRAPHQL_LIMITER } = process.env;
 const DEBUG_GATEWAY_AUTH = process.env.DEBUG_GATEWAY_AUTH === 'true';
 
 const debugLimiter = (
-  req: any,
+  req: IGatewayRequest,
   event: string,
   extra: Record<string, unknown> = {},
 ) => {

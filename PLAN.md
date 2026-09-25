@@ -533,7 +533,7 @@ over.
 - [ ] 6.4 GraphQL nullability and resolver typing, module by module, one commit
   per module. Apply the D4 rules and switch the resolver maps to the
   generated types. Update the mirrored frontend interfaces in the same commit.
-- [ ] 6.5 Gateway and `logs-service`: remove the `any` in GraphQL, tRPC and
+- [x] 6.5 Gateway and `logs-service`: remove the `any` in GraphQL, tRPC and
   subscription code.
 - [ ] 6.6 Enforcement, per D4: backend eslint configs and scoped
   `no-explicit-any: error`. `pnpm nx lint` passes for every core project.

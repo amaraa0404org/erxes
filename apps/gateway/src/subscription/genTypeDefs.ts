@@ -1,12 +1,12 @@
 import { gql } from '@apollo/client/core';
 import { DocumentNode } from 'graphql';
+import { ISubscriptionPluginModule } from './plugins/getPluginConfigs';
 
-export default function getTypeDefs(plugins): DocumentNode {
+export default function getTypeDefs(
+  plugins: ISubscriptionPluginModule[],
+): DocumentNode {
   const pluginTypeDefs = (plugins || [])
-    .map((plugin) => {
-      const pluginModule = plugin.default || plugin;
-      return pluginModule.typeDefs;
-    })
+    .map((plugin) => plugin.typeDefs)
     .join('\n\n');
 
   return gql`

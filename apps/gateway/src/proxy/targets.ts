@@ -7,8 +7,17 @@ import fetch from 'node-fetch';
 export type ErxesProxyTarget = {
   name: string;
   address: string;
-  config: any;
+  // Plugin config as published to service discovery; the gateway never reads
+  // it, only forwards it, so it stays opaque here.
+  config: unknown;
 };
+
+declare global {
+  // Populated at boot and refreshed by the plugin change watcher; read by the
+  // router-recovery path. Initialized before `startRouter` runs.
+  // eslint-disable-next-line no-var
+  var currentTargets: ErxesProxyTarget[] | undefined;
+}
 
 dotenv.config();
 

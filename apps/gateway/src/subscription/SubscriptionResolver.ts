@@ -17,12 +17,25 @@ import {
   parseResolveInfo,
   ResolveTree,
 } from 'graphql-parse-resolve-info';
+import type { ConnectionInitMessage, Context } from 'graphql-ws';
+import type { Extra } from 'graphql-ws/lib/use/ws';
 import fetch from 'node-fetch';
 
-function fieldPathsAsStrings(obj: { [key: string]: any }) {
-  const paths = (obj = {}, head = ''): string[] => {
+/** Options recorded for a field path: alias rename and/or query arguments. */
+interface IFieldOptions {
+  alias?: string;
+  args?: Record<string, unknown>;
+}
+
+/** The full field-path entry collected from a parsed resolve-info tree. */
+interface IFieldValue extends IFieldOptions {
+  name: string;
+}
+
+function fieldPathsAsStrings(obj: Record<string, unknown>) {
+  const paths = (obj: object, head = ''): string[] => {
     return Object.entries(obj).reduce(
-      (acc: string[], [key, value]: [string, any]) => {
+      (acc: string[], [key, value]: [string, unknown]) => {
         const fullPath = addDelimiter(head, key);
         return isObject(value)
           ? acc.concat(key, paths(value, fullPath))
@@ -34,7 +47,7 @@ function fieldPathsAsStrings(obj: { [key: string]: any }) {
   return paths(obj);
 }
 
-function isObject(val: any) {
+function isObject(val: unknown): val is Record<string, unknown> {
   return typeof val === 'object' && !Array.isArray(val) && val !== null;
 }
 
@@ -42,7 +55,7 @@ function addDelimiter(a: string, b: string) {
   return a ? `${a}.${b}` : b;
 }
 
-function isFieldObject(obj: any) {
+function isFieldObject(obj: unknown): obj is ResolveTree {
   return (
     isObject(obj) &&
     Object.prototype.hasOwnProperty.call(obj, 'args') &&
@@ -53,11 +66,14 @@ function isFieldObject(obj: any) {
 
 function fieldPathsAsMapFromResolveInfo(
   resolveInfo: FieldsByTypeName | ResolveTree,
-) {
+): Record<string, IFieldOptions | null> {
   // Construct entries-like array of field paths their corresponding name, alias, and args
-  const paths = (obj = {}, head = ''): [string, any][] => {
+  const paths = (obj: object, head = ''): [string, IFieldValue | null][] => {
     return Object.entries(obj).reduce(
-      (acc: [string, any][], [key, value]: [string, any]) => {
+      (
+        acc: [string, IFieldValue | null][],
+        [key, value]: [string, unknown],
+      ) => {
         const fullPath = addDelimiter(head, key);
         if (
           isFieldObject(value) &&
@@ -83,30 +99,38 @@ function fieldPathsAsMapFromResolveInfo(
   // Filter field paths and construct an object from entries
   return Object.fromEntries(
     resolveInfoFields
-      .filter(([_, options]) => options)
-      .map(([path, { alias, args, name }]) => {
-        const pathParts = path.split('.');
-        pathParts.forEach((_part, i) => {
-          if (pathParts[i - 1] === 'fieldsByTypeName') {
-            pathParts.splice(i - 1, 2);
-          }
-        });
-        const keptOptions = {
-          ...(name !== alias && { alias }),
-          ...(Object.keys(args).length && { args }),
-        };
-        return [
-          pathParts.join('.'),
-          Object.keys(keptOptions).length ? keptOptions : null,
-        ];
-      }),
+      .filter((entry): entry is [string, IFieldValue] => Boolean(entry[1]))
+      .map(
+        ([path, { alias, args, name }]): [string, IFieldOptions | null] => {
+          const pathParts = path.split('.');
+          pathParts.forEach((_part, i) => {
+            if (pathParts[i - 1] === 'fieldsByTypeName') {
+              pathParts.splice(i - 1, 2);
+            }
+          });
+          const keptOptions: IFieldOptions = {
+            ...(name !== alias ? { alias } : {}),
+            ...(args && Object.keys(args).length ? { args } : {}),
+          };
+          return [
+            pathParts.join('.'),
+            Object.keys(keptOptions).length ? keptOptions : null,
+          ];
+        },
+      ),
   );
 }
 
-function buildSelection(selection, pathString, pathParts, fieldPathMap, index) {
+function buildSelection(
+  selection: string,
+  pathString: string,
+  pathParts: string[],
+  fieldPathMap: Record<string, IFieldOptions | null>,
+  index: number,
+): string {
   let formattedSelection = selection;
-  let options;
-  let parentOptions;
+  let options: IFieldOptions | null | undefined;
+  let parentOptions: IFieldOptions | null | undefined;
   if (pathParts.length > 1 && index < pathParts.length - 1) {
     const parentPathString = pathParts.slice(0, index + 1).join('.');
     parentOptions = fieldPathMap[parentPathString];
@@ -139,8 +163,8 @@ function buildSelection(selection, pathString, pathParts, fieldPathMap, index) {
 }
 
 function buildNonPayloadSelections(
-  payload,
-  info,
+  payload: Record<string, unknown>,
+  info: GraphQLResolveInfo,
 ): { selections: string; resolveInfo: ResolveTree | FieldsByTypeName } {
   const resolveInfo = parseResolveInfo(info);
   if (!resolveInfo) {
@@ -148,7 +172,7 @@ function buildNonPayloadSelections(
   }
 
   const payloadFieldPaths = fieldPathsAsStrings(
-    payload[resolveInfo?.name as string],
+    payload[resolveInfo?.name as string] as Record<string, unknown>,
   );
   const operationFields = resolveInfo
     ? fieldPathsAsMapFromResolveInfo(resolveInfo)
@@ -201,10 +225,15 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
+export type SubscriptionWsContext = Context<
+  ConnectionInitMessage['payload'],
+  Extra
+>;
+
 export default class SubscriptionResolver {
   private apolloLink!: ApolloLink;
 
-  constructor(gatewayURL: string, context: any) {
+  constructor(gatewayURL: string, context: SubscriptionWsContext) {
     const contextLink = setContext((_request, previousContext) => {
       const cookie = context.extra?.request?.headers?.cookie;
       if (cookie) {
@@ -219,7 +248,12 @@ export default class SubscriptionResolver {
       return previousContext;
     });
 
-    const httpLink = createHttpLink({ fetch: fetch as any, uri: gatewayURL });
+    // node-fetch implements the Fetch API but its typings differ from the
+    // DOM `fetch` signature @apollo/client expects; runtime-compatible.
+    const httpLink = createHttpLink({
+      fetch: fetch as unknown as typeof globalThis.fetch,
+      uri: gatewayURL,
+    });
 
     this.apolloLink = from([errorLink, contextLink, httpLink]);
   }
@@ -230,19 +264,20 @@ export default class SubscriptionResolver {
     info,
     buildQueryUsingSelections,
   }: {
-    payload: any;
-    queryVariables: object;
+    payload: Record<string, unknown>;
+    queryVariables: Record<string, unknown>;
     info: GraphQLResolveInfo;
-    buildQueryUsingSelections: (selections: any) => string;
-  }): Promise<any> {
+    buildQueryUsingSelections: (selections: string) => string;
+  }): Promise<unknown> {
     const { selections, resolveInfo } = buildNonPayloadSelections(
       payload,
       info,
     );
 
+    const resolveInfoName = resolveInfo?.name as string | undefined;
     const payloadData =
-      typeof resolveInfo?.name === 'string'
-        ? payload[resolveInfo.name]
+      typeof resolveInfoName === 'string'
+        ? payload[resolveInfoName]
         : Object.values(payload)[0];
 
     if (!selections) {

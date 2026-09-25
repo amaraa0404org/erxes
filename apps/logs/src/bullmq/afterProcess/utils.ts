@@ -6,17 +6,19 @@ import {
   CreateDocumentRule,
 } from './types';
 
-export function getAllKeys(obj: Record<string, any>, prefix = ''): string[] {
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+export function getAllKeys(
+  obj: Record<string, unknown>,
+  prefix = '',
+): string[] {
   let keys: string[] = [];
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
       const fullKey = prefix ? `${prefix}.${key}` : key;
       keys.push(fullKey);
-      if (
-        typeof obj[key] === 'object' &&
-        obj[key] !== null &&
-        !Array.isArray(obj[key])
-      ) {
+      if (isPlainObject(obj[key])) {
         keys = keys.concat(getAllKeys(obj[key], fullKey));
       }
     }
@@ -27,7 +29,7 @@ export function getAllKeys(obj: Record<string, any>, prefix = ''): string[] {
 export async function sendProducer(
   context: AfterProcessContext,
   producerName: TAfterProcessProducers,
-  input: any,
+  input: unknown,
 ): Promise<void> {
   try {
     await sendCoreModuleProducer({
@@ -46,10 +48,19 @@ export async function sendProducer(
   }
 }
 
+// The `updateDescription` of the mongo change-event payload; `removed` is an
+// object keyed by field name in this pipeline (unlike the MongoDB driver's
+// `string[]` shape).
+interface IUpdateDescription {
+  updated?: Record<string, unknown>;
+  added?: Record<string, unknown>;
+  removed?: Record<string, unknown>;
+}
+
 export function shouldProcessUpdatedDocument(
   rule: UpdatedDocumentRule,
   context: AfterProcessContext,
-  payload: any,
+  payload: Record<string, unknown>,
 ): boolean {
   const { contentTypes, when } = rule;
 
@@ -65,7 +76,7 @@ export function shouldProcessUpdatedDocument(
     updated: updatedFields = {},
     added: addedFields = {},
     removed: removedFields = {},
-  } = payload.updateDescription || {};
+  } = (payload.updateDescription || {}) as IUpdateDescription;
 
   const hasRemovedFields = getAllKeys(removedFields).some((key) =>
     (when.fieldsRemoved || []).includes(key),
@@ -82,7 +93,7 @@ export function shouldProcessUpdatedDocument(
 export function shouldProcessCreateDocument(
   rule: CreateDocumentRule,
   context: AfterProcessContext,
-  payload: any,
+  payload: Record<string, unknown>,
 ): boolean {
   const { contentTypes, when } = rule;
 
@@ -99,9 +110,11 @@ export function shouldProcessCreateDocument(
     return false;
   }
 
-  const hasFieldsExists = getAllKeys(document).some((key) =>
-    (when.fieldsWith || []).includes(key),
-  );
+  // getAllKeys only enumerates own enumerable keys, so this runs identically
+  // for whatever object `fullDocument` happens to be.
+  const hasFieldsExists = getAllKeys(
+    document as Record<string, unknown>,
+  ).some((key) => (when.fieldsWith || []).includes(key));
 
   return hasFieldsExists;
 }

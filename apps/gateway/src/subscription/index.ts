@@ -13,7 +13,9 @@ import {
 import * as ws from 'ws';
 import SubscriptionResolver from './SubscriptionResolver';
 import { Disposable, SubscribeMessage } from 'graphql-ws';
-import genTypeDefsAndResolvers from './genTypeDefsAndResolvers';
+import genTypeDefsAndResolvers, {
+  ISubscriptionTypeDefsAndResolvers,
+} from './genTypeDefsAndResolvers';
 import * as http from 'http';
 import { supergraphPath } from '../apollo-router/paths';
 import * as fs from 'fs';
@@ -21,7 +23,8 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { apolloRouterPort } from '../apollo-router';
 import { gql } from '@apollo/client/core';
 import { getSubdomain } from '../util/subdomain';
-import * as jwt from 'jsonwebtoken';
+import { verifyJwt, IUserTokenPayload } from '../middlewares/userMiddleware';
+import { IHeaderUser } from '../connectionResolver';
 
 let disposable: Disposable | undefined;
 let currentSchema: GraphQLSchema | undefined;
@@ -42,16 +45,15 @@ function readCookie(rawCookie: string | undefined, name: string) {
   return undefined;
 }
 
-function extractSubscriptionUser(request: any) {
+function extractSubscriptionUser(
+  request: http.IncomingMessage,
+): IHeaderUser | undefined {
   try {
     const token = readCookie(request?.headers?.cookie, 'auth-token');
     if (!token) {
       return undefined;
     }
-    const decoded: any = jwt.verify(
-      token,
-      process.env.JWT_TOKEN_SECRET || 'SECRET',
-    );
+    const decoded = verifyJwt<IUserTokenPayload>(token);
     const user = decoded?.user;
     if (!user?._id) {
       return undefined;
@@ -72,7 +74,10 @@ export async function stopSubscriptionServer() {
   }
 }
 
-export function makeSubscriptionSchema({ typeDefs, resolvers }: any) {
+export function makeSubscriptionSchema({
+  typeDefs,
+  resolvers,
+}: ISubscriptionTypeDefsAndResolvers) {
   if (!typeDefs || !resolvers) {
     throw new Error(
       'Both `typeDefs` and `resolvers` are required to make the executable subscriptions schema.',

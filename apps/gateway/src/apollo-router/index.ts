@@ -12,6 +12,7 @@ import {
   supergraphPath,
 } from '~/apollo-router/paths';
 import supergraphCompose from '~/apollo-router/supergraph-compose';
+import { ErxesProxyTarget } from '~/proxy/targets';
 
 dotenv.config();
 
@@ -170,6 +171,27 @@ const downloadRouter = async () => {
   }
 };
 
+// Subset of the Apollo Router YAML config the gateway manages. Keys match
+// the router's own config names verbatim.
+interface RouterConfig {
+  traffic_shaping: {
+    all: { timeout: string };
+    router: { timeout: string };
+  };
+  include_subgraph_errors: { all: boolean };
+  rhai: { scripts: string; main: string };
+  cors: { allow_credentials: boolean };
+  headers: {
+    all: {
+      request: { propagate: { matching: string } }[];
+    };
+  };
+  supergraph: {
+    listen: string;
+    introspection: boolean;
+  };
+}
+
 const createRouterConfig = async () => {
   if (NODE_ENV === 'production' && fs.existsSync(routerConfigPath)) {
     // Don't rewrite in production if it exists. Delete and restart to update the config
@@ -191,7 +213,7 @@ const createRouterConfig = async () => {
     );
   }
 
-  const config: any = {
+  const config: RouterConfig = {
     traffic_shaping: {
       all: {
         timeout: '300s',
@@ -274,7 +296,7 @@ const spawnRouter = () => {
   });
 };
 
-export const startRouter = async (proxy) => {
+export const startRouter = async (proxy: ErxesProxyTarget[]) => {
   await createRouterConfig();
   console.log('Downloading router...');
   await downloadRouter();
@@ -287,7 +309,7 @@ export const startRouter = async (proxy) => {
   routerRecoverAttempt = 0;
 };
 
-export const restartRouter = async (proxy) => {
+export const restartRouter = async (proxy: ErxesProxyTarget[]) => {
   console.log('Restarting Apollo Router...');
 
   await supergraphCompose(proxy);

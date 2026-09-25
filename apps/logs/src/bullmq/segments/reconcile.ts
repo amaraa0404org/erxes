@@ -39,7 +39,7 @@ export const reconcileSegments = async ({
   let checked = 0;
   let skipped = 0;
 
-  const due: DueSegment[] = await sendTRPCMessage({
+  const due = await sendTRPCMessage<DueSegment[]>({
     subdomain,
     pluginName: 'core',
     module: 'segment',
@@ -63,7 +63,7 @@ export const reconcileSegments = async ({
         continue;
       }
 
-      const { count }: { count: number } = await sendTRPCMessage({
+      const { count } = await sendTRPCMessage<{ count: number }>({
         subdomain,
         pluginName: 'core',
         module: 'segment',

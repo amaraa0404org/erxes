@@ -4,7 +4,13 @@ import { getPlugin, getPlugins } from 'erxes-api-shared/utils';
 import fetch from 'node-fetch';
 import { pipeline } from 'node:stream/promises';
 
-async function downloadFile(url, path): Promise<void> {
+interface IServiceTarget {
+  name: string;
+  address: string;
+  config?: { hasSubscriptions?: boolean };
+}
+
+async function downloadFile(url: string, path: string): Promise<void> {
   const res = await fetch(url, { timeout: 15_000 });
 
   if (!res.ok || !res.body) {
@@ -25,9 +31,9 @@ export default async function downloadPlugins(): Promise<void> {
 
   const serviceNames = await getPlugins();
 
-  const allServices: any[] = await Promise.all(
+  const allServices: IServiceTarget[] = await Promise.all(
     serviceNames.map(async (serviceName) => {
-      const service: any = await getPlugin(serviceName);
+      const service = await getPlugin(serviceName);
       return { ...service, name: serviceName };
     }),
   );
@@ -47,7 +53,9 @@ export default async function downloadPlugins(): Promise<void> {
         );
       } catch (e) {
         console.error(
-          `${service.name} subscription plugin download from ${url} to ${target} failed. ${e.message}`,
+          `${service.name} subscription plugin download from ${url} to ${target} failed. ${
+            e instanceof Error ? e.message : e
+          }`,
           e,
         );
       }

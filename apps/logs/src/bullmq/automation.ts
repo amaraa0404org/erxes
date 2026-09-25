@@ -2,7 +2,7 @@ import { sendWorkerQueue } from 'erxes-api-shared/utils';
 
 export const sendAutomationTrigger = async (
   subdomain: string,
-  payload: any,
+  payload: { operationType?: string; fullDocument?: unknown },
   contentType: string,
 ) => {
   const recordType = payload.operationType === 'insert' ? 'new' : 'existing';

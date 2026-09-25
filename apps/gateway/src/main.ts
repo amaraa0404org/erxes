@@ -2,7 +2,7 @@ import './sentry-instrument';
 import * as Sentry from '@sentry/node';
 import * as dotenv from 'dotenv';
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as http from 'http';
@@ -67,7 +67,7 @@ const corsOptions = {
 };
 
 const myQueue = new Queue('gateway-service-discovery', {
-  connection: redis as any,
+  connection: redis,
   defaultJobOptions: DEFAULT_JOB_OPTIONS,
 });
 
@@ -131,7 +131,7 @@ app.use(async (req, res, next) => {
 
   // if (clientPortalToken) {
   //   try {
-  //     const decoded: any = jwt.verify(
+  //     const decoded = jwt.verify(
   //       clientPortalToken,
   //       process.env.JWT_TOKEN_SECRET || 'SECRET',
   //     );
@@ -198,7 +198,7 @@ app.use('/pl:serviceName', async (req, res) => {
 
     if (targetUrl) {
       // Proxy the request to the target service using the custom headers
-      return createProxyMiddleware({
+      return createProxyMiddleware<Request, Response>({
         target: targetUrl,
         changeOrigin: true, // Change the origin header to the target URL's origin
         on: {

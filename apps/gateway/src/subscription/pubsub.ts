@@ -22,6 +22,6 @@ const pubsub = new RedisPubSub({
     port: Number.parseInt(REDIS_PORT || '6379'),
     password: REDIS_PASSWORD,
   }),
-} as any);
+});
 
 export default pubsub;

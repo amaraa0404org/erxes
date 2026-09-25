@@ -12,7 +12,10 @@ export async function handleAfterMutation(
   const { mutationNames = [] } = context.rule;
   const { mutationName } = context.payload || {};
 
-  if (mutationNames.includes(mutationName)) {
+  if (
+    typeof mutationName === 'string' &&
+    mutationNames.includes(mutationName)
+  ) {
     await sendProducer(
       context,
       TAfterProcessProducers.AFTER_MUTATION,

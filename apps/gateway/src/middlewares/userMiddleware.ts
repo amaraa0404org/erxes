@@ -7,24 +7,56 @@ import {
   setCPUserHeader,
   setUserHeader,
 } from 'erxes-api-shared/utils';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { createHash } from 'crypto';
 import fetch from 'node-fetch';
-import { generateModels, IModels } from '../connectionResolver';
+import {
+  generateModels,
+  IGatewayRequest,
+  IHeaderUser,
+  IModels,
+} from '../connectionResolver';
 
 dotenv.config();
 
+interface IClientPortalTokenPayload extends jwt.JwtPayload {
+  clientPortalId?: string;
+}
+
+interface IClientAuthTokenPayload extends jwt.JwtPayload {
+  userId?: string;
+}
+
+export interface IUserTokenPayload extends jwt.JwtPayload {
+  user?: IHeaderUser;
+  typ?: string;
+  clientId?: string;
+  scope?: string;
+}
+
+// jwt.verify returns `string | JwtPayload`; for our tokens the object form is
+// the only meaningful one.
+export const verifyJwt = <T extends jwt.JwtPayload>(
+  token: string,
+): T | undefined => {
+  const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET || 'SECRET');
+  if (typeof decoded === 'string') {
+    return undefined;
+  }
+  return decoded as T;
+};
+
 const DEBUG_GATEWAY_AUTH = process.env.DEBUG_GATEWAY_AUTH === 'true';
 
-const shouldDebugAuth = (req: Request) =>
+const shouldDebugAuth = (req: IGatewayRequest) =>
   DEBUG_GATEWAY_AUTH && req.originalUrl.startsWith('/graphql');
 
 const hashToken = (token: string) =>
   createHash('sha256').update(token).digest('hex').slice(0, 12);
 
 const debugAuth = (
-  req: Request & { user?: any; cpUser?: any; clientPortal?: any },
+  req: IGatewayRequest,
   event: string,
   extra: Record<string, unknown> = {},
 ) => {
@@ -46,7 +78,7 @@ const debugAuth = (
   );
 };
 
-const getBearerToken = (req: Request) => {
+const getBearerToken = (req: IGatewayRequest) => {
   const authorization = req.headers.authorization;
 
   if (!authorization) {
@@ -64,7 +96,7 @@ const getBearerToken = (req: Request) => {
 
 // skipcq: JS-R1005 — legacy middleware complexity
 export default async function userMiddleware(
-  req: Request & { user?: any; cpUser?: any; clientPortal?: any },
+  req: IGatewayRequest,
   res: Response,
   next: NextFunction,
 ) {
@@ -196,7 +228,7 @@ export default async function userMiddleware(
           _id: `app:${appInDb._id}`,
           username: appInDb.name,
           isOwner: appInDb.allowAllPermission === true,
-        } as any;
+        };
         setUserHeader(req.headers, req.user);
       }
     } catch (e) {
@@ -219,13 +251,11 @@ export default async function userMiddleware(
     const clientPortalTokenString = String(clientPortalToken);
 
     try {
-      const clientPortalTokenDecoded: any = jwt.verify(
-        clientPortalTokenString,
-        process.env.JWT_TOKEN_SECRET || 'SECRET',
-      );
+      const clientPortalTokenDecoded =
+        verifyJwt<IClientPortalTokenPayload>(clientPortalTokenString);
 
       const clientPortal = await models.ClientPortals.findOne({
-        _id: clientPortalTokenDecoded.clientPortalId,
+        _id: clientPortalTokenDecoded?.clientPortalId,
       });
 
       if (!clientPortal) {
@@ -244,13 +274,12 @@ export default async function userMiddleware(
         try {
           const clientAuthTokenString = String(clientAuthToken);
 
-          const clientAuthTokenDecoded: any = jwt.verify(
+          const clientAuthTokenDecoded = verifyJwt<IClientAuthTokenPayload>(
             clientAuthTokenString,
-            process.env.JWT_TOKEN_SECRET || 'SECRET',
           );
 
           const clientPortalUser = await models.CPUsers.findOne({
-            _id: clientAuthTokenDecoded.userId,
+            _id: clientAuthTokenDecoded?.userId,
             clientPortalId: clientPortal._id,
           });
 
@@ -316,11 +345,8 @@ export default async function userMiddleware(
 
   try {
     // verify user token and retrieve stored user information
-    const decoded: any = jwt.verify(
-      token,
-      process.env.JWT_TOKEN_SECRET || 'SECRET',
-    );
-    const user = decoded.user;
+    const decoded = verifyJwt<IUserTokenPayload>(token);
+    const user = decoded?.user;
 
     if (!user?._id) {
       debugAuth(req, 'decoded-user-missing-id', {
@@ -365,7 +391,7 @@ export default async function userMiddleware(
     req.user.loginToken = token;
     req.user.sessionCode = req.headers.sessioncode || '';
 
-    if (decoded.typ === 'oauth_access') {
+    if (decoded?.typ === 'oauth_access') {
       req.user.oauthClientId = decoded.clientId || '';
       req.user.oauthScopes = String(decoded.scope || '')
         .split(/\s|,/)

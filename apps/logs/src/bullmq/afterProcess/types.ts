@@ -6,7 +6,7 @@ export interface AfterProcessContext {
   pluginName: string;
   source: AfterProcessProps['source'];
   action: string;
-  payload: any;
+  payload: Record<string, unknown>;
   contentType?: string;
 }
 

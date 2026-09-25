@@ -27,16 +27,19 @@ const apply = async (
     transitions?: boolean;
   },
 ): Promise<SegmentApplyMembershipResult> => {
-  const result: SegmentApplyMembershipResult | null =
-    await sendCoreModuleProducer({
-      subdomain,
-      moduleName: 'segments',
-      pluginName: pluginOf(contentType),
-      producerName: TSegmentProducers.APPLY_MEMBERSHIP,
-      method: 'mutation',
-      input: { contentType, updates: [], ...data },
-      defaultValue: null,
-    });
+  const result = await sendCoreModuleProducer<
+    'segments',
+    TSegmentProducers.APPLY_MEMBERSHIP,
+    SegmentApplyMembershipResult | null
+  >({
+    subdomain,
+    moduleName: 'segments',
+    pluginName: pluginOf(contentType),
+    producerName: TSegmentProducers.APPLY_MEMBERSHIP,
+    method: 'mutation',
+    input: { contentType, updates: [], ...data },
+    defaultValue: null,
+  });
 
   if (!result) {
     throw new Error(`${contentType} did not answer the membership write`);
@@ -63,7 +66,7 @@ const setStatus = (
   total?: number,
   starting?: boolean,
 ): Promise<StatusResult> =>
-  sendTRPCMessage({
+  sendTRPCMessage<StatusResult>({
     subdomain,
     pluginName: 'core',
     module: 'segment',
@@ -77,7 +80,7 @@ const estimateTotal = async (
   subdomain: string,
   segmentId: string,
 ): Promise<number | undefined> => {
-  const result: { total: number | null } | null = await sendTRPCMessage({
+  const result = await sendTRPCMessage<{ total: number | null } | null>({
     subdomain,
     pluginName: 'core',
     module: 'segment',
@@ -90,7 +93,7 @@ const estimateTotal = async (
 };
 
 const rebuildReferencing = async (subdomain: string, segmentId: string) => {
-  const referencing: { _id: string }[] = await sendTRPCMessage({
+  const referencing = await sendTRPCMessage<{ _id: string }[]>({
     subdomain,
     pluginName: 'core',
     module: 'segment',
@@ -116,8 +119,10 @@ export const rebuildSegment = async ({
   subdomain,
   segmentId,
 }: SegmentRebuildEvent) => {
-  const segment: { _id: string; contentType: string } | null =
-    await sendTRPCMessage({
+  const segment = await sendTRPCMessage<{
+    _id: string;
+    contentType: string;
+  } | null>({
       subdomain,
       pluginName: 'core',
       module: 'segment',
@@ -162,8 +167,10 @@ export const rebuildSegment = async ({
     }
 
     while (!cancelled) {
-      const page: { ids: string[]; nextCursor?: string } | null =
-        await sendTRPCMessage({
+      const page = await sendTRPCMessage<{
+        ids: string[];
+        nextCursor?: string;
+      } | null>({
           subdomain,
           pluginName: 'core',
           module: 'segment',

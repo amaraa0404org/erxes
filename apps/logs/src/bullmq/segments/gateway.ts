@@ -29,7 +29,7 @@ export const workerSegmentGateway = (
     }),
 
   resolveEdges: async ({ subjectRecordType, relatedRecordType, subjectIds }) =>
-    sendTRPCMessage({
+    sendTRPCMessage<Record<string, string[]>>({
       subdomain,
       pluginName: 'core',
       module: 'segment',

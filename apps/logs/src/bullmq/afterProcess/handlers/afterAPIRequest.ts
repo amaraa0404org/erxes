@@ -12,7 +12,7 @@ export async function handleAfterAPIRequest(
   const { paths = [] } = context.rule;
   const { path } = context.payload || {};
 
-  if (paths.includes(path)) {
+  if (typeof path === 'string' && paths.includes(path)) {
     await sendProducer(
       context,
       TAfterProcessProducers.AFTER_API_REQUEST,
