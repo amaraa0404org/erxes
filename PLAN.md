@@ -458,7 +458,7 @@ over.
 
 ### Milestone 4: Extract plugins, then delete them
 
-- [ ] 4.1 For each plugin, from a fresh `git clone --no-local` of this
+- [x] 4.1 For each plugin, from a fresh `git clone --no-local` of this
   repository at the current `HEAD`, run `git filter-repo` with the D3 paths
   and renames into `../erxes-plugins/erxes-plugin-<name>`. Then add, in one
   commit per repository:
