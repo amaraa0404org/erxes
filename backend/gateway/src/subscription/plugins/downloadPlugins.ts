@@ -5,7 +5,12 @@ import fetch from 'node-fetch';
 import { pipeline } from 'node:stream/promises';
 
 async function downloadFile(url, path): Promise<void> {
-  const res = await fetch(url);
+  const res = await fetch(url, { timeout: 15_000 });
+
+  if (!res.ok || !res.body) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
   await pipeline(res.body, fs.createWriteStream(path));
 }
 

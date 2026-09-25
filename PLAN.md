@@ -370,7 +370,7 @@ test.
   invalidation, and `getAvailablePlugins()`. Delete `setActivePlugins()` and
   `getActivePlugins()`, and migrate their consumers. Add unit tests for the
   pure functions.
-- [ ] 1.4 Gateway, per D1:
+- [x] 1.4 Gateway, per D1:
   - non-blocking boot, the reaper, and debounced recomposition that skips
     failing subgraphs and keeps the last good supergraph;
   - `--hot-reload`;
@@ -594,6 +594,9 @@ _Append one line per removed or changed core contract:
 - 1.3 `ENABLED_PLUGINS` / `ENABLED_PLUGINS_ONLY_API` no longer feed service
   discovery; `getPlugins()` returns `['core', ...alive members of
   erxes:plugins]` — owner: core
+- 1.4 The BullMQ `update-apollo-router` job/worker and the development
+  supergraph poll are deleted; the router always runs with `--hot-reload` and
+  picks up recomposed supergraph files itself — owner: core/gateway
 - 2.1 `GET /get-frontend-plugins` builds the remote list from
   `getAvailablePlugins(subdomain)` and uses each plugin manifest's
   `uiRemoteEntry` as `entry`; the `plugins.erxes.io` CDN URL construction

@@ -9,9 +9,7 @@ import * as yaml from 'yaml';
 
 dotenv.config();
 
-const { NODE_ENV, SUPERGRAPH_POLL_INTERVAL_MS } = process.env;
-
-let supergraphPollInterval: NodeJS.Timeout | undefined;
+const { NODE_ENV } = process.env;
 
 type SupergraphConfig = {
   federation_version: string;
@@ -54,26 +52,25 @@ const writeSupergraphConfig = async (proxyTargets: ErxesProxyTarget[]) => {
   }
 };
 
+// Composes to a `.next` file and only replaces the live supergraph when the
+// output actually changed, so the router's --hot-reload watcher is not poked
+// by identical rewrites. If rover fails this throws before the copy, leaving
+// the last good supergraph in place.
 const supergraphComposeOnce = async () => {
-  if (NODE_ENV === 'production') {
-    execSync(
-      `rover supergraph compose --config ${supergraphConfigPath} --output ${supergraphPath} --elv2-license=accept --log=error`,
-    );
-  } else {
-    const superGraphqlNext = supergraphPath + '.next';
+  const superGraphqlNext = supergraphPath + '.next';
 
-    execSync(
-      `pnpm rover supergraph compose --config ${supergraphConfigPath} --output ${superGraphqlNext} --elv2-license=accept --client-timeout=80000`,
-      // { stdio: ['ignore', 'ignore', 'ignore'] },
-    );
+  execSync(
+    NODE_ENV === 'production'
+      ? `rover supergraph compose --config ${supergraphConfigPath} --output ${superGraphqlNext} --elv2-license=accept --log=error`
+      : `pnpm rover supergraph compose --config ${supergraphConfigPath} --output ${superGraphqlNext} --elv2-license=accept --client-timeout=80000`,
+  );
 
-    if (
-      !fs.existsSync(supergraphPath) ||
-      !isSameFile(supergraphPath, superGraphqlNext)
-    ) {
-      fs.cpSync(superGraphqlNext, supergraphPath, { force: true });
-      console.log(`NEW Supergraph Schema was printed to ${supergraphPath}`);
-    }
+  if (
+    !fs.existsSync(supergraphPath) ||
+    !isSameFile(supergraphPath, superGraphqlNext)
+  ) {
+    fs.cpSync(superGraphqlNext, supergraphPath, { force: true });
+    console.log(`NEW Supergraph Schema was printed to ${supergraphPath}`);
   }
 };
 
@@ -82,18 +79,4 @@ export default async function supergraphCompose(
 ) {
   await writeSupergraphConfig(proxyTargets);
   await supergraphComposeOnce();
-  if (NODE_ENV === 'development' && !supergraphPollInterval) {
-    supergraphPollInterval = setInterval(async () => {
-      try {
-        await supergraphComposeOnce();
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          // Now you can safely access e.message or other Error properties
-          console.log(e.message);
-        } else {
-          console.log('Unknown error:', e);
-        }
-      }
-    }, Number(SUPERGRAPH_POLL_INTERVAL_MS) || 10_000);
-  }
 }

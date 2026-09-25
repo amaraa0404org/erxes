@@ -5,6 +5,7 @@ import {
   ExecutionArgs,
   getOperationAST,
   GraphQLError,
+  GraphQLSchema,
   parse,
   subscribe,
   validate,
@@ -23,6 +24,7 @@ import { getSubdomain } from '../util/subdomain';
 import * as jwt from 'jsonwebtoken';
 
 let disposable: Disposable | undefined;
+let currentSchema: GraphQLSchema | undefined;
 
 function readCookie(rawCookie: string | undefined, name: string) {
   if (!rawCookie) {
@@ -89,24 +91,38 @@ export function makeSubscriptionSchema({ typeDefs, resolvers }: any) {
   });
 }
 
+// Rebuilds the executable subscription schema from the currently alive
+// plugins (fresh subscriptionPlugin.js downloads; departed plugins drop out).
+// Called once at boot and on every debounced plugin join/leave. On failure the
+// previous schema keeps serving — a bad plugin must not break existing
+// subscribers.
+export async function rebuildSubscriptionSchema(): Promise<void> {
+  try {
+    const typeDefsResolvers = await genTypeDefsAndResolvers();
+
+    if (!typeDefsResolvers) {
+      currentSchema = undefined;
+      console.log('No subscription plugins available; schema cleared');
+      return;
+    }
+
+    currentSchema = makeSubscriptionSchema(typeDefsResolvers);
+    console.log('Subscription schema rebuilt');
+  } catch (e) {
+    console.error(
+      'Failed to rebuild the subscription schema; keeping the previous one',
+      e,
+    );
+  }
+}
+
 export async function startSubscriptionServer(httpServer: http.Server) {
   const wsServer = new ws.Server({
     server: httpServer,
     path: '/graphql',
   });
 
-  const typeDefsResolvers = await genTypeDefsAndResolvers();
-
-  if (!typeDefsResolvers) {
-    return;
-  }
-
-  const { typeDefs, resolvers } = typeDefsResolvers;
-
-  const schema = makeSubscriptionSchema({
-    typeDefs,
-    resolvers,
-  });
+  await rebuildSubscriptionSchema();
 
   await stopSubscriptionServer();
 
@@ -127,6 +143,14 @@ export async function startSubscriptionServer(httpServer: http.Server) {
         _ctx,
         msg: SubscribeMessage,
       ): Promise<ExecutionArgs | readonly GraphQLError[] | void> => {
+        // Read at subscribe time so connections opened after a plugin joined
+        // get the rebuilt schema without a process restart.
+        const schema = currentSchema;
+
+        if (!schema) {
+          return [new GraphQLError('Subscriptions are not available')];
+        }
+
         const args = {
           schema,
           operationName: msg.payload.operationName,

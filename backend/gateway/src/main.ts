@@ -16,7 +16,8 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { retryGetProxyTargets } from '~/proxy/targets';
 import { startRouter, stopRouter } from '~/apollo-router';
 import userMiddleware from '~/middlewares/userMiddleware';
-import { initMQWorkers } from '~/mq/workers/workers';
+import { startPluginReaper } from '~/plugins/reaper';
+import { startPluginChangeWatcher } from '~/plugins/watch';
 import {
   applyProxiesCoreless,
   applyProxyToCore,
@@ -27,11 +28,9 @@ import {
   applyTrustProxy,
   DEFAULT_JOB_OPTIONS,
   getPlugin,
-  getPlugins,
   getSubdomain,
   isDev,
   redis,
-  setActivePlugins,
 } from 'erxes-api-shared/utils';
 import { generateModels } from '~/connectionResolver';
 import { applyGraphqlLimiters } from '~/middlewares/graphql-limiter';
@@ -222,21 +221,18 @@ let httpServer: http.Server;
 
 async function start() {
   try {
-    const enabledPlugins = await getPlugins();
-    await setActivePlugins(enabledPlugins);
-
-    // Initial fetch of the proxy targets
+    // Only core is required at boot; plugins join at runtime and trigger a
+    // debounced recompose via `erxes:plugins:changed`.
     global.currentTargets = await retryGetProxyTargets();
-
-    // Initialize MQ workers
-    console.log('Initializing MQ workers...');
-    await initMQWorkers(redis);
-    console.log('MQ workers initialized');
 
     // Start the router with the initial targets
     console.log('Starting the router...');
     await startRouter(global.currentTargets);
     console.log('Router started successfully');
+
+    // Subscribe before finishing boot so a join during startup is not missed
+    startPluginReaper();
+    startPluginChangeWatcher();
 
     // Apply the initial proxy middleware
     applyGraphqlLimiters(app);
@@ -250,6 +246,7 @@ async function start() {
     await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
 
     await startSubscriptionServer(httpServer);
+
     console.log(`Server is running at http://localhost:${port}/`);
   } catch (error) {
     console.error('Error starting the server:', error);

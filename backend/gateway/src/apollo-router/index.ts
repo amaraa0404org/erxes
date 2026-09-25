@@ -238,6 +238,9 @@ const spawnRouter = () => {
   const spawnedRouter = spawn(
     routerPath,
     [
+      // Watches the supergraph file so plugin join/leave recompositions are
+      // picked up without a process restart (`--dev` already implies this).
+      '--hot-reload',
       ...(NODE_ENV === 'development' ? devOptions : []),
       '--log',
       NODE_ENV === 'development' ? 'warn' : 'error',
