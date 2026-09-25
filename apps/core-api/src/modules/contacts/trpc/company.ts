@@ -1,10 +1,32 @@
 import { initTRPC } from '@trpc/server';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 import { z } from 'zod';
+import { ICompany, ICompanyDocument } from 'erxes-api-shared/core-types';
 import { createOrUpdate } from '../utils';
 import { CoreTRPCContext } from '~/init-trpc';
 import { agentMeta } from '~/utils/agentMeta';
 
 const t = initTRPC.context<CoreTRPCContext>().create();
+
+/** Free-form MongoDB selector/filter document sent by plugin callers. */
+const mongoFilterSchema = z.record(z.string(), z.unknown());
+
+/** Free-form MongoDB update document ($set, $inc, ...) or plain field bag. */
+const mongoUpdateSchema = z.record(z.string(), z.unknown());
+
+/** Company create-update payload; callers may send any company field. */
+const companyDocSchema = z.record(z.string(), z.unknown());
+
+const createOrUpdateDocSchema = z.object({
+  rows: z.array(
+    z.object({
+      selector: mongoFilterSchema,
+      doc: companyDocSchema,
+      customFieldsData: z.array(mongoFilterSchema).optional(),
+    }),
+  ),
+  doNotReplaceExistingValues: z.boolean().default(false),
+});
 
 export const companyTrpcRouter = t.router({
   companies: t.router({
@@ -15,12 +37,14 @@ export const companyTrpcRouter = t.router({
           { module: 'contacts', action: 'contactsRead' },
         ),
       )
-      .input(z.any())
+      .input(z.object({ query: mongoFilterSchema.optional() }))
       .query(async ({ ctx, input }) => {
         const { query } = input;
         const { models } = ctx;
 
-        return models.Companies.find(query).lean();
+        return models.Companies.find(
+          query as FilterQuery<ICompanyDocument>,
+        ).lean();
       }),
 
     findOne: t.procedure
@@ -30,9 +54,12 @@ export const companyTrpcRouter = t.router({
           { module: 'contacts', action: 'contactsRead' },
         ),
       )
-      .input(z.any())
+      .input(mongoFilterSchema)
       .query(async ({ ctx, input }) => {
-        const query = input?.query || input?.selector || input;
+        const query = (input?.query || input?.selector || input) as Record<
+          string,
+          unknown
+        >;
         const { models } = ctx;
 
         if (!query || !Object.keys(query).length) {
@@ -101,7 +128,14 @@ export const companyTrpcRouter = t.router({
           { module: 'contacts', action: 'contactsRead' },
         ),
       )
-      .input(z.any())
+      .input(
+        z.object({
+          query: mongoFilterSchema.optional(),
+          fields: mongoFilterSchema.optional(),
+          skip: z.number().optional(),
+          limit: z.number().optional(),
+        }),
+      )
       .query(async ({ ctx, input }) => {
         const { query, fields, skip, limit } = input;
         const { models } = ctx;
@@ -109,37 +143,42 @@ export const companyTrpcRouter = t.router({
         return models.Companies.findActiveCompanies(query, fields, skip, limit);
       }),
 
-    getCompanyName: t.procedure.input(z.any()).query(async ({ ctx, input }) => {
-      const { company } = input;
-      const { models } = ctx;
+    getCompanyName: t.procedure
+      .input(z.object({ company: companyDocSchema }))
+      .query(async ({ ctx, input }) => {
+        const { company } = input;
+        const { models } = ctx;
 
-      return models.Companies.getCompanyName(company);
-    }),
+        return models.Companies.getCompanyName(company as ICompany);
+      }),
 
     createCompany: t.procedure
-      .input(z.any())
+      .input(z.object({ doc: companyDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { doc } = input;
         const { models } = ctx;
 
-        const company = await models.Companies.createCompany(doc);
+        const company = await models.Companies.createCompany(doc as ICompany);
 
         return company;
       }),
 
     updateCompany: t.procedure
-      .input(z.any())
+      .input(z.object({ _id: z.string(), doc: companyDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { _id, doc } = input;
         const { models } = ctx;
 
-        const company = await models.Companies.updateCompany(_id, doc);
+        const company = await models.Companies.updateCompany(
+          _id,
+          doc as ICompany,
+        );
 
         return company;
       }),
 
     removeCompanies: t.procedure
-      .input(z.any())
+      .input(z.object({ _ids: z.array(z.string()) }))
       .mutation(async ({ ctx, input }) => {
         const { _ids } = input;
         const { models } = ctx;
@@ -148,7 +187,7 @@ export const companyTrpcRouter = t.router({
       }),
 
     createOrUpdate: t.procedure
-      .input(z.any())
+      .input(z.object({ doc: createOrUpdateDocSchema }))
       .mutation(async ({ ctx, input }) => {
         const { doc } = input;
         const { models } = ctx;
@@ -161,8 +200,8 @@ export const companyTrpcRouter = t.router({
     updateMany: t.procedure
       .input(
         z.object({
-          selector: z.record(z.any()),
-          modifier: z.record(z.any()),
+          selector: mongoFilterSchema,
+          modifier: mongoUpdateSchema,
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -171,7 +210,10 @@ export const companyTrpcRouter = t.router({
         if (!selector || !Object.keys(selector).length) {
           return {};
         }
-        return await models.Companies.updateMany(selector, modifier);
+        return await models.Companies.updateMany(
+          selector as FilterQuery<ICompanyDocument>,
+          modifier as UpdateQuery<ICompanyDocument>,
+        );
       }),
   }),
 });
