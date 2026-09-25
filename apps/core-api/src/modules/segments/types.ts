@@ -1,4 +1,5 @@
 import { ISegment } from './db/definitions/segments';
+import { SegmentNode } from './db/definitions/segmentNodes';
 
 export interface ISegmentsEdit extends ISegment {
   _id: string;
@@ -7,9 +8,9 @@ export interface ISegmentsEdit extends ISegment {
 
 export interface IPreviewParams {
   contentType: string;
-  conditions: any;
+  conditions: SegmentNode;
   subOf?: string;
-  config: any;
+  config: Record<string, unknown>;
   conditionsConjunction?: 'and' | 'or';
 }
 
@@ -19,7 +20,7 @@ export type IOptions = {
   returnFullDoc?: boolean;
   returnSelector?: boolean;
   returnCount?: boolean;
-  defaultMustSelector?: any[];
+  defaultMustSelector?: Record<string, unknown>[];
   page?: number;
   perPage?: number;
   sortField?: string;

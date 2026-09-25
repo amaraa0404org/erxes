@@ -1,9 +1,13 @@
-import { IProductRule, IProductRuleDocument } from '@/products/@types/rule';
+import { IProductRule } from '@/products/@types/rule';
+import {
+  MutationProductRulesRemoveArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const productRuleMutations = {
+export const productRuleMutations: MutationResolvers<IContext> = {
   async productRulesAdd(
-    _root: undefined,
+    _root,
     params: IProductRule,
     { models, checkPermission }: IContext,
   ) {
@@ -13,8 +17,8 @@ export const productRuleMutations = {
   },
 
   async productRulesEdit(
-    _root: undefined,
-    { _id, ...doc }: IProductRuleDocument,
+    _root,
+    { _id, ...doc }: { _id: string } & IProductRule,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productRulesManage');
@@ -23,12 +27,16 @@ export const productRuleMutations = {
   },
 
   async productRulesRemove(
-    _root: undefined,
-    { _ids }: { _ids: string[] },
+    _root,
+    { _ids }: MutationProductRulesRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productRulesManage');
 
-    return models.ProductRules.removeRule(_ids);
+    const result = await models.ProductRules.removeRule(
+      _ids.filter((id): id is string => id != null),
+    );
+
+    return result as unknown as Record<string, unknown>;
   },
 };

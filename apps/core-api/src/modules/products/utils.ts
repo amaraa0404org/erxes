@@ -98,8 +98,12 @@ export const checkSameMaskConfig = async (models: IModels, doc: IProduct) => {
     return undefined;
   }
 
-  const similarityGroups =
-    await models.ProductsConfigs.getConfig('similarityGroup');
+  const similarityGroups = await models.ProductsConfigs.getConfig<
+    Record<
+      string,
+      { filterField?: string; rules?: { fieldId: string }[] }
+    >
+  >('similarityGroup');
 
   if (!similarityGroups) {
     return undefined;

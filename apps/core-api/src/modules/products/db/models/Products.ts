@@ -3,7 +3,7 @@ import {
   IProductDocument,
   IPropertyField,
 } from 'erxes-api-shared/core-types';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { nanoid } from 'nanoid';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
 
@@ -23,7 +23,7 @@ import { IModels } from '~/connectionResolvers';
 import { generateProductUpdateActivityLogs } from '../../meta/activity-log';
 
 export interface IProductModel extends Model<IProductDocument> {
-  getProduct(selector: any): Promise<IProductDocument>;
+  getProduct(selector: FilterQuery<IProductDocument>): Promise<IProductDocument>;
   createProduct(doc: IProduct): Promise<IProductDocument>;
   updateProduct(_id: string, doc: IProduct): Promise<IProductDocument>;
   updateProductFromBulk(
@@ -31,7 +31,7 @@ export interface IProductModel extends Model<IProductDocument> {
     doc: IProduct,
   ): Promise<IProductDocument | null>;
   updateProducts(
-    query: any,
+    query: FilterQuery<IProductDocument>,
     doc: IProduct,
   ): Promise<{ n: number; nModified: number; ok: number }>;
   removeProducts(_ids: string[]): Promise<{ n: number; ok: number }>;
@@ -195,7 +195,9 @@ export const loadProductClass = (
     /**
      * Get Product
      */
-    public static async getProduct(selector: any) {
+    public static async getProduct(
+      selector: FilterQuery<IProductDocument>,
+    ) {
       const product = await models.Products.findOne(selector).lean();
 
       if (!product) {
@@ -366,7 +368,10 @@ export const loadProductClass = (
       return updatedProduct;
     }
 
-    public static async updateProducts(query: any, doc: IProduct) {
+    public static async updateProducts(
+      query: FilterQuery<IProductDocument>,
+      doc: IProduct,
+    ) {
       const products = await models.Products.find(query).lean();
 
       const result = await models.Products.updateMany(query, { $set: doc });

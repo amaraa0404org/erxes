@@ -5,12 +5,14 @@ import {
   IProductCategoryDocument,
 } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
 import { IModels } from '~/connectionResolvers';
 
 export interface IProductCategoryModel extends Model<IProductCategoryDocument> {
-  getProductCategory(selector: any): Promise<IProductCategoryDocument>;
+  getProductCategory(
+    selector: FilterQuery<IProductCategoryDocument>,
+  ): Promise<IProductCategoryDocument>;
   createProductCategory(
     doc: IProductCategory,
   ): Promise<IProductCategoryDocument>;
@@ -33,7 +35,9 @@ export const loadProductCategoryClass = (
     /**
      * Get Product Category
      */
-    public static async getProductCategory(selector: any) {
+    public static async getProductCategory(
+      selector: FilterQuery<IProductCategoryDocument>,
+    ) {
       const productCategory = await models.ProductCategories.findOne(selector);
 
       if (!productCategory) {
@@ -59,7 +63,7 @@ export const loadProductCategoryClass = (
         return [];
       }
 
-      const orderQry: any[] = [];
+      const orderQry: FilterQuery<IProductCategoryDocument>[] = [];
       for (const category of categories) {
         orderQry.push({
           order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) },

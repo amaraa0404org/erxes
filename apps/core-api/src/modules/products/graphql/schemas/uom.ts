@@ -10,7 +10,7 @@ export const types = `
     _id: String!
     name: String
     code: String
-    createdAt: Date
+    createdAt: Date!
     isForSubscription:Boolean
     subscriptionConfig:JSON
     timely: TimelyType
@@ -18,10 +18,10 @@ export const types = `
 `;
 
 export const queries = `
-  uoms: [Uom]
-  uomsTotalCount: Int
+  uoms: [Uom!]!
+  uomsTotalCount: Int!
 
-  cpUoms: [Uom]
+  cpUoms: [Uom!]!
 `;
 
 const mutationParams = `
@@ -33,7 +33,7 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  uomsAdd(${mutationParams}): Uom
+  uomsAdd(${mutationParams}): Uom!
   uomsEdit(_id: String!, ${mutationParams}): Uom
-  uomsRemove(uomIds: [String!]): String
+  uomsRemove(uomIds: [String!]): JSON!
 `;

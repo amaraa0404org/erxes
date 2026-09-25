@@ -8,6 +8,19 @@ import {
   SegmentRelationMeta,
 } from 'erxes-api-shared/core-modules';
 import { getPlugin, getPlugins } from 'erxes-api-shared/utils';
+import {
+  QueryResolvers,
+  QuerySegmentDetailArgs,
+  QuerySegmentFieldsArgs,
+  QuerySegmentGrowthArgs,
+  QuerySegmentMemberCountArgs,
+  QuerySegmentMembersArgs,
+  QuerySegmentRelationsArgs,
+  QuerySegmentsArgs,
+  QuerySegmentSameDefinitionArgs,
+  QuerySegmentsPreviewCountArgs,
+  QuerySegmentUsageArgs,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { ISegmentDocument } from '../../db/definitions/segments';
 import { visibleTo } from '../../utils/access';
@@ -22,12 +35,8 @@ import {
   listSegmentMembers,
 } from '../../utils/runSegment';
 
-export const segmentQueries = {
-  async segmentUsage(
-    _root: unknown,
-    { ids }: { ids: string[] },
-    { models }: IContext,
-  ) {
+export const segmentQueries: QueryResolvers<IContext> = {
+  async segmentUsage(_root, { ids }: QuerySegmentUsageArgs, { models }) {
     if (!ids?.length) {
       return [];
     }
@@ -66,7 +75,7 @@ export const segmentQueries = {
 
   async segmentsGetTypes() {
     const pluginNames = await getPlugins();
-    let types: Array<{ name: string; description: string }> = [];
+    let types: Array<{ contentType: string; description?: string }> = [];
     for (const serviceName of pluginNames) {
       const plugin = await getPlugin(serviceName);
       const meta = plugin.config.meta || {};
@@ -91,18 +100,8 @@ export const segmentQueries = {
 
   async segments(
     _root,
-    {
-      contentTypes,
-      ids,
-      searchValue,
-      excludeIds,
-    }: {
-      contentTypes: string[];
-      ids?: string[];
-      searchValue?: string;
-      excludeIds?: string[];
-    },
-    { models, commonQuerySelector, user }: IContext,
+    { contentTypes, ids, searchValue, excludeIds }: QuerySegmentsArgs,
+    { models, commonQuerySelector, user },
   ) {
     let selector: Record<string, unknown> = {
       ...commonQuerySelector,
@@ -130,8 +129,8 @@ export const segmentQueries = {
 
   async segmentDetail(
     _root,
-    { _id }: { _id: string },
-    { models, user }: IContext,
+    { _id }: QuerySegmentDetailArgs,
+    { models, user },
   ) {
     return models.Segments.findOne({
       _id,
@@ -140,7 +139,7 @@ export const segmentQueries = {
     });
   },
 
-  async segmentFields(_root, { contentType }: { contentType: string }) {
+  async segmentFields(_root, { contentType }: QuerySegmentFieldsArgs) {
     const [pluginName] = contentType.split(':');
     const plugin = await getPlugin(pluginName);
     const declared = plugin.config?.meta?.segments?.segmentFields || {};
@@ -151,9 +150,13 @@ export const segmentQueries = {
     }));
   },
 
-  async segmentRelations(_root, { subjectType }: { subjectType: string }) {
+  async segmentRelations(_root, { subjectType }: QuerySegmentRelationsArgs) {
     const pluginNames = await getPlugins();
-    const relations: SegmentRelationMeta[] = [];
+    const relations: Array<
+      SegmentRelationMeta & {
+        measureOperators: ReturnType<typeof resolveSegmentFieldOperators>;
+      }
+    > = [];
 
     for (const pluginName of pluginNames) {
       const plugin = await getPlugin(pluginName);
@@ -182,12 +185,8 @@ export const segmentQueries = {
 
   async segmentMembers(
     _root,
-    {
-      segmentId,
-      cursor,
-      limit,
-    }: { segmentId: string; cursor?: string; limit?: number },
-    { models, subdomain }: IContext,
+    { segmentId, cursor, limit }: QuerySegmentMembersArgs,
+    { models, subdomain },
   ) {
     const segment = await models.Segments.getSegment(segmentId);
 
@@ -195,13 +194,16 @@ export const segmentQueries = {
       return { ids: [] };
     }
 
-    return listSegmentMembers(models, subdomain, segment, { cursor, limit });
+    return listSegmentMembers(models, subdomain, segment, {
+      cursor: cursor ?? undefined,
+      limit: limit ?? undefined,
+    });
   },
 
   async segmentMemberCount(
     _root,
-    { segmentId }: { segmentId: string },
-    { models, subdomain }: IContext,
+    { segmentId }: QuerySegmentMemberCountArgs,
+    { models, subdomain },
   ) {
     const segment = await models.Segments.getSegment(segmentId);
 
@@ -212,8 +214,8 @@ export const segmentQueries = {
 
   async segmentGrowth(
     _root,
-    { segmentId, days }: { segmentId: string; days?: number },
-    { models }: IContext,
+    { segmentId, days }: QuerySegmentGrowthArgs,
+    { models },
   ) {
     const span = Math.min(days || 30, 365);
     const now = new Date();
@@ -307,20 +309,20 @@ export const segmentQueries = {
 
   async segmentSameDefinition(
     _root,
-    {
-      contentType,
-      root,
-      excludeId,
-    }: { contentType: string; root: SegmentNode; excludeId?: string },
-    { models }: IContext,
+    { contentType, root, excludeId }: QuerySegmentSameDefinitionArgs,
+    { models },
   ) {
-    return models.Segments.findSameDefinition(contentType, root, excludeId);
+    return models.Segments.findSameDefinition(
+      contentType,
+      root as SegmentNode,
+      excludeId ?? undefined,
+    );
   },
 
   async segmentsPreviewCount(
     _root,
-    { contentType, root }: { contentType: string; root: SegmentNode },
-    { models, subdomain }: IContext,
+    { contentType, root }: QuerySegmentsPreviewCountArgs,
+    { models, subdomain },
   ) {
     return countSegmentMembers(
       models,

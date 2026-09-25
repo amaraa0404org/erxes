@@ -13,24 +13,24 @@ export const types = `
     description: String
     coverImage: String
 
-    products: [PackageProduct]
+    products: [PackageProduct!]!
 
-    tagIds: [String]
-    tags: [Tag]
+    tagIds: [String!]
+    tags: [Tag!]!
 
     price: Float
     percent: Float
-    totalPrice: Float
+    totalPrice: Float!
 
-    status: String
-    createdAt: Date
-    updatedAt: Date
+    status: String!
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type ProductPackagesListResponse {
-    list: [ProductPackage]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [ProductPackage!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   input ProductPackageInput {
@@ -47,7 +47,7 @@ const queryParams = `
 `;
 
 export const queries = `
-  productPackages(${queryParams}${GQL_CURSOR_PARAM_DEFS}): ProductPackagesListResponse
+  productPackages(${queryParams}${GQL_CURSOR_PARAM_DEFS}): ProductPackagesListResponse!
   productPackageDetail(_id: String!): ProductPackage
 `;
 
@@ -63,8 +63,8 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  productPackagesAdd(${mutationParams}): ProductPackage
+  productPackagesAdd(${mutationParams}): ProductPackage!
   productPackagesEdit(_id: String!, ${mutationParams}): ProductPackage
-  productPackagesChangeStatus(_ids: [String!]!, status: String!): [ProductPackage]
-  productPackagesRemove(_ids: [String!]!): JSON
+  productPackagesChangeStatus(_ids: [String!]!, status: String!): [ProductPackage!]!
+  productPackagesRemove(_ids: [String!]!): JSON!
 `;

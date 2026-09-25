@@ -2,21 +2,33 @@ import {
   sameSegmentDefinition,
   sendSegmentForget,
   sendSegmentRebuild,
+  SegmentNode,
 } from 'erxes-api-shared/core-modules';
+import {
+  MutationResolvers,
+  MutationSegmentsAddArgs,
+  MutationSegmentsEditArgs,
+  MutationSegmentsRebuildArgs,
+  MutationSegmentsRemoveArgs,
+  MutationSegmentsStopRebuildArgs,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { ISegmentCreate } from '../../db/models/Segments';
 import { assertCanEditSegment } from '../../utils/access';
 import { publishSegmentBuild } from '../../utils/publishBuild';
 
-export const segmentMutations = {
+export const segmentMutations: MutationResolvers<IContext> = {
   async segmentsAdd(
     _root,
-    doc: ISegmentCreate,
-    { models, subdomain, user, checkPermission }: IContext,
+    doc: MutationSegmentsAddArgs,
+    { models, subdomain, user, checkPermission },
   ) {
     await checkPermission('segmentsManage');
 
-    const segment = await models.Segments.createSegment(doc, user._id);
+    const segment = await models.Segments.createSegment(
+      doc as unknown as ISegmentCreate,
+      user._id,
+    );
 
     if (!segment.ownedBy) {
       sendSegmentRebuild({ subdomain, segmentId: segment._id });
@@ -27,8 +39,8 @@ export const segmentMutations = {
 
   async segmentsEdit(
     _root,
-    { _id, ...doc }: ISegmentCreate & { _id: string },
-    { models, subdomain, user, checkPermission }: IContext,
+    { _id, ...doc }: MutationSegmentsEditArgs,
+    { models, subdomain, user, checkPermission },
   ) {
     await checkPermission('segmentsManage');
 
@@ -44,12 +56,16 @@ export const segmentMutations = {
       doc.root &&
       (!segment.root ||
         !sameSegmentDefinition(
-          doc.contentType || segment.contentType,
-          doc.root,
+          segment.contentType,
+          doc.root as SegmentNode,
           segment.root,
         ));
 
-    const updated = await models.Segments.updateSegment(_id, doc, user._id);
+    const updated = await models.Segments.updateSegment(
+      _id,
+      doc as unknown as Partial<ISegmentCreate>,
+      user._id,
+    );
 
     const wasOwned = Boolean(segment.ownedBy) || !segment.name?.trim();
     const promoted = wasOwned && Boolean(updated?.name?.trim());
@@ -63,8 +79,8 @@ export const segmentMutations = {
 
   async segmentsRebuild(
     _root,
-    { _id }: { _id: string },
-    { models, subdomain, user, checkPermission }: IContext,
+    { _id }: MutationSegmentsRebuildArgs,
+    { models, subdomain, user, checkPermission },
   ) {
     await checkPermission('segmentsManage');
 
@@ -83,8 +99,8 @@ export const segmentMutations = {
 
   async segmentsStopRebuild(
     _root,
-    { _id }: { _id: string },
-    { models, user, checkPermission }: IContext,
+    { _id }: MutationSegmentsStopRebuildArgs,
+    { models, user, checkPermission },
   ) {
     await checkPermission('segmentsManage');
 
@@ -112,8 +128,8 @@ export const segmentMutations = {
 
   async segmentsRemove(
     _root,
-    { ids }: { ids: string[] },
-    { models, subdomain, user, checkPermission }: IContext,
+    { ids }: MutationSegmentsRemoveArgs,
+    { models, subdomain, user, checkPermission },
   ) {
     await checkPermission('segmentsManage');
 

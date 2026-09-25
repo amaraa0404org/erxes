@@ -1,19 +1,27 @@
 import { IProduct } from 'erxes-api-shared/core-types';
+import {
+  MutationProductsAddArgs,
+  MutationProductsDuplicateArgs,
+  MutationProductsEditArgs,
+  MutationProductsMergeArgs,
+  MutationProductsRemoveArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const productMutations = {
+export const productMutations: MutationResolvers<IContext> = {
   /**
    * Creates a new product
    * @param {Object} doc Product document
    */
   async productsAdd(
-    _root: undefined,
-    doc: IProduct,
+    _root,
+    doc: MutationProductsAddArgs,
     { models, __, checkPermission }: IContext,
   ) {
     await checkPermission('productsCreate');
 
-    return models.Products.createProduct(__(doc));
+    return models.Products.createProduct(__(doc) as IProduct);
   },
 
   /**
@@ -22,8 +30,8 @@ export const productMutations = {
    * @param {Object} param2.doc Product info
    */
   async productsEdit(
-    _parent: undefined,
-    { _id, ...doc }: { _id: string } & IProduct,
+    _parent,
+    { _id, ...doc }: MutationProductsEditArgs,
     { models, __, checkPermission }: IContext,
   ) {
     await checkPermission('productsUpdate');
@@ -33,7 +41,7 @@ export const productMutations = {
       __({
         ...doc,
         status: 'active',
-      }),
+      }) as IProduct,
     );
   },
 
@@ -42,39 +50,39 @@ export const productMutations = {
    * @param {string} param1._id Product id
    */
   async productsRemove(
-    _parent: undefined,
-    { productIds }: { productIds: string[] },
+    _parent,
+    { productIds }: MutationProductsRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productsDelete');
 
-    return models.Products.removeProducts(productIds);
+    return models.Products.removeProducts(
+      (productIds ?? []).filter((id): id is string => id != null),
+    );
   },
 
   /**
    * Merge products
    */
   async productsMerge(
-    _parent: undefined,
-    {
-      productIds,
-      productFields,
-    }: { productIds: string[]; productFields: IProduct },
+    _parent,
+    { productIds, productFields }: MutationProductsMergeArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productsMerge');
 
-    return models.Products.mergeProducts(productIds, {
-      ...productFields,
-    });
+    return models.Products.mergeProducts(
+      (productIds ?? []).filter((id): id is string => id != null),
+      (productFields ?? {}) as unknown as IProduct,
+    );
   },
 
   /**
    * Duplicate a product
    */
   async productsDuplicate(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: MutationProductsDuplicateArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productsCreate');

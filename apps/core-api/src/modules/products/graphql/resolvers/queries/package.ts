@@ -1,25 +1,36 @@
+import { AnyResolver } from 'erxes-api-shared/core-types';
+import { cursorPaginate } from 'erxes-api-shared/utils';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  QueryProductPackageDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IPackageDocument, IPackageParams } from '@/products/@types/package';
-import { cursorPaginate } from 'erxes-api-shared/utils';
-import { Resolver } from 'erxes-api-shared/core-types';
 
-export const packageQueries: Record<string, Resolver> = {
+export const packageQueries: QueryResolvers<IContext> = {
   async productPackages(
-    _parent: undefined,
+    _parent,
     params: IPackageParams,
     { models }: IContext,
   ) {
     const { searchValue, status, ids, tagIds } = params;
 
-    const filter: any = {
+    const filter: FilterQuery<IPackageDocument> = {
       status: { $ne: 'archived' },
     };
 
     if (status) filter.status = status;
 
-    if (ids?.length) filter._id = { $in: ids };
+    if (ids?.length) {
+      filter._id = { $in: ids.filter((id): id is string => id != null) };
+    }
 
-    if (tagIds?.length) filter.tagIds = { $in: tagIds };
+    if (tagIds?.length) {
+      filter.tagIds = {
+        $in: tagIds.filter((id): id is string => id != null),
+      };
+    }
 
     if (searchValue) {
       filter.$or = [
@@ -30,19 +41,28 @@ export const packageQueries: Record<string, Resolver> = {
 
     return cursorPaginate<IPackageDocument>({
       model: models.Packages,
-      params,
+      params: {
+        limit: params.limit ?? undefined,
+        cursor: params.cursor ?? undefined,
+        direction: params.direction ?? undefined,
+        orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+      },
       query: filter,
     });
   },
 
   async productPackageDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryProductPackageDetailArgs,
     { models }: IContext,
   ) {
     return models.Packages.getPackage(_id);
   },
 };
 
-packageQueries.productPackages.wrapperConfig = { skipPermission: true };
-packageQueries.productPackageDetail.wrapperConfig = { skipPermission: true };
+(packageQueries.productPackages as AnyResolver).wrapperConfig = {
+  skipPermission: true,
+};
+(packageQueries.productPackageDetail as AnyResolver).wrapperConfig = {
+  skipPermission: true,
+};

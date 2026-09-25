@@ -7,11 +7,11 @@ export const types = `
     parentId: String
     code: String!
     order: String!
-    scopeBrandIds: [String]
+    scopeBrandIds: [String!]
     attachment: Attachment
-    status: String
-    isRoot: Boolean
-    productCount: Int
+    status: String!
+    isRoot: Boolean!
+    productCount: Int!
     maskType: String
     mask: JSON
     isSimilarity: Boolean
@@ -30,11 +30,11 @@ const queryParams = `
 `;
 
 export const queries = `
-  productCategories(${queryParams}): [ProductCategory]
-  productCategoriesTotalCount(${queryParams}): Int
+  productCategories(${queryParams}): [ProductCategory!]!
+  productCategoriesTotalCount(${queryParams}): Int!
   productCategoryDetail(_id: String): ProductCategory
-  categoriesWithChilds(ids: [String!]!): [ProductCategory]
-  cpProductCategories(${queryParams}): [ProductCategory]
+  categoriesWithChilds(ids: [String!]!): [ProductCategory!]!
+  cpProductCategories(${queryParams}): [ProductCategory!]!
 `;
 
 const mutationParams = `
@@ -53,7 +53,7 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  productCategoriesAdd(${mutationParams}): ProductCategory
+  productCategoriesAdd(${mutationParams}): ProductCategory!
   productCategoriesEdit(_id: String!, ${mutationParams}): ProductCategory
-  productCategoriesRemove(_id: String!): JSON
+  productCategoriesRemove(_id: String!): JSON!
 `;

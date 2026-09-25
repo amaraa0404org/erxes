@@ -1,18 +1,20 @@
 import { IBundleCondition, IBundleConditionDocument } from '@/bundle/@types';
 import { bundleConditionsSchema } from '@/bundle/db/definitions/bundleCondition';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
 
 export interface IBundleConditionModel extends Model<IBundleConditionDocument> {
-  getCondidtion(doc: any): IBundleConditionDocument;
-  getConditionByCode(code: string): IBundleConditionDocument;
+  getCondidtion(
+    doc: FilterQuery<IBundleConditionDocument>,
+  ): Promise<IBundleConditionDocument>;
+  getConditionByCode(code: string): Promise<IBundleConditionDocument>;
   generateCode(code: string): string;
-  createCondition(doc: IBundleCondition): IBundleConditionDocument;
+  createCondition(doc: IBundleCondition): Promise<IBundleConditionDocument>;
   updateCondition(
     _id: string,
     fields: IBundleCondition,
-  ): IBundleConditionDocument;
-  removeCondition(_ids: string[]): void;
+  ): Promise<IBundleConditionDocument | null>;
+  removeCondition(_ids: string[]): Promise<{ deletedCount?: number }>;
 }
 
 export const loadBundleConditionClass = (
@@ -23,7 +25,9 @@ export const loadBundleConditionClass = (
     /*
      * Get a BundleCondition
      */
-    public static async getCondidtion(doc: any) {
+    public static async getCondidtion(
+      doc: FilterQuery<IBundleConditionDocument>,
+    ) {
       const condition = await models.BundleCondition.findOne(doc).lean();
 
       if (!condition) {

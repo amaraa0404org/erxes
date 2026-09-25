@@ -1,7 +1,11 @@
+import { GraphQLResolveInfo } from 'graphql';
 import { IProductDocument } from 'erxes-api-shared/core-types';
 import { PRODUCT_SIMILARITY_STATUSES } from '@/products/constants';
+import {
+  ProductDiscountArgs,
+  ProductResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { IProductParams } from '~/modules/products/@types';
 
 type DiscountConditions = Record<string, unknown>;
 type ProductDiscount = {
@@ -13,7 +17,7 @@ type ProductDiscount = {
   base?: boolean | null;
 };
 
-const inventoryKey = (id?: string) => id || '_';
+const inventoryKey = (id?: string | null) => id || '_';
 
 const compactDiscountConditions = (conditions: DiscountConditions = {}) =>
   Object.entries(conditions).reduce<DiscountConditions>(
@@ -29,10 +33,10 @@ const compactDiscountConditions = (conditions: DiscountConditions = {}) =>
   );
 
 const getDiscountConditions = (
-  params: Partial<IProductParams> = {},
+  params: Record<string, unknown> = {},
 ): DiscountConditions =>
   compactDiscountConditions({
-    ...params.discountConditions,
+    ...(params.discountConditions as DiscountConditions | undefined),
     branchId: params.branchId,
     departmentId: params.departmentId,
   });
@@ -117,29 +121,20 @@ export const getMatchingBaseDiscount = (
     .sort((a, b) => b.discount - a.discount)[0];
 };
 
-export default {
-  __resolveReference: async (
-    { _id }: { _id: string },
-    { models }: IContext,
-  ) => {
+const Product: ProductResolvers<IContext> = {
+  __resolveReference: async ({ _id }, { models }) => {
     return models.Products.findOne({ _id });
   },
-  category: async (
-    product: IProductDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+
+  category: async (product, _args, { models }) => {
     if (!product.categoryId) {
       return null;
     }
 
     return models.ProductCategories.findOne({ _id: product.categoryId });
   },
-  vendor: async (
-    product: IProductDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+
+  vendor: async (product, _args, { models }) => {
     if (!product.vendorId) {
       return null;
     }
@@ -149,16 +144,16 @@ export default {
 
   remainder: async (
     product: IProductDocument,
-    _args: undefined,
-    _context: IContext,
-    info: any,
+    _args,
+    _context,
+    info: GraphQLResolveInfo,
   ) => {
     const { branchId, departmentId } = info?.variableValues || {};
     const { branchIds, departmentIds } = info?.variableValues || {};
 
     if (branchId || departmentId) {
-      const branchKey = inventoryKey(branchId);
-      const departmentKey = inventoryKey(departmentId);
+      const branchKey = inventoryKey(branchId as string);
+      const departmentKey = inventoryKey(departmentId as string);
       const { remainder, cost, soonIn, soonOut } =
         product?.inventories?.[branchKey]?.[departmentKey] || {};
       return { remainder, cost, soonIn, soonOut };
@@ -167,14 +162,22 @@ export default {
     const result = { remainder: 0, cost: 0, soonIn: 0, soonOut: 0 };
 
     for (const branchID of Object.keys(product.inventories || {})) {
-      if (branchIds?.length && !branchIds.includes(branchID)) {
+      if (
+        Array.isArray(branchIds) &&
+        branchIds.length &&
+        !branchIds.includes(branchID)
+      ) {
         continue;
       }
 
       for (const departmentID of Object.keys(
         product.inventories?.[branchID] || {},
       )) {
-        if (departmentIds?.length && !departmentIds.includes(departmentID)) {
+        if (
+          Array.isArray(departmentIds) &&
+          departmentIds.length &&
+          !departmentIds.includes(departmentID)
+        ) {
           continue;
         }
 
@@ -194,10 +197,10 @@ export default {
   },
 
   discount: async (
-    product: IProductDocument,
-    args: IProductParams,
-    _context: IContext,
-    info: any,
+    product,
+    args: ProductDiscountArgs,
+    _context,
+    info: GraphQLResolveInfo,
   ) => {
     return getMatchingDiscount(
       product.discounts,
@@ -208,11 +211,7 @@ export default {
     );
   },
 
-  similarity: async (
-    product: IProductDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+  similarity: async (product, _args, { models }) => {
     if (!product.similarityId) {
       return null;
     }
@@ -223,11 +222,7 @@ export default {
     }).lean();
   },
 
-  uom: async (
-    product: IProductDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+  uom: async (product, _args, { models }) => {
     if (!product.uom) {
       return null;
     }
@@ -243,3 +238,5 @@ export default {
     return uom?.name || uom?.code || '';
   },
 };
+
+export default Product;

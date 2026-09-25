@@ -1,15 +1,12 @@
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const productRuleQueries = {
-  async productRules(_root: undefined, _args: undefined, { models }: IContext) {
+export const productRuleQueries: QueryResolvers<IContext> = {
+  async productRules(_root, _args, { models }) {
     return models.ProductRules.find().lean();
   },
 
-  async productRulesWithCount(
-    _root: undefined,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async productRulesWithCount(_root, _args, { models }) {
     const rules = await models.ProductRules.find().lean();
 
     return {

@@ -102,9 +102,10 @@ const mappers = {
   Position: '../modules/organization/structure/@types/structure#IPositionDocument',
   Product: 'erxes-api-shared/core-types#IProductDocument',
   ProductCategory: 'erxes-api-shared/core-types#IProductCategoryDocument',
+  ProductBulkSimilarity:
+    '../modules/products/@types/similarity#IProductSimilarityDocument',
   ProductPackage: '../modules/products/@types/package#IPackageDocument',
   ProductRule: '../modules/products/@types/rule#IProductRuleDocument',
-  ProductSimilarity: '../modules/products/@types/similarity#IProductSimilarityDocument',
   ProductsConfig: 'erxes-api-shared/core-types#IProductsConfigDocument',
   PropertySystemField:
     '../modules/properties/@types/systemField#ISystemFieldSettingDocument',

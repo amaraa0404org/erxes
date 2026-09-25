@@ -1,24 +1,19 @@
 import { escapeRegExp } from 'erxes-api-shared/utils';
-import { IProductCategoryDocument } from 'erxes-api-shared/core-types';
+import { ProductCategoryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
 import { PRODUCT_STATUSES } from '@/products/constants';
 
-export default {
-  __resolveReference: async (
-    { _id }: { _id: string },
-    { models }: IContext,
-  ) => {
+const ProductCategory: ProductCategoryResolvers<IContext> = {
+  __resolveReference: async ({ _id }, { models }) => {
     return models.ProductCategories.findOne({ _id });
   },
-  isRoot: (category: IProductCategoryDocument) => {
+
+  isRoot: (category) => {
     return category.parentId ? false : true;
   },
-  productCount: async (
-    category: IProductCategoryDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+
+  productCount: async (category, _args, { models }) => {
     const product_category_ids = await models.ProductCategories.find(
       { order: { $regex: new RegExp(`^${escapeRegExp(category.order)}`) } },
       { _id: 1 },
@@ -29,3 +24,5 @@ export default {
     });
   },
 };
+
+export default ProductCategory;

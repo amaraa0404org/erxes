@@ -1,13 +1,9 @@
-import { IProductSimilarityDocument } from '@/products/@types/similarity';
 import { PRODUCT_STATUSES } from '@/products/constants';
+import { ProductBulkSimilarityResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
-  async products(
-    similarity: IProductSimilarityDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+const ProductBulkSimilarity: ProductBulkSimilarityResolvers<IContext> = {
+  async products(similarity, _args, { models }) {
     if (!similarity.productIds?.length) return [];
 
     return models.Products.find({
@@ -18,11 +14,7 @@ export default {
       .lean();
   },
 
-  fields: async (
-    similarity: IProductSimilarityDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+  fields: async (similarity, _args, { models }) => {
     const fieldIds = Object.keys(similarity.propertiesData || {});
 
     if (!fieldIds.length) {
@@ -36,19 +28,17 @@ export default {
     return fieldIds.map((fieldId) => ({
       fieldId,
       text: fields.find((f) => f._id === fieldId)?.name || fieldId,
-      values: similarity.propertiesData?.[fieldId] || [],
+      values:
+        (similarity.propertiesData?.[fieldId] as string[] | undefined) ??
+        [],
     }));
   },
 
-  info: async (
-    similarity: IProductSimilarityDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) => {
+  info: async (similarity, _args, { models }) => {
     const { info } = similarity || {};
 
     if (!info?.uom) {
-      return info;
+      return info as unknown as Record<string, unknown>;
     }
 
     const uom = await models.Uoms.findOne({
@@ -56,9 +46,11 @@ export default {
     }).lean();
 
     if (!uom) {
-      return info;
+      return info as unknown as Record<string, unknown>;
     }
 
     return { ...info, uom: uom.name || uom.code || info.uom };
   },
 };
+
+export default ProductBulkSimilarity;

@@ -1,19 +1,25 @@
 import { IUom } from 'erxes-api-shared/core-types';
+import {
+  MutationResolvers,
+  MutationUomsAddArgs,
+  MutationUomsEditArgs,
+  MutationUomsRemoveArgs,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const uomMutations = {
+export const uomMutations: MutationResolvers<IContext> = {
   /**
    * Creates a new uom
    * @param {Object} doc uom document
    */
   async uomsAdd(
-    _parent: undefined,
-    doc: IUom,
+    _parent,
+    doc: MutationUomsAddArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('uomsManage');
 
-    return await models.Uoms.createUom(doc);
+    return await models.Uoms.createUom(doc as IUom);
   },
 
   /**
@@ -22,13 +28,13 @@ export const uomMutations = {
    * @param {Object} param2.doc uom info
    */
   async uomsEdit(
-    _parent: undefined,
-    { _id, ...doc }: { _id: string } & IUom,
+    _parent,
+    { _id, ...doc }: MutationUomsEditArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('uomsManage');
 
-    return await models.Uoms.updateUom(_id, doc);
+    return await models.Uoms.updateUom(_id, doc as IUom);
   },
 
   /**
@@ -36,12 +42,14 @@ export const uomMutations = {
    * @param {string[]} uomIds Array of Uom ids
    */
   async uomsRemove(
-    _parent: undefined,
-    { uomIds }: { uomIds: string[] },
+    _parent,
+    { uomIds }: MutationUomsRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('uomsManage');
 
-    return await models.Uoms.removeUoms(uomIds);
+    return await models.Uoms.removeUoms(
+      (uomIds ?? []).filter((id): id is string => id != null),
+    );
   },
 };

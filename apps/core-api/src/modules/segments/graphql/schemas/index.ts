@@ -71,7 +71,7 @@ export const types = `
   """One day of a segment's life: where it ended, and what moved it there."""
   type SegmentDay {
     """Start of the bucket this point covers - hourly on a short window."""
-    at: Date
+    at: Date!
     date: String!
     """Closing membership. Absent on days the worker never settled it."""
     count: Int
@@ -117,12 +117,12 @@ export const types = `
 `;
 
 export const queries = `
-  segmentsGetTypes: [JSON]
+  segmentsGetTypes: [JSON!]!
 
   """What still points at these segments, read before deleting one."""
   segmentUsage(ids: [String!]!): [SegmentUsage!]!
 
-  segments(contentTypes: [String]!, ids: [String], excludeIds: [String], searchValue: String): [Segment]
+  segments(contentTypes: [String]!, ids: [String!], excludeIds: [String!], searchValue: String): [Segment!]!
   segmentDetail(_id: String!): Segment
 
   """Filterable fields for a content type, including tenant custom properties."""
@@ -163,9 +163,9 @@ const ownableFields = `
 `;
 
 export const mutations = `
-  segmentsAdd(contentType: String!, ${ownableFields}): Segment
+  segmentsAdd(contentType: String!, ${ownableFields}): Segment!
   segmentsEdit(_id: String!, ${commonFields}): Segment
-  segmentsRemove(ids: [String!]!): JSON
-  segmentsRebuild(_id: String!): JSON
-  segmentsStopRebuild(_id: String!): JSON
+  segmentsRemove(ids: [String!]!): JSON!
+  segmentsRebuild(_id: String!): JSON!
+  segmentsStopRebuild(_id: String!): JSON!
 `;

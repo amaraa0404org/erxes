@@ -8,10 +8,10 @@ import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
 import { IModels } from '~/connectionResolvers';
 
 export interface IProductsConfigModel extends Model<IProductsConfigDocument> {
-  getConfig(
+  getConfig<T = Record<string, unknown>>(
     code: string,
-    defaultValue?: unknown,
-  ): Promise<IProductsConfigDocument>;
+    defaultValue?: T,
+  ): Promise<T | ''>;
   createOrUpdateConfig({
     code,
     value,
@@ -27,14 +27,17 @@ export const loadProductsConfigClass = (
     /*
      * Get a Config
      */
-    public static async getConfig(code: string, defaultValue?: any) {
+    public static async getConfig<T = Record<string, unknown>>(
+      code: string,
+      defaultValue?: T,
+    ): Promise<T | ''> {
       const config = await models.ProductsConfigs.findOne({ code });
 
       if (!config) {
-        return defaultValue || '';
+        return (defaultValue ?? '') as T | '';
       }
 
-      return config.value;
+      return config.value as T;
     }
 
     /**

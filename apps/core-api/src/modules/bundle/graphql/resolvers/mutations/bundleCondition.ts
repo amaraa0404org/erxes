@@ -1,11 +1,18 @@
-import { IBundleCondition } from '@/bundle/@types';
+import {
+  MutationBundleConditionAddArgs,
+  MutationBundleConditionDefaultArgs,
+  MutationBundleConditionEditArgs,
+  MutationBundleConditionRemoveArgs,
+  MutationBundleConditionSetBulkArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const bundleConditionMutations = {
+export const bundleConditionMutations: MutationResolvers<IContext> = {
   async bundleConditionAdd(
-    _root: undefined,
-    doc: IBundleCondition,
-    { user, models, checkPermission }: IContext,
+    _root,
+    doc: MutationBundleConditionAddArgs,
+    { user, models, checkPermission },
   ) {
     await checkPermission('bundleConditionsManage');
 
@@ -16,9 +23,9 @@ export const bundleConditionMutations = {
   },
 
   async bundleConditionEdit(
-    _root: undefined,
-    { _id, ...fields }: { _id: string } & IBundleCondition,
-    { models, checkPermission }: IContext,
+    _root,
+    { _id, ...fields }: MutationBundleConditionEditArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleConditionsManage');
 
@@ -26,37 +33,46 @@ export const bundleConditionMutations = {
   },
 
   async bundleConditionRemove(
-    _root: undefined,
-    { _ids }: { _ids: string[] },
-    { models, checkPermission }: IContext,
+    _root,
+    { _ids }: MutationBundleConditionRemoveArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleConditionsManage');
 
-    return models.BundleCondition.removeCondition(_ids);
+    const result = await models.BundleCondition.removeCondition(_ids ?? []);
+
+    return result as unknown as Record<string, unknown>;
   },
 
   async bundleConditionDefault(
-    _root: undefined,
-    { _id }: { _id: string },
-    { models, checkPermission }: IContext,
+    _root,
+    { _id }: MutationBundleConditionDefaultArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleConditionsManage');
 
     await models.BundleCondition.updateMany({}, { isDefault: false });
 
-    return models.BundleCondition.updateOne({ _id }, { isDefault: true });
+    const result = await models.BundleCondition.updateOne(
+      { _id },
+      { isDefault: true },
+    );
+
+    return result as unknown as Record<string, unknown>;
   },
 
   async bundleConditionSetBulk(
-    _root: undefined,
-    { bundleId, productIds }: { bundleId: string; productIds: string[] },
-    { models, checkPermission }: IContext,
+    _root,
+    { bundleId, productIds }: MutationBundleConditionSetBulkArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleConditionsManage');
 
-    return await models.Products.updateMany(
+    const result = await models.Products.updateMany(
       { _id: { $in: productIds } },
       { $set: { bundleId: bundleId } },
     );
+
+    return result as unknown as Record<string, unknown>;
   },
 };

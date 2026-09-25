@@ -1,5 +1,5 @@
 import { buildPropertyFilter } from 'erxes-api-shared/core-modules';
-import { IProductDocument, Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver, IProductDocument } from 'erxes-api-shared/core-types';
 import {
   cursorPaginate,
   cursorPaginateAggregation,
@@ -7,6 +7,13 @@ import {
   escapeRegExp,
 } from 'erxes-api-shared/utils';
 import { FilterQuery, PipelineStage, SortOrder } from 'mongoose';
+import {
+  QueryCpProductDetailArgs,
+  QueryProductDetailArgs,
+  QueryProductLastCodeByCategoryArgs,
+  QueryProductSimilaritiesArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext, IModels } from '~/connectionResolvers';
 
 import { IProductParams } from '@/products/@types/product';
@@ -20,7 +27,7 @@ import {
 } from '@/products/utils';
 import { getMatchingBaseDiscount } from '@/products/graphql/resolvers/customResolvers/product';
 
-const inventoryKey = (id?: string) => id || '_';
+const inventoryKey = (id?: string | null) => id || '_';
 type DiscountField = 'discount' | 'discountPercent';
 type DiscountRangeOperator = '$gte' | '$lte';
 type DiscountConditions = Record<string, unknown>;
@@ -29,8 +36,13 @@ type BasePricedProduct = Record<string, unknown> & {
   discounts?: unknown[];
 };
 
-const isDiscountSortField = (sortField?: string) =>
+const isDiscountSortField = (sortField?: string | null) =>
   sortField === 'discount' || sortField === 'discountPercent';
+
+const compactIds = (
+  ids?: (string | null)[] | null,
+): string[] | undefined =>
+  ids?.filter((id): id is string => id != null);
 
 const hasRangeValue = (value?: number | null): value is number =>
   value !== undefined && value !== null;
@@ -256,7 +268,7 @@ const pushScopedDiscountRangeFilter = (
   filters: FilterQuery<IProductDocument>[],
   field: DiscountField,
   operator: DiscountRangeOperator,
-  value: number | undefined,
+  value: number | null | undefined,
   conditions: DiscountConditions,
 ) => {
   if (!hasRangeValue(value)) {
@@ -296,12 +308,8 @@ const paginateDiscountSortedProducts = async (
 ) => {
   const pipeline = buildDiscountSortPipeline(filter, params);
   const sortDirection = params.sortDirection === -1 ? -1 : 1;
-  const paginationParams = params as IProductParams & {
-    page?: number;
-    perPage?: number;
-  };
-  const page = Number(paginationParams.page || 1);
-  const perPage = Number(paginationParams.perPage || params.limit || 20);
+  const page = Number(params.page || 1);
+  const perPage = Number(params.perPage || params.limit || 20);
 
   pipeline.push(
     { $sort: { discountSortValue: sortDirection, code: 1, _id: 1 } },
@@ -314,24 +322,18 @@ const paginateDiscountSortedProducts = async (
 
 const generateFilter = async (
   context: IContext,
-  commonQuerySelector: any,
+  commonQuerySelector: Record<string, unknown>,
   params: IProductParams,
 ) => {
   const { models } = context;
   const {
     type,
-    categoryIds,
     searchValue,
     vendorId,
-    brandIds,
-    tagIds,
-    excludeTagIds,
     tagWithRelated,
-    ids,
     excludeIds,
     image,
     segment,
-    segmentIds,
     propertiesData,
     branchId,
     departmentId,
@@ -345,7 +347,14 @@ const generateFilter = async (
     maxDiscountPercent,
   } = params;
 
-  const filter: FilterQuery<IProductParams> = { ...commonQuerySelector };
+  const ids = compactIds(params.ids);
+  const categoryIds = compactIds(params.categoryIds);
+  const brandIds = compactIds(params.brandIds);
+  const tagIds = compactIds(params.tagIds);
+  const excludeTagIds = compactIds(params.excludeTagIds);
+  const segmentIds = compactIds(params.segmentIds);
+
+  const filter: FilterQuery<IProductDocument> = { ...commonQuerySelector };
 
   const andFilters: FilterQuery<IProductDocument>[] = [];
 
@@ -592,15 +601,11 @@ const generateFilter = async (
   return { ...filter, ...(andFilters.length ? { $and: andFilters } : {}) };
 };
 
-export const productQueries: Record<string, Resolver<any, any, IContext>> = {
+export const productQueries: QueryResolvers<IContext> = {
   /**
    * Products list
    */
-  async productsMain(
-    _parent: undefined,
-    params: IProductParams,
-    context: IContext,
-  ) {
+  async productsMain(_parent, params: IProductParams, context: IContext) {
     const { commonQuerySelector, models } = context;
     const filter = await generateFilter(context, commonQuerySelector, params);
 
@@ -613,7 +618,9 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
         model: models.Products,
         pipeline: discountPipeline,
         params: {
-          ...params,
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
           orderBy: {
             discountSortValue: (params.sortDirection || 1) as SortOrder,
             _id: 1,
@@ -636,18 +643,19 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
 
     const result = await cursorPaginate({
       model: models.Products,
-      params,
+      params: {
+        limit: params.limit ?? undefined,
+        cursor: params.cursor ?? undefined,
+        direction: params.direction ?? undefined,
+        orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+      },
       query: filter,
     });
 
     return applyBasePrices(result, params);
   },
 
-  async products(
-    _parent: undefined,
-    params: IProductParams,
-    context: IContext,
-  ) {
+  async products(_parent, params: IProductParams, context: IContext) {
     const { commonQuerySelector, models } = context;
     const filter = await generateFilter(context, commonQuerySelector, params);
 
@@ -681,18 +689,17 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
     const result = await defaultPaginate(
       models.Products.find(filter).sort(sort).lean(),
       {
-        ...params,
+        ids: compactIds(params.ids),
+        excludeIds: params.excludeIds ?? undefined,
+        page: params.page ?? undefined,
+        perPage: params.perPage ?? undefined,
       },
     );
 
     return applyBasePrices(result, params);
   },
 
-  async cpProducts(
-    _parent: undefined,
-    params: IProductParams,
-    context: IContext,
-  ) {
+  async cpProducts(_parent, params: IProductParams, context: IContext) {
     const { commonQuerySelector, models } = context;
     const filter = await generateFilter(context, commonQuerySelector, params);
 
@@ -716,21 +723,24 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
     }
 
     return await defaultPaginate(models.Products.find(filter).sort(sort), {
-      ...params,
+      ids: compactIds(params.ids),
+      excludeIds: params.excludeIds ?? undefined,
+      page: params.page ?? undefined,
+      perPage: params.perPage ?? undefined,
     });
   },
 
   async productDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryProductDetailArgs,
     { models }: IContext,
   ) {
     return await models.Products.findOne({ _id }).lean();
   },
 
   async productLastCodeByCategory(
-    _parent: undefined,
-    { categoryId }: { categoryId?: string },
+    _parent,
+    { categoryId }: QueryProductLastCodeByCategoryArgs,
     context: IContext,
   ) {
     if (!categoryId) {
@@ -768,15 +778,15 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async cpProductDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryCpProductDetailArgs,
     { models }: IContext,
   ) {
     return await models.Products.findOne({ _id }).lean();
   },
 
   async productsTotalCount(
-    _parent: undefined,
+    _parent,
     params: IProductParams,
     context: IContext,
   ) {
@@ -793,8 +803,8 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async productSimilarities(
-    _parent: undefined,
-    { _id, groupedSimilarity },
+    _parent,
+    { _id, groupedSimilarity }: QueryProductSimilaritiesArgs,
     { models }: IContext,
   ) {
     const product: IProductDocument = await models.Products.getProduct({ _id });
@@ -817,9 +827,15 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
         );
       };
 
-      const similarityGroups = await models.ProductsConfigs.getConfig(
-        'similarityGroup',
-      );
+      type SimilarityGroupMask = {
+        filterField?: string;
+        rules?: { fieldId: string; title?: string }[];
+      };
+
+      const similarityGroups =
+        (await models.ProductsConfigs.getConfig<
+          Record<string, SimilarityGroupMask>
+        >('similarityGroup')) || {};
 
       const codeMasks = Object.keys(similarityGroups);
       const customFieldIds = (product.customFieldsData || []).map(
@@ -863,7 +879,7 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
 
       const codeRegexes: FilterQuery<IProductDocument>[] = [];
       const fieldIds: string[] = [];
-      const groups: { title: string; fieldId: string }[] = [];
+      const groups: { title?: string; fieldId: string }[] = [];
 
       for (const matchedMask of matchedMasks) {
         const matched = similarityGroups[matchedMask];
@@ -958,7 +974,7 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async productCountByTags(_root, _params, { models }: IContext) {
-    const counts = {};
+    const counts: Record<string, number> = {};
 
     const tags = await models.Tags.find({ type: 'core:product' }).lean();
 
@@ -973,10 +989,10 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 };
 
-productQueries.cpProducts.wrapperConfig = {
+(productQueries.cpProducts as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };
 
-productQueries.cpProductDetail.wrapperConfig = {
+(productQueries.cpProductDetail as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

@@ -1,4 +1,3 @@
-import { ICursorPaginateParams } from 'erxes-api-shared/core-types';
 import { Document } from 'mongoose';
 
 export interface IPackageProduct {
@@ -23,9 +22,17 @@ export interface IPackageDocument extends IPackage, Document {
   updatedAt: Date;
 }
 
-export interface IPackageParams extends ICursorPaginateParams {
-  searchValue?: string;
-  status?: string;
-  ids?: string[];
-  tagIds?: string[];
+export interface IPackageParams {
+  searchValue?: string | null;
+  status?: string | null;
+  ids?: (string | null)[] | null;
+  tagIds?: (string | null)[] | null;
+  // cursor pagination
+  limit?: number | null;
+  cursor?: string | null;
+  direction?: 'forward' | 'backward' | null;
+  cursorMode?: 'inclusive' | 'exclusive' | null;
+  orderBy?: Record<string, unknown> | null;
+  sortMode?: string | null;
+  aggregationPipeline?: (Record<string, unknown> | null)[] | null;
 }

@@ -1,15 +1,27 @@
+import { IBundleRuleItem } from '@/bundle/@types';
+import { IProductDocument } from 'erxes-api-shared/core-types';
+import {
+  QueryResolvers,
+  QueryBundleRuleDetailArgs,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const bundleRuleQueries = {
-  async bundleRules(_root: undefined, _args: undefined, { models }: IContext) {
+type BundleRuleItemWithProducts = IBundleRuleItem & {
+  products: IProductDocument[];
+};
+
+export const bundleRuleQueries: QueryResolvers<IContext> = {
+  async bundleRules(_root, _args, { models }) {
     const bundles = await models.BundleRule.find({}).lean();
 
-    const bundlesWithProducts: any[] = [];
+    const bundlesWithProducts: Array<
+      (typeof bundles)[number] & { rules: BundleRuleItemWithProducts[] }
+    > = [];
 
     for (const bundle of bundles) {
-      const rulesWithProducts: any[] = [];
+      const rulesWithProducts: BundleRuleItemWithProducts[] = [];
 
-      for (const rule of bundle.rules) {
+      for (const rule of bundle.rules || []) {
         const products = await models.Products.find({
           _id: { $in: rule.productIds || [] },
         });
@@ -29,18 +41,14 @@ export const bundleRuleQueries = {
     return bundlesWithProducts;
   },
 
-  async bundleRuleDetail(
-    _root: undefined,
-    { _id }: { _id: string },
-    { models }: IContext,
-  ) {
+  async bundleRuleDetail(_root, { _id }: QueryBundleRuleDetailArgs, { models }) {
     const bundle = await models.BundleRule.findById(_id).lean();
 
     if (!bundle) {
       return null;
     }
 
-    const rulesWithProducts: any[] = [];
+    const rulesWithProducts: BundleRuleItemWithProducts[] = [];
 
     for (const rule of bundle.rules || []) {
       const products = await models.Products.find({

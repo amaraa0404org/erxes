@@ -1,9 +1,9 @@
 export interface IProductCategoryParams {
-  parentId: string;
-  searchValue: string;
-  status: string;
-  withChild: boolean;
-  brandIds: string;
-  meta: string | number;
-  ids: string[];
+  parentId?: string | null;
+  searchValue?: string | null;
+  status?: string | null;
+  withChild?: boolean | null;
+  brandIds?: (string | null)[] | null;
+  meta?: string | number | null;
+  ids?: (string | null)[] | null;
 }

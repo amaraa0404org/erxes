@@ -1,36 +1,59 @@
+import {
+  BundleRuleItemInput,
+  MutationBundleRulesAddArgs,
+  MutationBundleRulesEditArgs,
+  MutationBundleRulesRemoveArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { IBundleRule } from '~/modules/bundle/@types';
 
-export const bundleRuleMutations = {
+const nonNullRules = (
+  rules: MutationBundleRulesAddArgs['rules'],
+): BundleRuleItemInput[] | null | undefined =>
+  rules === undefined
+    ? undefined
+    : (rules ?? []).filter(
+        (rule): rule is BundleRuleItemInput => rule != null,
+      );
+
+export const bundleRuleMutations: MutationResolvers<IContext> = {
   async bundleRulesAdd(
-    _root: undefined,
-    doc: IBundleRule,
-    { models, checkPermission }: IContext,
+    _root,
+    doc: MutationBundleRulesAddArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleRulesManage');
 
     return models.BundleRule.createRule({
       ...doc,
+      rules: nonNullRules(doc.rules) ?? undefined,
     });
   },
 
   async bundleRulesEdit(
-    _root: undefined,
-    { _id, ...fields }: { _id: string } & IBundleRule,
-    { models, checkPermission }: IContext,
+    _root,
+    { _id, ...fields }: MutationBundleRulesEditArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleRulesManage');
 
-    return models.BundleRule.updateRule(_id, fields);
+    const { rules, ...rest } = fields;
+
+    return models.BundleRule.updateRule(_id, {
+      ...rest,
+      ...(rules !== undefined ? { rules: nonNullRules(rules) ?? null } : {}),
+    });
   },
 
   async bundleRulesRemove(
-    _root: undefined,
-    { _ids }: { _ids: string[] },
-    { models, checkPermission }: IContext,
+    _root,
+    { _ids }: MutationBundleRulesRemoveArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('bundleRulesManage');
 
-    return models.BundleRule.removeRule(_ids);
+    const result = await models.BundleRule.removeRule(_ids ?? []);
+
+    return result as unknown as Record<string, unknown>;
   },
 };

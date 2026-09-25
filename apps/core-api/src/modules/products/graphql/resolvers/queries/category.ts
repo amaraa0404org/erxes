@@ -1,9 +1,14 @@
+import { AnyResolver, IProductCategoryDocument } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import {
+  QueryCategoriesWithChildsArgs,
+  QueryProductCategoryDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext, IModels } from '~/connectionResolvers';
 
 import { IProductCategoryParams } from '@/products/@types';
-import { Resolver } from 'erxes-api-shared/core-types';
 
 const generateFilter = async (
   models: IModels,
@@ -17,7 +22,7 @@ const generateFilter = async (
     ids,
   }: IProductCategoryParams,
 ) => {
-  const filter: FilterQuery<IProductCategoryParams> = {};
+  const filter: FilterQuery<IProductCategoryDocument> = {};
 
   filter.status = { $nin: ['disabled', 'archived'] };
 
@@ -45,14 +50,16 @@ const generateFilter = async (
   }
 
   if (brandIds) {
-    filter.scopeBrandIds = { $in: brandIds };
+    filter.scopeBrandIds = {
+      $in: brandIds.filter((id): id is string => id != null),
+    };
   }
 
   if (meta) {
     if (typeof meta === 'number' && !isNaN(meta)) {
       filter.meta = { $lte: Number(meta) };
     } else {
-      filter.meta = meta;
+      filter.meta = meta as string;
     }
   }
 
@@ -60,36 +67,38 @@ const generateFilter = async (
     filter.name = new RegExp(`.*${searchValue}.*`, 'i');
   }
 
-  if (ids?.length > 0) {
-    filter._id = { $in: ids };
+  if (ids?.length) {
+    filter._id = { $in: ids.filter((id): id is string => id != null) };
   }
 
   return filter;
 };
 
-export const categoryQueries: Record<string, Resolver<any, any, IContext>> = {
+export const categoryQueries: QueryResolvers<IContext> = {
   async productCategories(
-    _parent: undefined,
+    _parent,
     params: IProductCategoryParams,
     { models }: IContext,
   ) {
     const filter = await generateFilter(models, params);
-    const sortParams: any = { order: 1 };
-    return await models.ProductCategories.find(filter).sort(sortParams).lean();
+    return await models.ProductCategories.find(filter)
+      .sort({ order: 1 })
+      .lean();
   },
 
   async cpProductCategories(
-    _parent: undefined,
+    _parent,
     params: IProductCategoryParams,
     { models }: IContext,
   ) {
     const filter = await generateFilter(models, params);
-    const sortParams: any = { order: 1 };
-    return await models.ProductCategories.find(filter).sort(sortParams).lean();
+    return await models.ProductCategories.find(filter)
+      .sort({ order: 1 })
+      .lean();
   },
 
   async productCategoriesTotalCount(
-    _parent: undefined,
+    _parent,
     params: IProductCategoryParams,
     { models }: IContext,
   ) {
@@ -98,22 +107,22 @@ export const categoryQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async productCategoryDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryProductCategoryDetailArgs,
     { models }: IContext,
   ) {
     return models.ProductCategories.findOne({ _id }).lean();
   },
 
   async categoriesWithChilds(
-    _parent: undefined,
-    { ids }: { ids: string[] },
+    _parent,
+    { ids }: QueryCategoriesWithChildsArgs,
     { models }: IContext,
   ) {
     return await models.ProductCategories.getChildCategories(ids);
   },
 };
 
-categoryQueries.cpProductCategories.wrapperConfig = {
+(categoryQueries.cpProductCategories as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

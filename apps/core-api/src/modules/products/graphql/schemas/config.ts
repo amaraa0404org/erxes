@@ -7,9 +7,9 @@ export const types = `
 `;
 
 export const queries = `
-  productsConfigs: [ProductsConfig]
+  productsConfigs: [ProductsConfig!]!
 `;
 
 export const mutations = `
-  productsConfigsUpdate(configsMap: JSON!): JSON
+  productsConfigsUpdate(configsMap: JSON!): JSON!
 `;

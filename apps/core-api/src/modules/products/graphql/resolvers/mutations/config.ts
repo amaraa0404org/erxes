@@ -1,12 +1,23 @@
+import {
+  MutationProductsConfigsUpdateArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const configMutations = {
+type SimilarityMaskRule = { fieldId: string };
+type SimilarityMaskValue = {
+  filterField?: string;
+  rules?: SimilarityMaskRule[];
+  defaultProduct?: string;
+};
+
+export const configMutations: MutationResolvers<IContext> = {
   /**
    * Create or update config object
    */
   async productsConfigsUpdate(
-    _parent: undefined,
-    { configsMap },
+    _parent,
+    { configsMap }: MutationProductsConfigsUpdateArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('productsConfigsManage');
@@ -23,7 +34,11 @@ export const configMutations = {
 
       await models.ProductsConfigs.createOrUpdateConfig(doc);
 
-      if (code === 'similarityGroup') {
+      if (
+        code === 'similarityGroup' &&
+        value &&
+        typeof value === 'object'
+      ) {
         const masks = Object.keys(value);
 
         await models.Products.updateMany(
@@ -32,7 +47,9 @@ export const configMutations = {
         );
 
         for (const mask of masks) {
-          const maskValue = value[mask];
+          const maskValue = (
+            value as Record<string, SimilarityMaskValue>
+          )[mask];
 
           const codeRegex = ['*', '.', '_'].includes(mask)
             ? new RegExp(
@@ -48,7 +65,7 @@ export const configMutations = {
             'customFieldsData.',
           )
             ? {
-                'customFieldsData.field': maskValue.filterField.replace(
+                'customFieldsData.field': maskValue.filterField!.replace(
                   'customFieldsData.',
                   '',
                 ),
@@ -88,7 +105,7 @@ export const configMutations = {
       // checkUOM normalizes the value (which may be a code, name or _id) to
       // the canonical UOM code and ensures the UOM exists.
       const normalizedUom = await models.Uoms.checkUOM({
-        uom: defaultUOM,
+        uom: defaultUOM as string,
         subUoms: [],
       });
 
@@ -102,6 +119,6 @@ export const configMutations = {
       }
     }
 
-    return ['success'];
+    return ['success'] as unknown as Record<string, unknown>;
   },
 };

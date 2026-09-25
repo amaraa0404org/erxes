@@ -6,15 +6,15 @@ export const types = `
     code: String
     userId: String
     isDefault: Boolean
-    createdAt: Date
+    createdAt: Date!
   }
 `;
 
 export const queries = `
-  allBundleConditions: [BundleCondition]
-  bundleConditions(searchValue: String): [BundleCondition]
+  allBundleConditions: [BundleCondition!]!
+  bundleConditions(searchValue: String): [BundleCondition!]!
   bundleConditionDetail(_id: String!): BundleCondition
-  bundleConditionTotalCount: Int
+  bundleConditionTotalCount: Int!
 `;
 
 const mutationParams = `
@@ -24,9 +24,9 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  bundleConditionAdd(${mutationParams}): BundleCondition
+  bundleConditionAdd(${mutationParams}): BundleCondition!
   bundleConditionEdit(_id: String! ${mutationParams}): BundleCondition
-  bundleConditionRemove(_ids: [String]): JSON
-  bundleConditionDefault(_id: String!): JSON
-  bundleConditionSetBulk(productIds:[String],bundleId:String!): JSON
+  bundleConditionRemove(_ids: [String!]): JSON!
+  bundleConditionDefault(_id: String!): JSON!
+  bundleConditionSetBulk(productIds: [String!]!, bundleId: String!): JSON!
 `;

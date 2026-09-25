@@ -27,9 +27,9 @@ import type { IFieldGroupDocument } from '../modules/properties/@types/group';
 import type { IImportDocument } from '../modules/import-export/db/models/Imports';
 import type { IInternalNoteDocument } from '../modules/internalNote/types';
 import type { IOAuthClientAppDocument } from '../modules/auth/db/definitions/oauthClientApps';
+import type { IProductSimilarityDocument } from '../modules/products/@types/similarity';
 import type { IPackageDocument } from '../modules/products/@types/package';
 import type { IProductRuleDocument } from '../modules/products/@types/rule';
-import type { IProductSimilarityDocument } from '../modules/products/@types/similarity';
 import type { ISystemFieldSettingDocument } from '../modules/properties/@types/systemField';
 import type { ISegmentDocument } from '../modules/segments/db/definitions/segments';
 import type { ISmsRequestDocument } from '../modules/broadcast/@types/sms';
@@ -69,9 +69,9 @@ export type Action = {
 
 export type ActionCode = {
   __typename?: 'ActionCode';
-  code?: Maybe<Scalars['String']['output']>;
-  expires?: Maybe<Scalars['Date']['output']>;
-  type?: Maybe<ActionCodeType>;
+  code: Scalars['String']['output'];
+  expires: Scalars['Date']['output'];
+  type: ActionCodeType;
 };
 
 export enum ActionCodeType {
@@ -658,11 +658,11 @@ export type CpComment = {
   __typename?: 'CPComment';
   _id: Scalars['String']['output'];
   content?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   parentId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
   typeId?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
   userId?: Maybe<Scalars['String']['output']>;
   userType?: Maybe<CpCommentUserType>;
 };
@@ -691,9 +691,9 @@ export type CpCommentInput = {
 
 export type CpCommentListResponse = {
   __typename?: 'CPCommentListResponse';
-  list?: Maybe<Array<Maybe<CpComment>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<CpComment>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type CpCommentUpdateInput = {
@@ -708,9 +708,9 @@ export enum CpCommentUserType {
 
 export type CpExamplePost = {
   __typename?: 'CPExamplePost';
-  content?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  content: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type CpNotification = {
@@ -752,9 +752,9 @@ export enum CpNotificationKind {
 
 export type CpNotificationListResponse = {
   __typename?: 'CPNotificationListResponse';
-  list?: Maybe<Array<Maybe<CpNotification>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<CpNotification>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export enum CpNotificationPriority {
@@ -837,14 +837,14 @@ export type CpUser = {
   company?: Maybe<Company>;
   companyName?: Maybe<Scalars['String']['output']>;
   companyRegistrationNumber?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   customFieldsData?: Maybe<Scalars['JSON']['output']>;
   customer?: Maybe<Customer>;
   email?: Maybe<Scalars['String']['output']>;
   erxesCompanyId?: Maybe<Scalars['String']['output']>;
   erxesCustomerId?: Maybe<Scalars['String']['output']>;
   failedLoginAttempts?: Maybe<Scalars['Int']['output']>;
-  fcmTokens?: Maybe<Array<Maybe<FcmDevice>>>;
+  fcmTokens: Array<FcmDevice>;
   firstName?: Maybe<Scalars['String']['output']>;
   isEmailVerified: Scalars['Boolean']['output'];
   isPhoneVerified: Scalars['Boolean']['output'];
@@ -856,18 +856,18 @@ export type CpUser = {
   phone?: Maybe<Scalars['String']['output']>;
   primaryAuthMethod?: Maybe<AuthMethod>;
   propertiesData?: Maybe<Scalars['JSON']['output']>;
-  socialAuthProviders?: Maybe<Array<Maybe<SocialAuthProviderInfo>>>;
-  type?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  socialAuthProviders: Array<SocialAuthProviderInfo>;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
   username?: Maybe<Scalars['String']['output']>;
   verificationRequest?: Maybe<VerificationRequest>;
 };
 
 export type CpUserListResponse = {
   __typename?: 'CPUserListResponse';
-  list?: Maybe<Array<Maybe<CpUser>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<CpUser>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type CpUserRemoveResponse = {
@@ -904,7 +904,7 @@ export type ClientPortal = {
   __typename?: 'ClientPortal';
   _id: Scalars['String']['output'];
   auth?: Maybe<Auth>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   domain?: Maybe<Scalars['String']['output']>;
   enableManualVerification?: Maybe<Scalars['Boolean']['output']>;
@@ -916,7 +916,7 @@ export type ClientPortal = {
   smsProvidersConfig?: Maybe<SmsProvidersConfig>;
   testUser?: Maybe<TestUser>;
   token?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
   url?: Maybe<Scalars['String']['output']>;
   useB2B?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -940,9 +940,9 @@ export type ClientPortalConfigInput = {
 
 export type ClientPortalListResponse = {
   __typename?: 'ClientPortalListResponse';
-  list?: Maybe<Array<Maybe<ClientPortal>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ClientPortal>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type CompaniesListResponse = {
@@ -1004,6 +1004,12 @@ export type Conformity = {
   mainTypeId?: Maybe<Scalars['String']['output']>;
   relType?: Maybe<Scalars['String']['output']>;
   relTypeId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ConformityEditResult = {
+  __typename?: 'ConformityEditResult';
+  addedTypeIds: Array<Scalars['String']['output']>;
+  removedTypeIds: Array<Scalars['String']['output']>;
 };
 
 export type CookieOrganization = {
@@ -1949,9 +1955,9 @@ export type MainLogsList = {
 
 export type ManualVerificationConfig = {
   __typename?: 'ManualVerificationConfig';
-  userIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  verifyCompany?: Maybe<Scalars['Boolean']['output']>;
-  verifyCustomer?: Maybe<Scalars['Boolean']['output']>;
+  userIds: Array<Scalars['String']['output']>;
+  verifyCompany: Scalars['Boolean']['output'];
+  verifyCustomer: Scalars['Boolean']['output'];
 };
 
 export type ManualVerificationConfigInput = {
@@ -1975,7 +1981,7 @@ export type ModifiedNote = {
 export type MultiFactorConfig = {
   __typename?: 'MultiFactorConfig';
   email?: Maybe<OtpEmailConfig>;
-  isEnabled?: Maybe<Scalars['Boolean']['output']>;
+  isEnabled: Scalars['Boolean']['output'];
   sms?: Maybe<OtpsmsConfig>;
 };
 
@@ -2029,42 +2035,42 @@ export type Mutation = {
   bundleRulesAdd: BundleRule;
   bundleRulesEdit?: Maybe<BundleRule>;
   bundleRulesRemove: Scalars['JSON']['output'];
-  checkTokiUserLegalAge?: Maybe<Scalars['Boolean']['output']>;
-  clientPortalAdd?: Maybe<ClientPortal>;
-  clientPortalChangeToken?: Maybe<Scalars['String']['output']>;
-  clientPortalCommentAdd?: Maybe<CpComment>;
-  clientPortalCommentDelete?: Maybe<Scalars['JSON']['output']>;
-  clientPortalCommentUpdate?: Maybe<CpComment>;
-  clientPortalCompanyEdit?: Maybe<Company>;
-  clientPortalCustomerEdit?: Maybe<Customer>;
+  checkTokiUserLegalAge: Scalars['Boolean']['output'];
+  clientPortalAdd: ClientPortal;
+  clientPortalChangeToken: Scalars['String']['output'];
+  clientPortalCommentAdd: CpComment;
+  clientPortalCommentDelete: Scalars['JSON']['output'];
+  clientPortalCommentUpdate: CpComment;
+  clientPortalCompanyEdit: Company;
+  clientPortalCustomerEdit: Customer;
   clientPortalDelete?: Maybe<Scalars['JSON']['output']>;
-  clientPortalLogout?: Maybe<Scalars['String']['output']>;
-  clientPortalMarkAllNotificationsAsRead?: Maybe<Scalars['JSON']['output']>;
-  clientPortalMarkNotificationAsRead?: Maybe<Scalars['JSON']['output']>;
-  clientPortalSendNotification?: Maybe<CpNotification>;
+  clientPortalLogout: Scalars['String']['output'];
+  clientPortalMarkAllNotificationsAsRead: Scalars['JSON']['output'];
+  clientPortalMarkNotificationAsRead: Scalars['JSON']['output'];
+  clientPortalSendNotification: CpNotification;
   clientPortalUpdate?: Maybe<ClientPortal>;
-  clientPortalUserAddFcmToken?: Maybe<CpUser>;
-  clientPortalUserChangePassword?: Maybe<CpUser>;
-  clientPortalUserConfirmChangeEmail?: Maybe<CpUser>;
-  clientPortalUserConfirmChangePhone?: Maybe<CpUser>;
-  clientPortalUserDelete?: Maybe<CpUserRemoveResponse>;
-  clientPortalUserEdit?: Maybe<CpUser>;
-  clientPortalUserForgotPassword?: Maybe<Scalars['String']['output']>;
-  clientPortalUserLinkSocialAccount?: Maybe<CpUser>;
-  clientPortalUserLoginWithCredentials?: Maybe<Scalars['JSON']['output']>;
-  clientPortalUserLoginWithOTP?: Maybe<Scalars['JSON']['output']>;
-  clientPortalUserLoginWithSocial?: Maybe<Scalars['String']['output']>;
-  clientPortalUserLoginWithToki?: Maybe<Scalars['JSON']['output']>;
-  clientPortalUserRefreshToken?: Maybe<Scalars['String']['output']>;
-  clientPortalUserRegister?: Maybe<CpUser>;
-  clientPortalUserRegisterWithSocial?: Maybe<CpUser>;
-  clientPortalUserRemoveFcmToken?: Maybe<CpUser>;
-  clientPortalUserRequestChangeEmail?: Maybe<Scalars['String']['output']>;
-  clientPortalUserRequestChangePhone?: Maybe<Scalars['String']['output']>;
-  clientPortalUserRequestOTP?: Maybe<Scalars['String']['output']>;
-  clientPortalUserResetPassword?: Maybe<Scalars['JSON']['output']>;
-  clientPortalUserUnlinkSocialAccount?: Maybe<CpUser>;
-  clientPortalUserVerify?: Maybe<CpUser>;
+  clientPortalUserAddFcmToken: CpUser;
+  clientPortalUserChangePassword: CpUser;
+  clientPortalUserConfirmChangeEmail: CpUser;
+  clientPortalUserConfirmChangePhone: CpUser;
+  clientPortalUserDelete: CpUserRemoveResponse;
+  clientPortalUserEdit: CpUser;
+  clientPortalUserForgotPassword: Scalars['String']['output'];
+  clientPortalUserLinkSocialAccount: CpUser;
+  clientPortalUserLoginWithCredentials: Scalars['JSON']['output'];
+  clientPortalUserLoginWithOTP: Scalars['JSON']['output'];
+  clientPortalUserLoginWithSocial: Scalars['String']['output'];
+  clientPortalUserLoginWithToki: Scalars['JSON']['output'];
+  clientPortalUserRefreshToken: Scalars['String']['output'];
+  clientPortalUserRegister: CpUser;
+  clientPortalUserRegisterWithSocial: CpUser;
+  clientPortalUserRemoveFcmToken: CpUser;
+  clientPortalUserRequestChangeEmail: Scalars['String']['output'];
+  clientPortalUserRequestChangePhone: Scalars['String']['output'];
+  clientPortalUserRequestOTP: Scalars['String']['output'];
+  clientPortalUserResetPassword: Scalars['JSON']['output'];
+  clientPortalUserUnlinkSocialAccount: CpUser;
+  clientPortalUserVerify: CpUser;
   companiesAdd: Company;
   companiesEdit?: Maybe<Company>;
   companiesMerge?: Maybe<Company>;
@@ -2073,15 +2079,15 @@ export type Mutation = {
   configsManagePluginInstall?: Maybe<Scalars['JSON']['output']>;
   configsUpdate: Scalars['JSON']['output'];
   conformityAdd: Conformity;
-  conformityEdit?: Maybe<SuccessResult>;
+  conformityEdit: ConformityEditResult;
   cpCustomersAdd: Customer;
   cpManageRelations: Array<Relation>;
   cpTagsAdd: Tag;
   cpTagsTag?: Maybe<Scalars['JSON']['output']>;
-  cpUsersAdd?: Maybe<CpUser>;
-  cpUsersEdit?: Maybe<CpUser>;
-  cpUsersRemove?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  cpUsersSetPassword?: Maybe<CpUser>;
+  cpUsersAdd: CpUser;
+  cpUsersEdit: CpUser;
+  cpUsersRemove: Array<Scalars['String']['output']>;
+  cpUsersSetPassword: CpUser;
   createMultipleRelations: Scalars['JSON']['output'];
   createRelation: Relation;
   customersAdd: Customer;
@@ -2172,7 +2178,7 @@ export type Mutation = {
   productsDuplicate: Product;
   productsEdit: Product;
   productsMerge: Product;
-  productsRemove: Scalars['String']['output'];
+  productsRemove: Scalars['JSON']['output'];
   propertySystemFieldEdit: PropertySystemField;
   resetPassword: Scalars['JSON']['output'];
   segmentsAdd: Segment;
@@ -2200,7 +2206,7 @@ export type Mutation = {
   unitsRemove: Scalars['JSON']['output'];
   uomsAdd: Uom;
   uomsEdit?: Maybe<Uom>;
-  uomsRemove?: Maybe<Scalars['String']['output']>;
+  uomsRemove: Scalars['JSON']['output'];
   updateNotificationSettingsChannel: Scalars['JSON']['output'];
   updateNotificationSettingsEvent: Scalars['JSON']['output'];
   updateRelation: Relation;
@@ -4274,12 +4280,12 @@ export type OtpConfigInput = {
 
 export type OtpEmailConfig = {
   __typename?: 'OTPEmailConfig';
-  codeLength?: Maybe<Scalars['Int']['output']>;
-  duration?: Maybe<Scalars['Int']['output']>;
+  codeLength: Scalars['Int']['output'];
+  duration: Scalars['Int']['output'];
   emailSubject?: Maybe<Scalars['String']['output']>;
   enableEmailVerification?: Maybe<Scalars['Boolean']['output']>;
   enablePasswordlessLogin?: Maybe<Scalars['Boolean']['output']>;
-  messageTemplate?: Maybe<Scalars['String']['output']>;
+  messageTemplate: Scalars['String']['output'];
 };
 
 export type OtpEmailConfigInput = {
@@ -4304,12 +4310,12 @@ export type OtpResendConfigInput = {
 
 export type OtpsmsConfig = {
   __typename?: 'OTPSMSConfig';
-  codeLength?: Maybe<Scalars['Int']['output']>;
-  duration?: Maybe<Scalars['Int']['output']>;
+  codeLength: Scalars['Int']['output'];
+  duration: Scalars['Int']['output'];
   enablePasswordlessLogin?: Maybe<Scalars['Boolean']['output']>;
   enablePhoneVerification?: Maybe<Scalars['Boolean']['output']>;
-  messageTemplate?: Maybe<Scalars['String']['output']>;
-  smsProvider?: Maybe<Scalars['String']['output']>;
+  messageTemplate: Scalars['String']['output'];
+  smsProvider: Scalars['String']['output'];
 };
 
 export type OtpsmsConfigInput = {
@@ -4726,12 +4732,12 @@ export type Query = {
   bundleRuleDetail?: Maybe<BundleRule>;
   bundleRules: Array<BundleRule>;
   categoriesWithChilds: Array<ProductCategory>;
-  clientPortalComment?: Maybe<CpComment>;
-  clientPortalComments?: Maybe<CpCommentListResponse>;
+  clientPortalComment: CpComment;
+  clientPortalComments: CpCommentListResponse;
   clientPortalCurrentUser?: Maybe<CpUser>;
-  clientPortalNotificationDetail?: Maybe<CpNotification>;
-  clientPortalNotifications?: Maybe<CpNotificationListResponse>;
-  clientPortalUnreadNotificationCount?: Maybe<Scalars['Int']['output']>;
+  clientPortalNotificationDetail: CpNotification;
+  clientPortalNotifications: CpNotificationListResponse;
+  clientPortalUnreadNotificationCount: Scalars['Int']['output'];
   companies: CompaniesListResponse;
   companyDetail?: Maybe<Company>;
   configs: Array<Config>;
@@ -4814,12 +4820,12 @@ export type Query = {
   fieldsCombinedByContentType?: Maybe<Scalars['JSON']['output']>;
   getAutomationExecutionDetail: AutomationHistory;
   getAutomationWebhookEndpoint: Scalars['String']['output'];
-  getCPExamplePosts?: Maybe<Array<Maybe<CpExamplePost>>>;
+  getCPExamplePosts: Array<CpExamplePost>;
   getClientPortal?: Maybe<ClientPortal>;
-  getClientPortalNotificationsByCpUserId?: Maybe<CpNotificationListResponse>;
+  getClientPortalNotificationsByCpUserId: CpNotificationListResponse;
   getClientPortalUser?: Maybe<CpUser>;
-  getClientPortalUsers?: Maybe<CpUserListResponse>;
-  getClientPortals?: Maybe<ClientPortalListResponse>;
+  getClientPortalUsers: CpUserListResponse;
+  getClientPortals: ClientPortalListResponse;
   getFavoritesByCurrentUser: Array<Favorite>;
   getRelationsByEntities: Array<Relation>;
   getRelationsByEntity: Array<Relation>;
@@ -5860,6 +5866,7 @@ export type QueryEngageMembersArgs = {
   isVerified?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['JSON']['input']>;
+  searchValue?: InputMaybe<Scalars['String']['input']>;
   sortMode?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -5872,7 +5879,7 @@ export type QueryEngageMessageCountsArgs = {
 
 
 export type QueryEngageMessageDetailArgs = {
-  _id?: InputMaybe<Scalars['String']['input']>;
+  _id: Scalars['String']['input'];
 };
 
 
@@ -6689,11 +6696,11 @@ export type QueryUsersTotalCountArgs = {
 
 export type RefreshToken = {
   __typename?: 'RefreshToken';
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   deviceId?: Maybe<Scalars['String']['output']>;
-  expiresAt?: Maybe<Scalars['Date']['output']>;
+  expiresAt: Scalars['Date']['output'];
   ipAddress?: Maybe<Scalars['String']['output']>;
-  token?: Maybe<Scalars['String']['output']>;
+  token: Scalars['String']['output'];
   userAgent?: Maybe<Scalars['String']['output']>;
 };
 
@@ -6711,9 +6718,9 @@ export type RelationInput = {
 
 export type ResetPasswordConfig = {
   __typename?: 'ResetPasswordConfig';
-  emailContent?: Maybe<Scalars['String']['output']>;
-  emailSubject?: Maybe<Scalars['String']['output']>;
-  mode?: Maybe<Scalars['String']['output']>;
+  emailContent: Scalars['String']['output'];
+  emailSubject: Scalars['String']['output'];
+  mode: Scalars['String']['output'];
 };
 
 export type ResetPasswordConfigInput = {
@@ -6921,16 +6928,16 @@ export enum SocialAuthProvider {
 export type SocialAuthProviderInfo = {
   __typename?: 'SocialAuthProviderInfo';
   email?: Maybe<Scalars['String']['output']>;
-  linkedAt?: Maybe<Scalars['Date']['output']>;
-  provider?: Maybe<SocialAuthProvider>;
-  providerId?: Maybe<Scalars['String']['output']>;
+  linkedAt: Scalars['Date']['output'];
+  provider: SocialAuthProvider;
+  providerId: Scalars['String']['output'];
 };
 
 export type SocialpayConfig = {
   __typename?: 'SocialpayConfig';
-  certId?: Maybe<Scalars['String']['output']>;
+  certId: Scalars['String']['output'];
   enableSocialpay?: Maybe<Scalars['Boolean']['output']>;
-  publicKey?: Maybe<Scalars['String']['output']>;
+  publicKey: Scalars['String']['output'];
 };
 
 export type SocialpayConfigInput = {
@@ -7063,12 +7070,12 @@ export enum TokenDeliveryMethod {
 
 export type TokiConfig = {
   __typename?: 'TokiConfig';
-  apiKey?: Maybe<Scalars['String']['output']>;
+  apiKey: Scalars['String']['output'];
   enableToki?: Maybe<Scalars['Boolean']['output']>;
-  merchantId?: Maybe<Scalars['String']['output']>;
-  password?: Maybe<Scalars['String']['output']>;
+  merchantId: Scalars['String']['output'];
+  password: Scalars['String']['output'];
   production?: Maybe<Scalars['Boolean']['output']>;
-  username?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
 };
 
 export type TokiConfigInput = {
@@ -7275,9 +7282,9 @@ export type UsersListResponse = {
 
 export type VerificationRequest = {
   __typename?: 'VerificationRequest';
-  attachments?: Maybe<Array<Maybe<Attachment>>>;
+  attachments: Array<Attachment>;
   description?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   verifiedBy?: Maybe<Scalars['String']['output']>;
 };
 
@@ -7525,14 +7532,14 @@ export type ResolversTypes = ResolversObject<{
   CPComment: ResolverTypeWrapper<ICPCommentDocument>;
   CPCommentFilter: CpCommentFilter;
   CPCommentInput: CpCommentInput;
-  CPCommentListResponse: ResolverTypeWrapper<Omit<CpCommentListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['CPComment']>>> }>;
+  CPCommentListResponse: ResolverTypeWrapper<Omit<CpCommentListResponse, 'list'> & { list: Array<ResolversTypes['CPComment']> }>;
   CPCommentUpdateInput: CpCommentUpdateInput;
   CPCommentUserType: CpCommentUserType;
   CPExamplePost: ResolverTypeWrapper<CpExamplePost>;
   CPNotification: ResolverTypeWrapper<ICPNotificationDocument>;
   CPNotificationFilters: CpNotificationFilters;
   CPNotificationKind: CpNotificationKind;
-  CPNotificationListResponse: ResolverTypeWrapper<Omit<CpNotificationListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['CPNotification']>>> }>;
+  CPNotificationListResponse: ResolverTypeWrapper<Omit<CpNotificationListResponse, 'list'> & { list: Array<ResolversTypes['CPNotification']> }>;
   CPNotificationPriority: CpNotificationPriority;
   CPNotificationResult: ResolverTypeWrapper<CpNotificationResult>;
   CPNotificationSendInput: CpNotificationSendInput;
@@ -7543,7 +7550,7 @@ export type ResolversTypes = ResolversObject<{
   CPUnitUser: ResolverTypeWrapper<CpUnitUser>;
   CPUnitUserDetails: ResolverTypeWrapper<CpUnitUserDetails>;
   CPUser: ResolverTypeWrapper<ICPUserDocument>;
-  CPUserListResponse: ResolverTypeWrapper<Omit<CpUserListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['CPUser']>>> }>;
+  CPUserListResponse: ResolverTypeWrapper<Omit<CpUserListResponse, 'list'> & { list: Array<ResolversTypes['CPUser']> }>;
   CPUserRemoveResponse: ResolverTypeWrapper<CpUserRemoveResponse>;
   CPUserType: CpUserType;
   CURSOR_DIRECTION: Cursor_Direction;
@@ -7552,11 +7559,12 @@ export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   ClientPortal: ResolverTypeWrapper<IClientPortalDocument>;
   ClientPortalConfigInput: ClientPortalConfigInput;
-  ClientPortalListResponse: ResolverTypeWrapper<Omit<ClientPortalListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ClientPortal']>>> }>;
+  ClientPortalListResponse: ResolverTypeWrapper<Omit<ClientPortalListResponse, 'list'> & { list: Array<ResolversTypes['ClientPortal']> }>;
   CompaniesListResponse: ResolverTypeWrapper<Omit<CompaniesListResponse, 'list'> & { list: Array<ResolversTypes['Company']> }>;
   Company: ResolverTypeWrapper<ICompanyDocument>;
   Config: ResolverTypeWrapper<IConfigDocument>;
   Conformity: ResolverTypeWrapper<IConformityDocument>;
+  ConformityEditResult: ResolverTypeWrapper<ConformityEditResult>;
   CookieOrganization: ResolverTypeWrapper<CookieOrganization>;
   Coordinate: ResolverTypeWrapper<Coordinate>;
   CoordinateInput: CoordinateInput;
@@ -7698,7 +7706,7 @@ export type ResolversTypes = ResolversObject<{
   PositionListQueryResponse: ResolverTypeWrapper<Omit<PositionListQueryResponse, 'list'> & { list: Array<ResolversTypes['Position']> }>;
   PriceType: PriceType;
   Product: ResolverTypeWrapper<IProductDocument>;
-  ProductBulkSimilarity: ResolverTypeWrapper<Omit<ProductBulkSimilarity, 'products'> & { products: Array<ResolversTypes['Product']> }>;
+  ProductBulkSimilarity: ResolverTypeWrapper<IProductSimilarityDocument>;
   ProductCategory: ResolverTypeWrapper<IProductCategoryDocument>;
   ProductDurationType: ProductDurationType;
   ProductPackage: ResolverTypeWrapper<IPackageDocument>;
@@ -7706,7 +7714,7 @@ export type ResolversTypes = ResolversObject<{
   ProductPackagesListResponse: ResolverTypeWrapper<Omit<ProductPackagesListResponse, 'list'> & { list: Array<ResolversTypes['ProductPackage']> }>;
   ProductRule: ResolverTypeWrapper<IProductRuleDocument>;
   ProductRulesCount: ResolverTypeWrapper<Omit<ProductRulesCount, 'list'> & { list: Array<ResolversTypes['ProductRule']> }>;
-  ProductSimilarity: ResolverTypeWrapper<IProductSimilarityDocument>;
+  ProductSimilarity: ResolverTypeWrapper<Omit<ProductSimilarity, 'products'> & { products: Array<ResolversTypes['Product']> }>;
   ProductSimilarityField: ResolverTypeWrapper<ProductSimilarityField>;
   ProductSimilarityGroup: ResolverTypeWrapper<ProductSimilarityGroup>;
   ProductsConfig: ResolverTypeWrapper<IProductsConfigDocument>;
@@ -7840,12 +7848,12 @@ export type ResolversParentTypes = ResolversObject<{
   CPComment: ICPCommentDocument;
   CPCommentFilter: CpCommentFilter;
   CPCommentInput: CpCommentInput;
-  CPCommentListResponse: Omit<CpCommentListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['CPComment']>>> };
+  CPCommentListResponse: Omit<CpCommentListResponse, 'list'> & { list: Array<ResolversParentTypes['CPComment']> };
   CPCommentUpdateInput: CpCommentUpdateInput;
   CPExamplePost: CpExamplePost;
   CPNotification: ICPNotificationDocument;
   CPNotificationFilters: CpNotificationFilters;
-  CPNotificationListResponse: Omit<CpNotificationListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['CPNotification']>>> };
+  CPNotificationListResponse: Omit<CpNotificationListResponse, 'list'> & { list: Array<ResolversParentTypes['CPNotification']> };
   CPNotificationResult: CpNotificationResult;
   CPNotificationSendInput: CpNotificationSendInput;
   CPUnit: IUnitDocument;
@@ -7853,15 +7861,16 @@ export type ResolversParentTypes = ResolversObject<{
   CPUnitUser: CpUnitUser;
   CPUnitUserDetails: CpUnitUserDetails;
   CPUser: ICPUserDocument;
-  CPUserListResponse: Omit<CpUserListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['CPUser']>>> };
+  CPUserListResponse: Omit<CpUserListResponse, 'list'> & { list: Array<ResolversParentTypes['CPUser']> };
   CPUserRemoveResponse: CpUserRemoveResponse;
   ClientPortal: IClientPortalDocument;
   ClientPortalConfigInput: ClientPortalConfigInput;
-  ClientPortalListResponse: Omit<ClientPortalListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ClientPortal']>>> };
+  ClientPortalListResponse: Omit<ClientPortalListResponse, 'list'> & { list: Array<ResolversParentTypes['ClientPortal']> };
   CompaniesListResponse: Omit<CompaniesListResponse, 'list'> & { list: Array<ResolversParentTypes['Company']> };
   Company: ICompanyDocument;
   Config: IConfigDocument;
   Conformity: IConformityDocument;
+  ConformityEditResult: ConformityEditResult;
   CookieOrganization: CookieOrganization;
   Coordinate: Coordinate;
   CoordinateInput: CoordinateInput;
@@ -7994,14 +8003,14 @@ export type ResolversParentTypes = ResolversObject<{
   Position: IPositionDocument;
   PositionListQueryResponse: Omit<PositionListQueryResponse, 'list'> & { list: Array<ResolversParentTypes['Position']> };
   Product: IProductDocument;
-  ProductBulkSimilarity: Omit<ProductBulkSimilarity, 'products'> & { products: Array<ResolversParentTypes['Product']> };
+  ProductBulkSimilarity: IProductSimilarityDocument;
   ProductCategory: IProductCategoryDocument;
   ProductPackage: IPackageDocument;
   ProductPackageInput: ProductPackageInput;
   ProductPackagesListResponse: Omit<ProductPackagesListResponse, 'list'> & { list: Array<ResolversParentTypes['ProductPackage']> };
   ProductRule: IProductRuleDocument;
   ProductRulesCount: Omit<ProductRulesCount, 'list'> & { list: Array<ResolversParentTypes['ProductRule']> };
-  ProductSimilarity: IProductSimilarityDocument;
+  ProductSimilarity: Omit<ProductSimilarity, 'products'> & { products: Array<ResolversParentTypes['Product']> };
   ProductSimilarityField: ProductSimilarityField;
   ProductSimilarityGroup: ProductSimilarityGroup;
   ProductsConfig: IProductsConfigDocument;
@@ -8093,9 +8102,9 @@ export type ActionResolvers<ContextType = IContext, ParentType extends Resolvers
 }>;
 
 export type ActionCodeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ActionCode'] = ResolversParentTypes['ActionCode']> = ResolversObject<{
-  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  expires?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['ActionCodeType']>, ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  expires?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ActionCodeType'], ParentType, ContextType>;
 }>;
 
 export type ActivityLogResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ActivityLog'] = ResolversParentTypes['ActivityLog']> = ResolversObject<{
@@ -8544,25 +8553,25 @@ export type BundleRuleItemResolvers<ContextType = IContext, ParentType extends R
 export type CpCommentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPComment'] = ResolversParentTypes['CPComment']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   typeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userType?: Resolver<Maybe<ResolversTypes['CPCommentUserType']>, ParentType, ContextType>;
 }>;
 
 export type CpCommentListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPCommentListResponse'] = ResolversParentTypes['CPCommentListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPComment']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['CPComment']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CpExamplePostResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPExamplePost'] = ResolversParentTypes['CPExamplePost']> = ResolversObject<{
-  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type CpNotificationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPNotification'] = ResolversParentTypes['CPNotification']> = ResolversObject<{
@@ -8588,9 +8597,9 @@ export type CpNotificationResolvers<ContextType = IContext, ParentType extends R
 }>;
 
 export type CpNotificationListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPNotificationListResponse'] = ResolversParentTypes['CPNotificationListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPNotification']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['CPNotification']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CpNotificationResultResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPNotificationResult'] = ResolversParentTypes['CPNotificationResult']> = ResolversObject<{
@@ -8639,14 +8648,14 @@ export type CpUserResolvers<ContextType = IContext, ParentType extends Resolvers
   company?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType>;
   companyName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   companyRegistrationNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   customFieldsData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   customer?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   erxesCompanyId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   erxesCustomerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   failedLoginAttempts?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  fcmTokens?: Resolver<Maybe<Array<Maybe<ResolversTypes['FcmDevice']>>>, ParentType, ContextType>;
+  fcmTokens?: Resolver<Array<ResolversTypes['FcmDevice']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isEmailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isPhoneVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -8658,17 +8667,17 @@ export type CpUserResolvers<ContextType = IContext, ParentType extends Resolvers
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   primaryAuthMethod?: Resolver<Maybe<ResolversTypes['AuthMethod']>, ParentType, ContextType>;
   propertiesData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  socialAuthProviders?: Resolver<Maybe<Array<Maybe<ResolversTypes['SocialAuthProviderInfo']>>>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  socialAuthProviders?: Resolver<Array<ResolversTypes['SocialAuthProviderInfo']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   verificationRequest?: Resolver<Maybe<ResolversTypes['VerificationRequest']>, ParentType, ContextType>;
 }>;
 
 export type CpUserListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPUserListResponse'] = ResolversParentTypes['CPUserListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPUser']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['CPUser']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CpUserRemoveResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPUserRemoveResponse'] = ResolversParentTypes['CPUserRemoveResponse']> = ResolversObject<{
@@ -8678,7 +8687,7 @@ export type CpUserRemoveResponseResolvers<ContextType = IContext, ParentType ext
 export type ClientPortalResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ClientPortal'] = ResolversParentTypes['ClientPortal']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   auth?: Resolver<Maybe<ResolversTypes['Auth']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enableManualVerification?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -8690,15 +8699,15 @@ export type ClientPortalResolvers<ContextType = IContext, ParentType extends Res
   smsProvidersConfig?: Resolver<Maybe<ResolversTypes['SMSProvidersConfig']>, ParentType, ContextType>;
   testUser?: Resolver<Maybe<ResolversTypes['TestUser']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   useB2B?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 }>;
 
 export type ClientPortalListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ClientPortalListResponse'] = ResolversParentTypes['ClientPortalListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ClientPortal']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ClientPortal']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CompaniesListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CompaniesListResponse'] = ResolversParentTypes['CompaniesListResponse']> = ResolversObject<{
@@ -8757,6 +8766,11 @@ export type ConformityResolvers<ContextType = IContext, ParentType extends Resol
   mainTypeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   relType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   relTypeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type ConformityEditResultResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ConformityEditResult'] = ResolversParentTypes['ConformityEditResult']> = ResolversObject<{
+  addedTypeIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  removedTypeIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type CookieOrganizationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CookieOrganization'] = ResolversParentTypes['CookieOrganization']> = ResolversObject<{
@@ -9417,9 +9431,9 @@ export type MainLogsListResolvers<ContextType = IContext, ParentType extends Res
 }>;
 
 export type ManualVerificationConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ManualVerificationConfig'] = ResolversParentTypes['ManualVerificationConfig']> = ResolversObject<{
-  userIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  verifyCompany?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  verifyCustomer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  userIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  verifyCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  verifyCustomer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 }>;
 
 export type ModifiedNoteResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ModifiedNote'] = ResolversParentTypes['ModifiedNote']> = ResolversObject<{
@@ -9435,7 +9449,7 @@ export type ModifiedNoteResolvers<ContextType = IContext, ParentType extends Res
 
 export type MultiFactorConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['MultiFactorConfig'] = ResolversParentTypes['MultiFactorConfig']> = ResolversObject<{
   email?: Resolver<Maybe<ResolversTypes['OTPEmailConfig']>, ParentType, ContextType>;
-  isEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   sms?: Resolver<Maybe<ResolversTypes['OTPSMSConfig']>, ParentType, ContextType>;
 }>;
 
@@ -9482,42 +9496,42 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   bundleRulesAdd?: Resolver<ResolversTypes['BundleRule'], ParentType, ContextType, Partial<MutationBundleRulesAddArgs>>;
   bundleRulesEdit?: Resolver<Maybe<ResolversTypes['BundleRule']>, ParentType, ContextType, RequireFields<MutationBundleRulesEditArgs, '_id'>>;
   bundleRulesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationBundleRulesRemoveArgs>>;
-  checkTokiUserLegalAge?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCheckTokiUserLegalAgeArgs, 'token'>>;
-  clientPortalAdd?: Resolver<Maybe<ResolversTypes['ClientPortal']>, ParentType, ContextType, RequireFields<MutationClientPortalAddArgs, 'name'>>;
-  clientPortalChangeToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalChangeTokenArgs, '_id'>>;
-  clientPortalCommentAdd?: Resolver<Maybe<ResolversTypes['CPComment']>, ParentType, ContextType, RequireFields<MutationClientPortalCommentAddArgs, 'comment'>>;
-  clientPortalCommentDelete?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalCommentDeleteArgs, '_id'>>;
-  clientPortalCommentUpdate?: Resolver<Maybe<ResolversTypes['CPComment']>, ParentType, ContextType, RequireFields<MutationClientPortalCommentUpdateArgs, '_id' | 'comment'>>;
-  clientPortalCompanyEdit?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, Partial<MutationClientPortalCompanyEditArgs>>;
-  clientPortalCustomerEdit?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, Partial<MutationClientPortalCustomerEditArgs>>;
+  checkTokiUserLegalAge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationCheckTokiUserLegalAgeArgs, 'token'>>;
+  clientPortalAdd?: Resolver<ResolversTypes['ClientPortal'], ParentType, ContextType, RequireFields<MutationClientPortalAddArgs, 'name'>>;
+  clientPortalChangeToken?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalChangeTokenArgs, '_id'>>;
+  clientPortalCommentAdd?: Resolver<ResolversTypes['CPComment'], ParentType, ContextType, RequireFields<MutationClientPortalCommentAddArgs, 'comment'>>;
+  clientPortalCommentDelete?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationClientPortalCommentDeleteArgs, '_id'>>;
+  clientPortalCommentUpdate?: Resolver<ResolversTypes['CPComment'], ParentType, ContextType, RequireFields<MutationClientPortalCommentUpdateArgs, '_id' | 'comment'>>;
+  clientPortalCompanyEdit?: Resolver<ResolversTypes['Company'], ParentType, ContextType, Partial<MutationClientPortalCompanyEditArgs>>;
+  clientPortalCustomerEdit?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, Partial<MutationClientPortalCustomerEditArgs>>;
   clientPortalDelete?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalDeleteArgs, '_id'>>;
-  clientPortalLogout?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  clientPortalMarkAllNotificationsAsRead?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationClientPortalMarkAllNotificationsAsReadArgs>>;
-  clientPortalMarkNotificationAsRead?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalMarkNotificationAsReadArgs, '_id'>>;
-  clientPortalSendNotification?: Resolver<Maybe<ResolversTypes['CPNotification']>, ParentType, ContextType, RequireFields<MutationClientPortalSendNotificationArgs, 'clientPortalId' | 'cpUserId' | 'input'>>;
+  clientPortalLogout?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  clientPortalMarkAllNotificationsAsRead?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationClientPortalMarkAllNotificationsAsReadArgs>>;
+  clientPortalMarkNotificationAsRead?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationClientPortalMarkNotificationAsReadArgs, '_id'>>;
+  clientPortalSendNotification?: Resolver<ResolversTypes['CPNotification'], ParentType, ContextType, RequireFields<MutationClientPortalSendNotificationArgs, 'clientPortalId' | 'cpUserId' | 'input'>>;
   clientPortalUpdate?: Resolver<Maybe<ResolversTypes['ClientPortal']>, ParentType, ContextType, RequireFields<MutationClientPortalUpdateArgs, '_id'>>;
-  clientPortalUserAddFcmToken?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserAddFcmTokenArgs, 'deviceId' | 'platform' | 'token'>>;
-  clientPortalUserChangePassword?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserChangePasswordArgs, 'currentPassword' | 'newPassword'>>;
-  clientPortalUserConfirmChangeEmail?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserConfirmChangeEmailArgs, 'code'>>;
-  clientPortalUserConfirmChangePhone?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserConfirmChangePhoneArgs, 'code'>>;
-  clientPortalUserDelete?: Resolver<Maybe<ResolversTypes['CPUserRemoveResponse']>, ParentType, ContextType>;
-  clientPortalUserEdit?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, Partial<MutationClientPortalUserEditArgs>>;
-  clientPortalUserForgotPassword?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserForgotPasswordArgs, 'identifier'>>;
-  clientPortalUserLinkSocialAccount?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserLinkSocialAccountArgs, 'provider' | 'token'>>;
-  clientPortalUserLoginWithCredentials?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationClientPortalUserLoginWithCredentialsArgs>>;
-  clientPortalUserLoginWithOTP?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithOtpArgs, 'identifier' | 'otp'>>;
-  clientPortalUserLoginWithSocial?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithSocialArgs, 'provider' | 'token'>>;
-  clientPortalUserLoginWithToki?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithTokiArgs, 'token'>>;
-  clientPortalUserRefreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRefreshTokenArgs, 'refreshToken'>>;
-  clientPortalUserRegister?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, Partial<MutationClientPortalUserRegisterArgs>>;
-  clientPortalUserRegisterWithSocial?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRegisterWithSocialArgs, 'provider' | 'token'>>;
-  clientPortalUserRemoveFcmToken?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRemoveFcmTokenArgs, 'deviceId'>>;
-  clientPortalUserRequestChangeEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRequestChangeEmailArgs, 'newEmail'>>;
-  clientPortalUserRequestChangePhone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRequestChangePhoneArgs, 'newPhone'>>;
-  clientPortalUserRequestOTP?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalUserRequestOtpArgs, 'identifier'>>;
-  clientPortalUserResetPassword?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalUserResetPasswordArgs, 'newPassword'>>;
-  clientPortalUserUnlinkSocialAccount?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserUnlinkSocialAccountArgs, 'provider'>>;
-  clientPortalUserVerify?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserVerifyArgs, 'code'>>;
+  clientPortalUserAddFcmToken?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserAddFcmTokenArgs, 'deviceId' | 'platform' | 'token'>>;
+  clientPortalUserChangePassword?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserChangePasswordArgs, 'currentPassword' | 'newPassword'>>;
+  clientPortalUserConfirmChangeEmail?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserConfirmChangeEmailArgs, 'code'>>;
+  clientPortalUserConfirmChangePhone?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserConfirmChangePhoneArgs, 'code'>>;
+  clientPortalUserDelete?: Resolver<ResolversTypes['CPUserRemoveResponse'], ParentType, ContextType>;
+  clientPortalUserEdit?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, Partial<MutationClientPortalUserEditArgs>>;
+  clientPortalUserForgotPassword?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserForgotPasswordArgs, 'identifier'>>;
+  clientPortalUserLinkSocialAccount?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserLinkSocialAccountArgs, 'provider' | 'token'>>;
+  clientPortalUserLoginWithCredentials?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationClientPortalUserLoginWithCredentialsArgs>>;
+  clientPortalUserLoginWithOTP?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithOtpArgs, 'identifier' | 'otp'>>;
+  clientPortalUserLoginWithSocial?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithSocialArgs, 'provider' | 'token'>>;
+  clientPortalUserLoginWithToki?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationClientPortalUserLoginWithTokiArgs, 'token'>>;
+  clientPortalUserRefreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserRefreshTokenArgs, 'refreshToken'>>;
+  clientPortalUserRegister?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, Partial<MutationClientPortalUserRegisterArgs>>;
+  clientPortalUserRegisterWithSocial?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserRegisterWithSocialArgs, 'provider' | 'token'>>;
+  clientPortalUserRemoveFcmToken?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserRemoveFcmTokenArgs, 'deviceId'>>;
+  clientPortalUserRequestChangeEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserRequestChangeEmailArgs, 'newEmail'>>;
+  clientPortalUserRequestChangePhone?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserRequestChangePhoneArgs, 'newPhone'>>;
+  clientPortalUserRequestOTP?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationClientPortalUserRequestOtpArgs, 'identifier'>>;
+  clientPortalUserResetPassword?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationClientPortalUserResetPasswordArgs, 'newPassword'>>;
+  clientPortalUserUnlinkSocialAccount?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserUnlinkSocialAccountArgs, 'provider'>>;
+  clientPortalUserVerify?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationClientPortalUserVerifyArgs, 'code'>>;
   companiesAdd?: Resolver<ResolversTypes['Company'], ParentType, ContextType, Partial<MutationCompaniesAddArgs>>;
   companiesEdit?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<MutationCompaniesEditArgs, '_id'>>;
   companiesMerge?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<MutationCompaniesMergeArgs, 'companyIds'>>;
@@ -9526,15 +9540,15 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   configsManagePluginInstall?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationConfigsManagePluginInstallArgs, 'name' | 'type'>>;
   configsUpdate?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationConfigsUpdateArgs, 'configsMap'>>;
   conformityAdd?: Resolver<ResolversTypes['Conformity'], ParentType, ContextType, RequireFields<MutationConformityAddArgs, 'mainType' | 'mainTypeId' | 'relType' | 'relTypeId'>>;
-  conformityEdit?: Resolver<Maybe<ResolversTypes['SuccessResult']>, ParentType, ContextType, RequireFields<MutationConformityEditArgs, 'mainType' | 'mainTypeId' | 'relType'>>;
+  conformityEdit?: Resolver<ResolversTypes['ConformityEditResult'], ParentType, ContextType, RequireFields<MutationConformityEditArgs, 'mainType' | 'mainTypeId' | 'relType'>>;
   cpCustomersAdd?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, Partial<MutationCpCustomersAddArgs>>;
   cpManageRelations?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<MutationCpManageRelationsArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
   cpTagsAdd?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCpTagsAddArgs, 'name'>>;
   cpTagsTag?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationCpTagsTagArgs, 'tagIds' | 'targetIds' | 'type'>>;
-  cpUsersAdd?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersAddArgs, 'clientPortalId'>>;
-  cpUsersEdit?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersEditArgs, '_id'>>;
-  cpUsersRemove?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, RequireFields<MutationCpUsersRemoveArgs, 'ids'>>;
-  cpUsersSetPassword?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersSetPasswordArgs, '_id' | 'newPassword'>>;
+  cpUsersAdd?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationCpUsersAddArgs, 'clientPortalId'>>;
+  cpUsersEdit?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationCpUsersEditArgs, '_id'>>;
+  cpUsersRemove?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationCpUsersRemoveArgs, 'ids'>>;
+  cpUsersSetPassword?: Resolver<ResolversTypes['CPUser'], ParentType, ContextType, RequireFields<MutationCpUsersSetPasswordArgs, '_id' | 'newPassword'>>;
   createMultipleRelations?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationCreateMultipleRelationsArgs, 'relations'>>;
   createRelation?: Resolver<ResolversTypes['Relation'], ParentType, ContextType, RequireFields<MutationCreateRelationArgs, 'relation'>>;
   customersAdd?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, Partial<MutationCustomersAddArgs>>;
@@ -9625,7 +9639,7 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   productsDuplicate?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationProductsDuplicateArgs, '_id'>>;
   productsEdit?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationProductsEditArgs, '_id'>>;
   productsMerge?: Resolver<ResolversTypes['Product'], ParentType, ContextType, Partial<MutationProductsMergeArgs>>;
-  productsRemove?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationProductsRemoveArgs>>;
+  productsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationProductsRemoveArgs>>;
   propertySystemFieldEdit?: Resolver<ResolversTypes['PropertySystemField'], ParentType, ContextType, RequireFields<MutationPropertySystemFieldEditArgs, 'code' | 'contentType'>>;
   resetPassword?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'newPassword' | 'token'>>;
   segmentsAdd?: Resolver<ResolversTypes['Segment'], ParentType, ContextType, RequireFields<MutationSegmentsAddArgs, 'contentType' | 'root'>>;
@@ -9653,7 +9667,7 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   unitsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationUnitsRemoveArgs, 'ids'>>;
   uomsAdd?: Resolver<ResolversTypes['Uom'], ParentType, ContextType, Partial<MutationUomsAddArgs>>;
   uomsEdit?: Resolver<Maybe<ResolversTypes['Uom']>, ParentType, ContextType, RequireFields<MutationUomsEditArgs, '_id'>>;
-  uomsRemove?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationUomsRemoveArgs>>;
+  uomsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationUomsRemoveArgs>>;
   updateNotificationSettingsChannel?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationUpdateNotificationSettingsChannelArgs>>;
   updateNotificationSettingsEvent?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationUpdateNotificationSettingsEventArgs>>;
   updateRelation?: Resolver<ResolversTypes['Relation'], ParentType, ContextType, RequireFields<MutationUpdateRelationArgs, 'id' | 'relation'>>;
@@ -9769,12 +9783,12 @@ export type OtpConfigResolvers<ContextType = IContext, ParentType extends Resolv
 }>;
 
 export type OtpEmailConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['OTPEmailConfig'] = ResolversParentTypes['OTPEmailConfig']> = ResolversObject<{
-  codeLength?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  duration?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  codeLength?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   emailSubject?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enableEmailVerification?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   enablePasswordlessLogin?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  messageTemplate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  messageTemplate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type OtpResendConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['OTPResendConfig'] = ResolversParentTypes['OTPResendConfig']> = ResolversObject<{
@@ -9783,12 +9797,12 @@ export type OtpResendConfigResolvers<ContextType = IContext, ParentType extends 
 }>;
 
 export type OtpsmsConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['OTPSMSConfig'] = ResolversParentTypes['OTPSMSConfig']> = ResolversObject<{
-  codeLength?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  duration?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  codeLength?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   enablePasswordlessLogin?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   enablePhoneVerification?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  messageTemplate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  smsProvider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  messageTemplate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  smsProvider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type OrganizationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
@@ -10118,12 +10132,12 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   bundleRuleDetail?: Resolver<Maybe<ResolversTypes['BundleRule']>, ParentType, ContextType, RequireFields<QueryBundleRuleDetailArgs, '_id'>>;
   bundleRules?: Resolver<Array<ResolversTypes['BundleRule']>, ParentType, ContextType>;
   categoriesWithChilds?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType, RequireFields<QueryCategoriesWithChildsArgs, 'ids'>>;
-  clientPortalComment?: Resolver<Maybe<ResolversTypes['CPComment']>, ParentType, ContextType, RequireFields<QueryClientPortalCommentArgs, '_id'>>;
-  clientPortalComments?: Resolver<Maybe<ResolversTypes['CPCommentListResponse']>, ParentType, ContextType, Partial<QueryClientPortalCommentsArgs>>;
+  clientPortalComment?: Resolver<ResolversTypes['CPComment'], ParentType, ContextType, RequireFields<QueryClientPortalCommentArgs, '_id'>>;
+  clientPortalComments?: Resolver<ResolversTypes['CPCommentListResponse'], ParentType, ContextType, Partial<QueryClientPortalCommentsArgs>>;
   clientPortalCurrentUser?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType>;
-  clientPortalNotificationDetail?: Resolver<Maybe<ResolversTypes['CPNotification']>, ParentType, ContextType, RequireFields<QueryClientPortalNotificationDetailArgs, '_id'>>;
-  clientPortalNotifications?: Resolver<Maybe<ResolversTypes['CPNotificationListResponse']>, ParentType, ContextType, Partial<QueryClientPortalNotificationsArgs>>;
-  clientPortalUnreadNotificationCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryClientPortalUnreadNotificationCountArgs>>;
+  clientPortalNotificationDetail?: Resolver<ResolversTypes['CPNotification'], ParentType, ContextType, RequireFields<QueryClientPortalNotificationDetailArgs, '_id'>>;
+  clientPortalNotifications?: Resolver<ResolversTypes['CPNotificationListResponse'], ParentType, ContextType, Partial<QueryClientPortalNotificationsArgs>>;
+  clientPortalUnreadNotificationCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryClientPortalUnreadNotificationCountArgs>>;
   companies?: Resolver<ResolversTypes['CompaniesListResponse'], ParentType, ContextType, Partial<QueryCompaniesArgs>>;
   companyDetail?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<QueryCompanyDetailArgs, '_id'>>;
   configs?: Resolver<Array<ResolversTypes['Config']>, ParentType, ContextType>;
@@ -10186,7 +10200,7 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   engageEmailPercentages?: Resolver<Maybe<ResolversTypes['AvgEmailStats']>, ParentType, ContextType>;
   engageMembers?: Resolver<ResolversTypes['EngageMemberListResponse'], ParentType, ContextType, Partial<QueryEngageMembersArgs>>;
   engageMessageCounts?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryEngageMessageCountsArgs, 'name'>>;
-  engageMessageDetail?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, Partial<QueryEngageMessageDetailArgs>>;
+  engageMessageDetail?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<QueryEngageMessageDetailArgs, '_id'>>;
   engageMessages?: Resolver<ResolversTypes['EngageMessageListResponse'], ParentType, ContextType, Partial<QueryEngageMessagesArgs>>;
   engageMessagesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryEngageMessagesTotalCountArgs>>;
   engageReportsList?: Resolver<ResolversTypes['EngageDeliveryReport'], ParentType, ContextType, Partial<QueryEngageReportsListArgs>>;
@@ -10204,12 +10218,12 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   fieldsCombinedByContentType?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryFieldsCombinedByContentTypeArgs, 'contentType'>>;
   getAutomationExecutionDetail?: Resolver<ResolversTypes['AutomationHistory'], ParentType, ContextType, RequireFields<QueryGetAutomationExecutionDetailArgs, 'executionId'>>;
   getAutomationWebhookEndpoint?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryGetAutomationWebhookEndpointArgs, '_id'>>;
-  getCPExamplePosts?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPExamplePost']>>>, ParentType, ContextType>;
+  getCPExamplePosts?: Resolver<Array<ResolversTypes['CPExamplePost']>, ParentType, ContextType>;
   getClientPortal?: Resolver<Maybe<ResolversTypes['ClientPortal']>, ParentType, ContextType, Partial<QueryGetClientPortalArgs>>;
-  getClientPortalNotificationsByCpUserId?: Resolver<Maybe<ResolversTypes['CPNotificationListResponse']>, ParentType, ContextType, RequireFields<QueryGetClientPortalNotificationsByCpUserIdArgs, 'cpUserId'>>;
+  getClientPortalNotificationsByCpUserId?: Resolver<ResolversTypes['CPNotificationListResponse'], ParentType, ContextType, RequireFields<QueryGetClientPortalNotificationsByCpUserIdArgs, 'cpUserId'>>;
   getClientPortalUser?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<QueryGetClientPortalUserArgs, '_id'>>;
-  getClientPortalUsers?: Resolver<Maybe<ResolversTypes['CPUserListResponse']>, ParentType, ContextType, Partial<QueryGetClientPortalUsersArgs>>;
-  getClientPortals?: Resolver<Maybe<ResolversTypes['ClientPortalListResponse']>, ParentType, ContextType, Partial<QueryGetClientPortalsArgs>>;
+  getClientPortalUsers?: Resolver<ResolversTypes['CPUserListResponse'], ParentType, ContextType, Partial<QueryGetClientPortalUsersArgs>>;
+  getClientPortals?: Resolver<ResolversTypes['ClientPortalListResponse'], ParentType, ContextType, Partial<QueryGetClientPortalsArgs>>;
   getFavoritesByCurrentUser?: Resolver<Array<ResolversTypes['Favorite']>, ParentType, ContextType>;
   getRelationsByEntities?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntitiesArgs, 'contentIds' | 'contentTypes'>>;
   getRelationsByEntity?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntityArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
@@ -10299,11 +10313,11 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
 }>;
 
 export type RefreshTokenResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RefreshToken'] = ResolversParentTypes['RefreshToken']> = ResolversObject<{
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   deviceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  expiresAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  expiresAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   ipAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userAgent?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -10315,9 +10329,9 @@ export type RelationResolvers<ContextType = IContext, ParentType extends Resolve
 }>;
 
 export type ResetPasswordConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ResetPasswordConfig'] = ResolversParentTypes['ResetPasswordConfig']> = ResolversObject<{
-  emailContent?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  emailSubject?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  mode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  emailContent?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  emailSubject?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  mode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type SmsProvidersConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SMSProvidersConfig'] = ResolversParentTypes['SMSProvidersConfig']> = ResolversObject<{
@@ -10453,15 +10467,15 @@ export type SmsStatusResolvers<ContextType = IContext, ParentType extends Resolv
 
 export type SocialAuthProviderInfoResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SocialAuthProviderInfo'] = ResolversParentTypes['SocialAuthProviderInfo']> = ResolversObject<{
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  linkedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  provider?: Resolver<Maybe<ResolversTypes['SocialAuthProvider']>, ParentType, ContextType>;
-  providerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  linkedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes['SocialAuthProvider'], ParentType, ContextType>;
+  providerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type SocialpayConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SocialpayConfig'] = ResolversParentTypes['SocialpayConfig']> = ResolversObject<{
-  certId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  certId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enableSocialpay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  publicKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  publicKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type SomeTypeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SomeType'] = ResolversParentTypes['SomeType']> = ResolversObject<{
@@ -10558,12 +10572,12 @@ export type TestUserResolvers<ContextType = IContext, ParentType extends Resolve
 }>;
 
 export type TokiConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TokiConfig'] = ResolversParentTypes['TokiConfig']> = ResolversObject<{
-  apiKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  apiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enableToki?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  merchantId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  merchantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   production?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type TriggerResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Trigger'] = ResolversParentTypes['Trigger']> = ResolversObject<{
@@ -10707,9 +10721,9 @@ export type UsersListResponseResolvers<ContextType = IContext, ParentType extend
 }>;
 
 export type VerificationRequestResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['VerificationRequest'] = ResolversParentTypes['VerificationRequest']> = ResolversObject<{
-  attachments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType>;
+  attachments?: Resolver<Array<ResolversTypes['Attachment']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verifiedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -10795,6 +10809,7 @@ export type Resolvers<ContextType = IContext> = ResolversObject<{
   Company?: CompanyResolvers<ContextType>;
   Config?: ConfigResolvers<ContextType>;
   Conformity?: ConformityResolvers<ContextType>;
+  ConformityEditResult?: ConformityEditResultResolvers<ContextType>;
   CookieOrganization?: CookieOrganizationResolvers<ContextType>;
   Coordinate?: CoordinateResolvers<ContextType>;
   CoreModulesGlobalSearchResult?: CoreModulesGlobalSearchResultResolvers<ContextType>;

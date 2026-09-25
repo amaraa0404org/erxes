@@ -15,24 +15,24 @@ export const types = `
     _id: String!
     name: String
     shortName: String
-    status: String
+    status: String!
     code: String
-    type: String
+    type: String!
     description: String
-    barcodes: [String]
+    barcodes: [String!]
     variants: JSON
     barcodeDescription: String
     unitPrice: Float
     weight: Float
     categoryId: String
     propertiesData: JSON
-    createdAt: Date
-    tagIds: [String]
+    createdAt: Date!
+    tagIds: [String!]
     attachment: Attachment
-    attachmentMore: [Attachment]
-    videos: [Attachment]
+    attachmentMore: [Attachment!]
+    videos: [Attachment!]
     vendorId: String
-    scopeBrandIds: [String]
+    scopeBrandIds: [String!]
     uom: String
     subUoms: JSON
     currency: String
@@ -51,7 +51,7 @@ export const types = `
     inventories: JSON
     discounts: JSON
 
-    remainder: JSON
+    remainder: JSON!
     discount(
       branchId: String
       departmentId: String
@@ -65,14 +65,14 @@ export const types = `
   }
 
   type ProductSimilarity {
-    products: [Product],
-    groups: [ProductSimilarityGroup],
+    products: [Product!]!,
+    groups: [ProductSimilarityGroup!],
   }
 
   type ProductsListResponse {
-    list: [Product],
-    pageInfo: PageInfo
-    totalCount: Int,
+    list: [Product!]!,
+    pageInfo: PageInfo!
+    totalCount: Int!,
   }
 `;
 
@@ -118,19 +118,19 @@ export const queries = `
     ${GQL_CURSOR_PARAM_DEFS}
     sortField: String,
     sortDirection: Int,
-  ): ProductsListResponse
+  ): ProductsListResponse!
   products(
     ${queryParams}
     page: Int,
     perPage: Int,
     sortField: String,
     sortDirection: Int,
-  ): [Product]
-  productsTotalCount(${queryParams}): Int
+  ): [Product!]!
+  productsTotalCount(${queryParams}): Int!
   productDetail(_id: String): Product
   productLastCodeByCategory(categoryId: String): String
-  productSimilarities(_id: String!, groupedSimilarity: String): ProductSimilarity
-  productCountByTags: JSON
+  productSimilarities(_id: String!, groupedSimilarity: String): ProductSimilarity!
+  productCountByTags: JSON!
 
   cpProducts(
     ${queryParams}
@@ -138,7 +138,7 @@ export const queries = `
     perPage: Int,
     sortField: String,
     sortDirection: Int,
-  ): [Product]
+  ): [Product!]!
   cpProductDetail(_id: String): Product
 `;
 
@@ -169,9 +169,9 @@ export const mutationParams = `
 `;
 
 export const mutations = `
-  productsAdd(${mutationParams}): Product
-  productsEdit(_id: String!, ${mutationParams}): Product
-  productsRemove(productIds: [String!]): String
-  productsMerge(productIds: [String], productFields: JSON): Product
-  productsDuplicate(_id: String!): Product
+  productsAdd(${mutationParams}): Product!
+  productsEdit(_id: String!, ${mutationParams}): Product!
+  productsRemove(productIds: [String!]): JSON!
+  productsMerge(productIds: [String], productFields: JSON): Product!
+  productsDuplicate(_id: String!): Product!
 `;

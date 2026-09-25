@@ -7,9 +7,9 @@ export const types = `
 
   type BundleRuleItem  {
     code: String!
-    productIds: [String]
-    products: [Product]
-    allowSkip: Boolean
+    productIds: [String!]
+    products: [Product!]
+    allowSkip: Boolean!
     quantity: Int
     priceType: PriceType
     priceAdjustType: String
@@ -24,14 +24,14 @@ export const types = `
     description: String
     code: String
     userId: String
-    createdAt: Date
-    rules: [BundleRuleItem]
+    createdAt: Date!
+    rules: [BundleRuleItem!]!
   }
 
   input BundleRuleItemInput {
     code: String!,
-    productIds: [String]
-    allowSkip: Boolean
+    productIds: [String!]
+    allowSkip: Boolean!
     quantity: Int
     priceType: PriceType
     priceAdjustType: String
@@ -42,7 +42,7 @@ export const types = `
 `;
 
 export const queries = `
-  bundleRules: [BundleRule]
+  bundleRules: [BundleRule!]!
   bundleRuleDetail( _id: String!): BundleRule
 `;
 
@@ -54,7 +54,7 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  bundleRulesAdd(${mutationParams}): BundleRule
+  bundleRulesAdd(${mutationParams}): BundleRule!
   bundleRulesEdit(_id: String! ${mutationParams}): BundleRule
-  bundleRulesRemove(_ids: [String]): JSON
+  bundleRulesRemove(_ids: [String!]): JSON!
 `;

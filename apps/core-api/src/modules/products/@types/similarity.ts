@@ -11,7 +11,9 @@ export interface IProductSimilarityInfo {
   unitPrice?: number;
   currency?: string;
   uom?: string;
-  subUoms?: any;
+  // mirrors IProduct.subUoms ({ uom, ratio } entries); ISubUom is not
+  // exported from erxes-api-shared, so the shape is spelled out here.
+  subUoms?: { uom: string; ratio: number }[];
   vendorId?: string;
   scopeBrandIds?: string[];
   barcodeDescription?: string;
@@ -33,7 +35,7 @@ export interface IProductSimilarityRow {
 export interface IProductSimilarity {
   status?: string;
   info: IProductSimilarityInfo;
-  propertiesData: Record<string, any>;
+  propertiesData: Record<string, unknown>;
   productIds?: string[];
   starProductId?: string;
 }
@@ -48,6 +50,6 @@ export interface IProductSimilarityDocument
 export interface IProductSimilarityBulkInput {
   _id?: string;
   info: IProductSimilarityInfo;
-  propertiesData: Record<string, any>;
+  propertiesData: Record<string, unknown>;
   rows: IProductSimilarityRow[];
 }

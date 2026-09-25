@@ -1,15 +1,18 @@
 import { IBundleRule, IBundleRuleDocument } from '@/bundle/@types';
 import { bundleRuleSchema } from '@/bundle/db/definitions/bundleRule';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
 
 export interface IBundleRuleModel extends Model<IBundleRuleDocument> {
-  getRule(doc: any): IBundleRuleDocument;
-  getRuleByCode(code: string): IBundleRuleDocument;
+  getRule(doc: FilterQuery<IBundleRuleDocument>): Promise<IBundleRuleDocument>;
+  getRuleByCode(code: string): Promise<IBundleRuleDocument>;
   generateCode(code: string): string;
-  createRule(doc: IBundleRule): IBundleRuleDocument;
-  updateRule(_id: string, fields: IBundleRule): IBundleRuleDocument;
-  removeRule(_ids: string[]): void;
+  createRule(doc: IBundleRule): Promise<IBundleRuleDocument>;
+  updateRule(
+    _id: string,
+    fields: IBundleRule,
+  ): Promise<IBundleRuleDocument | null>;
+  removeRule(_ids: string[]): Promise<{ deletedCount?: number }>;
 }
 
 export const loadBundleRuleClass = (models: IModels, subdomain: string) => {
@@ -17,7 +20,7 @@ export const loadBundleRuleClass = (models: IModels, subdomain: string) => {
     /*
      * Get a BundleRule
      */
-    public static async getRule(doc: any) {
+    public static async getRule(doc: FilterQuery<IBundleRuleDocument>) {
       const bundleRule = await models.BundleRule.findOne(doc).lean();
 
       if (!bundleRule) {
