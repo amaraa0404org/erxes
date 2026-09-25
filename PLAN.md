@@ -452,7 +452,7 @@ over.
   `useCompanyNameByRegister` are removed in Milestone 4, after extraction.
   Confirm now that core-ui does not import them. If it does, stop and record
   it under *Open issues*.
-- [ ] 3.6 Build and test every core project against the baseline. Boot core
+- [x] 3.6 Build and test every core project against the baseline. Boot core
   with zero plugins and smoke-test contacts, products, the client portal
   and broadcasts.
 
