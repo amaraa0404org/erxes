@@ -1,7 +1,6 @@
 import {
   IconBroadcast,
   IconBuilding,
-  IconCurrencyDollar,
   IconShoppingCart,
   IconUser,
   IconUsersGroup,
@@ -38,11 +37,6 @@ export const DOCUMENTS_TYPES_SET: Record<string, DocumentTypeConfig> = {
     icon: IconBroadcast,
     label: 'Broadcast',
     color: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-  },
-  'sales:deal': {
-    icon: IconCurrencyDollar,
-    label: 'Sales',
-    color: 'bg-green-100 text-green-800 border-green-200',
   },
 };
 

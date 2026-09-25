@@ -21,6 +21,6 @@ export const CORE_TRAILING_RELATIONS = [
     name: 'trackedData',
     icon: IconRadar,
     label: 'Tracked data',
-    contentTypes: ['core:customer', 'core:company', 'frontline:conversation'],
+    contentTypes: ['core:customer', 'core:company'],
   },
 ];

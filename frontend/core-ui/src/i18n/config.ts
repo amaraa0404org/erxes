@@ -26,7 +26,6 @@ export const defaultI18nOptions: InitOptions = {
     'importExport',
     'settings',
     'broadcasts',
-    'sales',
   ],
   defaultNS: 'common',
   fallbackNS: ['common'],

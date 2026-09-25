@@ -440,7 +440,7 @@ over.
 
   Delete the commented-out frontline calls in `broadcast/utils/common.ts` and
   `broadcast/utils/telnyx.ts`. List the kept calls under *Carry-over*.
-- [ ] 3.4 core-ui: remove plugin-specific code:
+- [x] 3.4 core-ui: remove plugin-specific code:
   - the `'sales'` namespace preload in `i18n/config.ts`;
   - `'mongolian'` in `GlobalSearchItem.tsx`;
   - `'frontline:conversation'` in `widgets/constants/core-relations.ts`;
@@ -623,6 +623,17 @@ _Append one line per removed or changed core contract:
   (exclude-category/product filters, initial-category ordering,
   `Product.remainder` pipeline scope) — owner: sales
 - 3.1 `clientPortalCheckTokiInvoice` mutation removed — owner: payment
+- 3.4 core-ui i18n initial `ns` preload drops `'sales'`; the plugin serves
+  its own namespace through `/locales` — owner: sales
+- 3.4 `GlobalSearchItem` no longer preloads the `mongolian` translation
+  namespace — owner: mongolian
+- 3.4 `CORE_TRAILING_RELATIONS` tracked-data `contentTypes` drops
+  `frontline:conversation` — owner: frontline
+- 3.4 `DOCUMENTS_TYPES_SET` drops the `sales:deal` entry — owner: sales
+- 3.4 `useManagePropertySidebarContent` drops the legacy `tickets:ticket` →
+  `frontline:tickets.tickets` source-type remap — owner: frontline
+- 3.4 `styles.css` drops the `.sales-description .bn-editor` rule —
+  owner: sales
 - 3.2 import template `frontline:ticket.ticket` removed from
   `importTemplates` — owner: frontline
 - 3.2 import template `accounting:account.account` removed from

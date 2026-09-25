@@ -7,13 +7,6 @@ import { useEffect, useMemo } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 import { useAutomationSetPropertyTargets, TAutomationAction } from 'ui-modules';
 
-const LEGACY_AUTOMATION_SOURCE_TYPES: Record<string, string> = {
-  'tickets:ticket': 'frontline:tickets.tickets',
-};
-
-const normalizeAutomationSourceType = (sourceType?: string) =>
-  sourceType ? LEGACY_AUTOMATION_SOURCE_TYPES[sourceType] || sourceType : '';
-
 export const useManagePropertySidebarContent = (
   currentAction: TAutomationAction,
   form: UseFormReturn<TManagePropertiesForm>,
@@ -42,14 +35,11 @@ export const useManagePropertySidebarContent = (
     actionFolks,
   );
 
-  const sourceType = normalizeAutomationSourceType(
-    selectedActionType || trigger?.type,
-  );
+  const sourceType = selectedActionType || trigger?.type || '';
   const { propertyTypes, loading } =
     useAutomationSetPropertyTargets(sourceType);
   const defaultPropertyType = propertyTypes[0]?.value || sourceType;
-  const normalizedModule = normalizeAutomationSourceType(module);
-  const propertyType = normalizedModule || defaultPropertyType;
+  const propertyType = module || defaultPropertyType;
   const selectedPropertyTarget = useMemo(
     () =>
       propertyTypes.find((p) => p.value === propertyType) ||
@@ -68,15 +58,10 @@ export const useManagePropertySidebarContent = (
   );
 
   useEffect(() => {
-    if (module && normalizedModule !== module) {
-      setValue('module', normalizedModule);
-      return;
-    }
-
     if (!module && defaultPropertyType) {
       setValue('module', defaultPropertyType);
     }
-  }, [defaultPropertyType, module, normalizedModule, setValue]);
+  }, [defaultPropertyType, module, setValue]);
 
   useEffect(() => {
     if (!selectedPropertyTarget) {

@@ -38,7 +38,7 @@ export const GlobalSearchItem = ({
   actionLabel: string;
   onSelect: (path: string) => void;
 }) => {
-  const { t } = useTranslation(['common', 'mongolian'], {
+  const { t } = useTranslation(['common'], {
     useSuspense: false,
   });
   const visibleFieldsMatch =
