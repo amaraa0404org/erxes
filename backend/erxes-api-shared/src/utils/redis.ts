@@ -1,8 +1,8 @@
-import Redis from 'ioredis';
+import Redis, { RedisOptions } from 'ioredis';
 
 const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD } = process.env;
 
-export const redis = new Redis({
+export const redisConnectionOptions: RedisOptions = {
   host: REDIS_HOST,
   port: Number.parseInt(REDIS_PORT || '6379', 10),
   password: REDIS_PASSWORD,
@@ -16,7 +16,9 @@ export const redis = new Redis({
       return false;
     }
   },
-});
+};
+
+export const redis = new Redis(redisConnectionOptions);
 
 export const resetConfigsCache = async () => {
   await redis.set('configs_erxes_api', '');

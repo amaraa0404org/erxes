@@ -14,6 +14,7 @@ import express, {
   Router,
 } from 'express';
 import { DocumentNode, GraphQLScalarType } from 'graphql';
+import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import rateLimit from 'express-rate-limit';
@@ -68,6 +69,15 @@ enum API_METHODS {
 }
 
 type TAPIMethod = keyof typeof API_METHODS;
+
+// Same validation as the gateway's locale route (backend/gateway/src/util/
+// locales.ts): duplicated here on purpose so plugins do not import gateway
+// code.
+const LNG_PATTERN = /^[a-zA-Z]{2,5}(?:[-_][a-zA-Z0-9]{2,8})?$/;
+const FILE_PATTERN = /^[a-zA-Z0-9._-]+\.json$/;
+
+const isValidLocaleParams = (lng: string, file: string): boolean =>
+  LNG_PATTERN.test(lng) && FILE_PATTERN.test(file);
 
 type IMeta = {
   automations?: AutomationConfigs;
@@ -142,6 +152,18 @@ type ConfigTypes = {
    * removes specific annotated procedures when needed.
    */
   agentToolsExclude?: string[];
+  /**
+   * Module Federation remote entry URL for the plugin's UI bundle. Stored in
+   * the plugin manifest so the core can serve it to the frontend. Defaults
+   * to `process.env.UI_REMOTE_ENTRY`.
+   */
+  uiRemoteEntry?: string;
+  /**
+   * Directory containing `${lng}/${file}` translation bundles. When set, the
+   * plugin serves `GET /locales/:lng/:file` so the gateway's locale fan-out
+   * can reach it.
+   */
+  localesDir?: string;
   meta?: IMeta;
 };
 
@@ -166,6 +188,9 @@ export async function startPlugin(
     onServerInit,
     // agent capability endpoint exclusions
     agentToolsExclude,
+    // runtime registration metadata
+    uiRemoteEntry = process.env.UI_REMOTE_ENTRY,
+    localesDir,
     // meta
     meta,
   } = configs || {};
@@ -198,6 +223,32 @@ export async function startPlugin(
   app.get('/debug-sentry', () => {
     throw new Error('Sentry test error: ' + new Date().toISOString());
   });
+
+  if (localesDir) {
+    const localesRoot = path.resolve(localesDir);
+
+    app.get('/locales/:lng/:file', (req, res) => {
+      const { lng, file } = req.params;
+
+      if (!isValidLocaleParams(lng, file)) {
+        return res.status(400).send('Invalid locale');
+      }
+
+      try {
+        const requestedPath = path.resolve(localesRoot, lng, file);
+        const realPath = fs.realpathSync(requestedPath);
+
+        if (!realPath.startsWith(localesRoot + path.sep)) {
+          return res.status(404).send('Locale not found');
+        }
+
+        res.set('Cache-Control', 'no-cache');
+        return res.json(JSON.parse(fs.readFileSync(realPath).toString()));
+      } catch {
+        return res.status(404).send('Locale not found');
+      }
+    });
+  }
 
   if (expressRouter) {
     app.use(expressRouter);
@@ -404,6 +455,7 @@ export async function startPlugin(
     port: PORT,
     hasSubscriptions,
     meta,
+    uiRemoteEntry,
   });
 
   if (meta) {

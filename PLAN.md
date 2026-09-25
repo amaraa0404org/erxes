@@ -361,12 +361,12 @@ they are marked as independent.
 Plugins are still in the repository. Use them, and the new example plugin, to
 test.
 
-- [ ] 1.1 Cherry-pick `d6f5e3b407`, the service-discovery miss-cache fix and
+- [x] 1.1 Cherry-pick `d6f5e3b407`, the service-discovery miss-cache fix and
   its test harness.
-- [ ] 1.2 Implement the D1 plugin side in `erxes-api-shared`: presence
+- [x] 1.2 Implement the D1 plugin side in `erxes-api-shared`: presence
   keys, heartbeat, graceful leave, pub/sub, `SERVICE_ADDRESS`,
   `uiRemoteEntry` and `localesDir`.
-- [ ] 1.3 Implement the D1 consumer side: `getPlugins()`, `isEnabled()`, cache
+- [x] 1.3 Implement the D1 consumer side: `getPlugins()`, `isEnabled()`, cache
   invalidation, and `getAvailablePlugins()`. Delete `setActivePlugins()` and
   `getActivePlugins()`, and migrate their consumers. Add unit tests for the
   pure functions.
@@ -579,6 +579,21 @@ no `build` target.
 
 _Append one line per removed or changed core contract:
 `- <milestone.task> <what changed> — owner: <plugin>`._
+
+- 1.2 `joinErxesGateway` no longer enqueues the BullMQ
+  `update-apollo-router` job and drops `LOAD_BALANCER_ADDRESS` /
+  `plugin-{name}-api` hostnames; the plugin address is `SERVICE_ADDRESS` or
+  `http://localhost:{port}` — owner: core/gateway
+- 1.2 New presence contract: `erxes:plugins` set, `erxes:plugin:alive:{name}`
+  heartbeat (TTL 30 s, refreshed every 10 s), `erxes:plugins:changed` pub/sub
+  payloads `{ name, event: 'joined'|'left' }`; the manifest may now carry a
+  top-level `uiRemoteEntry` — owner: core/gateway
+- 1.3 `setActivePlugins()` / `getActivePlugins()` and the
+  `erxes-active-plugins` Redis key are deleted; consumers use `getPlugins()`
+  — owner: core
+- 1.3 `ENABLED_PLUGINS` / `ENABLED_PLUGINS_ONLY_API` no longer feed service
+  discovery; `getPlugins()` returns `['core', ...alive members of
+  erxes:plugins]` — owner: core
 
 ## Open issues
 

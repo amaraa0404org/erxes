@@ -7,8 +7,8 @@ import {
 import { IUserDocument } from 'erxes-api-shared/core-types';
 import {
   extractUserFromHeader,
-  getActivePlugins,
   getPlugin,
+  getPlugins,
   redis,
 } from 'erxes-api-shared/utils';
 import { Request, Response } from 'express';
@@ -39,7 +39,7 @@ export const getAvailableOAuthScopesForUser = async ({
   subdomain: string;
   user: IUserDocument;
 }): Promise<OAuthScopeItem[]> => {
-  const activePlugins = await getActivePlugins();
+  const activePlugins = await getPlugins();
   const scopeMap = new Map<string, OAuthScopeItem>();
 
   for (const pluginName of activePlugins) {

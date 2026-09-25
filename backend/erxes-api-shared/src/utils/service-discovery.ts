@@ -1,60 +1,67 @@
 import * as dotenv from 'dotenv';
-import { redis } from './redis';
+import Redis from 'ioredis';
+import { redis, redisConnectionOptions } from './redis';
 import { getSaasOrganizationDetail } from './saas';
 import { getEnv } from './utils';
 import { IOrganizationCharge } from '../core-types';
-import { sendWorkerQueue } from './mq-worker';
 
 dotenv.config();
 
-const { NODE_ENV, LOAD_BALANCER_ADDRESS, MONGO_URL } = process.env;
-const GATEWAY_ROUTER_UPDATE_LOCK_KEY = 'gateway:update-apollo-router:pending';
+const { NODE_ENV, MONGO_URL } = process.env;
+
+// Presence-based plugin registry (D1): a plugin is installed exactly while
+// its process is alive and heartbeating. There is no env list.
+const PLUGINS_SET_KEY = 'erxes:plugins';
+const PLUGINS_CHANGED_CHANNEL = 'erxes:plugins:changed';
+const HEARTBEAT_TTL_SECONDS = 30;
+const HEARTBEAT_INTERVAL_MS = 10_000;
+const CACHE_TTL_MS = 60_000;
+
+const keyForHeartbeat = (name: string) => `erxes:plugin:alive:${name}`;
+const keyForAddress = (name: string) => `erxes-service-${name}`;
 
 interface PluginConfig {
   name: string;
   port: number;
   hasSubscriptions?: boolean;
   meta?: any;
+  uiRemoteEntry?: string;
 }
 
 export const isDev = NODE_ENV === 'development';
 
 export const keyForConfig = (name: string) => `erxesservice:config:${name}`;
 
+const publishPluginChange = (name: string, event: 'joined' | 'left') =>
+  redis.publish(PLUGINS_CHANGED_CHANNEL, JSON.stringify({ name, event }));
+
 export const getPlugins = async (): Promise<string[]> => {
-  const enabledServices: any[] =
-    process.env.ENABLED_PLUGINS?.split(',').map((plugin) => `${plugin}`) || [];
+  const members = await redis.smembers(PLUGINS_SET_KEY);
 
-  const enabledApiPlugins: any[] =
-    process.env.ENABLED_PLUGINS_ONLY_API?.split(',').map(
-      (plugin) => `${plugin}`,
-    ) || [];
-
-  return ['core', ...enabledServices, ...enabledApiPlugins];
-};
-
-const ACTIVE_PLUGINS_KEY = 'erxes-active-plugins';
-
-export const setActivePlugins = async (plugins: string[]): Promise<void> => {
-  await redis.set(ACTIVE_PLUGINS_KEY, JSON.stringify(plugins));
-};
-
-export const getActivePlugins = async (): Promise<string[]> => {
-  const data = await redis.get(ACTIVE_PLUGINS_KEY);
-
-  if (!data) {
+  if (!members.length) {
     return ['core'];
   }
 
-  return JSON.parse(data);
+  const pipeline = redis.pipeline();
+  for (const name of members) {
+    pipeline.exists(keyForHeartbeat(name));
+  }
+
+  const results = (await pipeline.exec()) || [];
+
+  const alive = members
+    .filter((name, index) => {
+      const [error, exists] = results[index] || [];
+      return name !== 'core' && !error && exists === 1;
+    })
+    .sort();
+
+  return ['core', ...alive];
 };
 
 export const getAvailablePlugins = async (
   subdomain: string,
 ): Promise<string[]> => {
-  const ENABLED_PLUGINS = getEnv({ name: 'ENABLED_PLUGINS' });
-  const ENABLED_API_PLUGINS = getEnv({ name: 'ENABLED_PLUGINS_ONLY_API' });
-
   const VERSION = getEnv({ name: 'VERSION', defaultValue: 'os' });
 
   if (VERSION && VERSION === 'saas') {
@@ -64,6 +71,7 @@ export const getAvailablePlugins = async (
 
     const charges = organizationInfo.charge as IOrganizationCharge;
 
+    const enabledPlugins = await getPlugins();
     const plugins: string[] = [];
 
     Object.keys(charges).forEach((key) => {
@@ -73,10 +81,7 @@ export const getAvailablePlugins = async (
       ) {
         const pluginName = key.split(':')[0];
 
-        const enabledPluginsArray = ENABLED_PLUGINS.split(',');
-        enabledPluginsArray.push(...ENABLED_API_PLUGINS.split(','));
-
-        if (enabledPluginsArray.includes(pluginName)) {
+        if (pluginName !== 'core' && enabledPlugins.includes(pluginName)) {
           plugins.push(pluginName);
         }
       }
@@ -88,8 +93,10 @@ export const getAvailablePlugins = async (
 };
 
 type ServiceInfo = { address: string; config: any };
-const serviceInfoCache: { [name in string]: Readonly<ServiceInfo> } = {};
-const pluginAddressCache = {} as any;
+type CacheEntry<T> = { value: T; expiresAt: number };
+
+const serviceInfoCache: Record<string, CacheEntry<Readonly<ServiceInfo>>> = {};
+const pluginAddressCache: Record<string, CacheEntry<string>> = {};
 
 export const clearServiceDiscoveryCache = (name?: string) => {
   if (name) {
@@ -104,15 +111,46 @@ export const clearServiceDiscoveryCache = (name?: string) => {
   );
 };
 
+let eventsSubscriber: Redis | null = null;
+
+// A dedicated connection is required: once an ioredis connection enters
+// subscriber mode it cannot run regular commands, so the shared `redis`
+// export must not be subscribed.
+const ensureEventsSubscriber = (): void => {
+  if (eventsSubscriber) {
+    return;
+  }
+
+  const subscriber = new Redis(redisConnectionOptions);
+  eventsSubscriber = subscriber;
+
+  subscriber.subscribe(PLUGINS_CHANGED_CHANNEL).catch((e) => console.error(e));
+  subscriber.on('message', (channel: string, message: string) => {
+    if (channel !== PLUGINS_CHANGED_CHANNEL) {
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(message);
+      clearServiceDiscoveryCache(payload?.name);
+    } catch {
+      clearServiceDiscoveryCache();
+    }
+  });
+};
+
 export const getPlugin = async (
   name: string,
 ): Promise<Readonly<ServiceInfo>> => {
-  if (serviceInfoCache[name]) {
-    return serviceInfoCache[name];
+  ensureEventsSubscriber();
+
+  const cached = serviceInfoCache[name];
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
   }
 
   const result: ServiceInfo = {
-    address: (await redis.get(`erxes-service-${name}`)) || '',
+    address: (await redis.get(keyForAddress(name))) || '',
     config: { meta: {} },
   };
 
@@ -121,18 +159,27 @@ export const getPlugin = async (
 
   Object.freeze(result);
 
+  // Never cache a miss: a plugin that registers later must be picked up.
   if (result.address) {
-    serviceInfoCache[name] = result;
+    serviceInfoCache[name] = {
+      value: result,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    };
+  } else {
+    delete serviceInfoCache[name];
   }
 
   return result;
 };
+
+const heartbeatIntervals = new Map<string, NodeJS.Timeout>();
 
 export const joinErxesGateway = async ({
   name,
   port,
   hasSubscriptions = false,
   meta,
+  uiRemoteEntry,
 }: PluginConfig) => {
   const rawVersion = process.env.RELEASE_VERSION;
   const releaseVersion = rawVersion?.startsWith('3.') ? rawVersion : 'latest';
@@ -153,56 +200,66 @@ export const joinErxesGateway = async ({
         ...meta,
       },
       releaseVersion,
+      ...(uiRemoteEntry ? { uiRemoteEntry } : {}),
     }),
   );
 
   const address =
-    LOAD_BALANCER_ADDRESS ||
-    `http://${isDev ? 'localhost' : `plugin-${name}-api`}:${port}`;
+    process.env.SERVICE_ADDRESS || `http://localhost:${port}`;
 
-  await redis.set(`erxes-service-${name}`, address);
+  await redis.set(keyForAddress(name), address);
 
-  if (NODE_ENV === 'production') {
-    try {
-      const didAcquireUpdateLock = await redis.set(
-        GATEWAY_ROUTER_UPDATE_LOCK_KEY,
-        '1',
-        'EX',
-        30,
-        'NX',
-      );
+  // `core` is always part of the deployment and services register their
+  // address directly; only real plugins announce themselves in the
+  // presence set.
+  if (name !== 'core') {
+    await redis.sadd(PLUGINS_SET_KEY, name);
+    await redis.set(
+      keyForHeartbeat(name),
+      '1',
+      'EX',
+      HEARTBEAT_TTL_SECONDS,
+    );
 
-      if (!didAcquireUpdateLock) {
-        console.log(
-          `gateway update-apollo-router already queued, skipped ${name}`,
-        );
-        console.log(`erxes-service${name} joined with ${address}`);
-        return;
-      }
-
-      await sendWorkerQueue('gateway', 'update-apollo-router').add(
-        'service-discovery-updated',
-        { pluginName: name },
-        {
-          delay: 10_000,
-          attempts: 3,
-          backoff: {
-            type: 'exponential',
-            delay: 1000,
-          },
-          removeOnComplete: true,
-          removeOnFail: 100,
-        },
-      );
-    } catch (e) {
-      console.error(e);
+    const previousHeartbeat = heartbeatIntervals.get(name);
+    if (previousHeartbeat) {
+      clearInterval(previousHeartbeat);
     }
+
+    // Unref'd so the heartbeat alone never keeps the process alive.
+    const heartbeat = setInterval(() => {
+      redis
+        .set(keyForHeartbeat(name), '1', 'EX', HEARTBEAT_TTL_SECONDS)
+        .catch((e) => console.error(e));
+    }, HEARTBEAT_INTERVAL_MS);
+    heartbeat.unref();
+    heartbeatIntervals.set(name, heartbeat);
+
+    await publishPluginChange(name, 'joined');
   }
 
   console.log(`erxes-service${name} joined with ${address}`);
 };
 
 export const leaveErxesGateway = async (name: string, port: number) => {
+  const heartbeat = heartbeatIntervals.get(name);
+  if (heartbeat) {
+    clearInterval(heartbeat);
+    heartbeatIntervals.delete(name);
+  }
+
+  if (name !== 'core') {
+    await redis.srem(PLUGINS_SET_KEY, name);
+  }
+
+  // The manifest key (erxesservice:config:{name}) is kept on purpose: it is
+  // harmless and joinErxesGateway merges it back in on rejoin.
+  await redis.del(keyForHeartbeat(name), keyForAddress(name));
+
+  if (name !== 'core') {
+    await publishPluginChange(name, 'left');
+  }
+
   console.log(`erxes-service${name} left ${port}`);
 };
 
@@ -215,10 +272,26 @@ export const isEnabled = async (name: string) => {
 };
 
 export const getPluginAddress = async (name: string) => {
-  if (!pluginAddressCache[name]) {
-    pluginAddressCache[name] = await redis.get(`erxes-service-${name}`);
+  ensureEventsSubscriber();
+
+  const cached = pluginAddressCache[name];
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
   }
-  return pluginAddressCache[name];
+
+  const address = await redis.get(keyForAddress(name));
+
+  // Never cache a miss: a plugin that registers later must be picked up.
+  if (address) {
+    pluginAddressCache[name] = {
+      value: address,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    };
+  } else {
+    delete pluginAddressCache[name];
+  }
+
+  return address;
 };
 
 function getNonFunctionProps<T extends object>(obj: T): Partial<T> {

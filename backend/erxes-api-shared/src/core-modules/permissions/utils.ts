@@ -8,7 +8,7 @@ import {
   getPlugin,
   sendTRPCMessage,
   redis,
-  getActivePlugins,
+  getPlugins,
   ExpectedError,
 } from '../../utils';
 
@@ -43,7 +43,7 @@ const applyDefaultGroupActions = async (
   actionsMap: Record<string, boolean>,
   defaultGroupIds: string[],
 ) => {
-  const plugins = await getActivePlugins();
+  const plugins = await getPlugins();
 
   for (const pluginName of plugins) {
     const plugin = await getPlugin(pluginName);
@@ -206,7 +206,7 @@ export const resolveActionOAuthScopes = (
 };
 
 const getOAuthActionScopeMap = async () => {
-  const activePlugins = await getActivePlugins();
+  const activePlugins = await getPlugins();
   const scopeMap: Record<string, string[]> = {};
 
   for (const pluginName of activePlugins) {

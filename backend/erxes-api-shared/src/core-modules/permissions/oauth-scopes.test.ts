@@ -1,11 +1,11 @@
 const mockRedis = { get: jest.fn(), set: jest.fn(), del: jest.fn() };
-const mockGetActivePlugins = jest.fn();
+const mockGetPlugins = jest.fn();
 const mockGetPlugin = jest.fn();
 const mockSendTRPCMessage = jest.fn();
 
 jest.mock('../../utils', () => ({
   redis: mockRedis,
-  getActivePlugins: (...args: unknown[]) => mockGetActivePlugins(...args),
+  getPlugins: (...args: unknown[]) => mockGetPlugins(...args),
   getPlugin: (...args: unknown[]) => mockGetPlugin(...args),
   sendTRPCMessage: (...args: unknown[]) => mockSendTRPCMessage(...args),
   ExpectedError: class ExpectedError extends Error {},
@@ -45,7 +45,7 @@ beforeEach(() => {
   mockRedis.get.mockResolvedValue(null);
   mockRedis.set.mockResolvedValue(undefined);
   mockRedis.del.mockResolvedValue(undefined);
-  mockGetActivePlugins.mockResolvedValue(['sales']);
+  mockGetPlugins.mockResolvedValue(['sales']);
   mockGetPlugin.mockResolvedValue(salesPlugin);
   mockSendTRPCMessage.mockResolvedValue([]);
 });
