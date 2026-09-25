@@ -404,7 +404,7 @@ test.
     serves `core-ui` alone;
   - the 30-second and on-focus live diff with `registerRemotes`, plus a unit
     test for the diff.
-- [ ] 2.3 Delete `erxes-ui` `isEnabled()` and add `ui-modules`
+- [x] 2.3 Delete `erxes-ui` `isEnabled()` and add `ui-modules`
   `useIsPluginEnabled()`.
 - [x] 2.4 Create `examples/plugin-hello/ui` (Nx project `hello_ui`): a Module
   Federation remote exposing `./config` (a navigation entry and one page
@@ -611,6 +611,9 @@ _Append one line per removed or changed core contract:
   owner: core/plugins
 - 2.2 `scripts/start-ui-dev.js` is deleted; root script `dev:ui` replaces
   `dev:uis` and serves `core-ui` alone — owner: core
+- 2.3 `erxes-ui` `isEnabled()` (build-time `ENABLED_PLUGINS` check) is
+  deleted; plugins must use `useIsPluginEnabled(name)` from `ui-modules`,
+  backed by `pluginsConfigState` — owner: plugins
 
 ## Open issues
 

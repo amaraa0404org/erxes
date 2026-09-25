@@ -11,7 +11,6 @@ export * from './isDeeplyEqual';
 export * from './localization';
 export * from './regex';
 export * from './IsUndefinedOrNull';
-export * from './isEnabled';
 export * from './string-array';
 export * from './searchProvider';
 export * from './stripHtml';
