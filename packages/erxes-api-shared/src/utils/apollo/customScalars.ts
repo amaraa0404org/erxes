@@ -1,11 +1,12 @@
 import { GraphQLScalarType } from 'graphql';
+import type { ValueNode } from 'graphql/language';
 import { Kind } from 'graphql/language'; // tslint:disable-line
 
-const jsonIdentity = (value: any) => {
+const jsonIdentity = (value: unknown) => {
   return value;
 };
 
-const jsonParseLiteral = (ast: any) => {
+const jsonParseLiteral = (ast: ValueNode): unknown => {
   switch (ast.kind) {
     case Kind.STRING:
     case Kind.BOOLEAN:
@@ -14,9 +15,9 @@ const jsonParseLiteral = (ast: any) => {
     case Kind.FLOAT:
       return Number.parseFloat(ast.value);
     case Kind.OBJECT: {
-      const value = Object.create(null);
+      const value: Record<string, unknown> = Object.create(null);
 
-      ast.fields.forEach((field: any) => {
+      ast.fields.forEach((field) => {
         value[field.name.value] = jsonParseLiteral(field.value);
       });
 
@@ -33,19 +34,23 @@ export const apolloCustomScalars = {
   Date: new GraphQLScalarType({
     name: 'Date',
     description: 'Date custom scalar type',
-    parseValue(value: any) {
-      return new Date(value); // value from the client
+    parseValue(value: unknown) {
+      // The client sends a date literal (string | number); Date's constructor
+      // also accepts a Date for completeness.
+      return new Date(value as string | number | Date);
     },
-    serialize: (value: any) => {
+    serialize: (value: unknown) => {
       if (value instanceof Date) {
         return value.toISOString();
       }
 
-      if (value.toISOString) {
-        return value.toISOString();
+      const candidate = value as { toISOString?: () => string };
+
+      if (candidate.toISOString) {
+        return candidate.toISOString();
       }
 
-      return new Date(value).toISOString();
+      return new Date(value as string | number | Date).toISOString();
     },
 
     parseLiteral(ast) {

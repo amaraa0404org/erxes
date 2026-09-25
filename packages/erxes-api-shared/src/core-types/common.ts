@@ -1,7 +1,11 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { SortOrder } from 'mongoose';
 import { IUserDocument } from './modules/team-member/user';
-import { Request as ApiRequest } from 'express';
+import {
+  Request as ApiRequest,
+  Response as ApiResponse,
+} from 'express';
+import { IncomingHttpHeaders } from 'http';
 import { ScopedEventHandlers } from '../core-modules';
 
 export interface IRule {
@@ -58,6 +62,9 @@ export interface IStringMap {
 
 export interface ICustomField {
   field: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — custom-field
+  // values are variant-shaped (string | number | Date | arrays | objects) by
+  // design; consumers coerce per the field's `type`.
   value: any;
   stringValue?: string;
   numberValue?: number;
@@ -95,14 +102,58 @@ export interface IPdfAttachment {
   pages: IAttachment[];
 }
 
+/**
+ * Request metadata carried alongside the GraphQL request. Built by
+ * `generateApolloContext`; `headers` is optional because only the
+ * before-resolvers path surfaces them.
+ */
+export interface IRequestInfo {
+  secure: boolean;
+  cookies: Record<string, string>;
+  headers?: IncomingHttpHeaders;
+}
+
+/**
+ * GraphQL request context shared by every service. Services extend it with
+ * their own models/data loaders (e.g. `IContext extends IMainContext`).
+ *
+ * `user` is declared non-null for ergonomic reasons — the gateway forwards a
+ * compacted user header only when authenticated, so it can be `null` at
+ * runtime; resolvers are gated by `checkLogin`/permission wrappers before
+ * reading it.
+ */
+/**
+ * Document forwarded through a base64 request header (`cpuser`,
+ * `clientportal`). `_id` is the only field guaranteed by the gateway; the
+ * remaining fields are owned by the consuming service's schema, so member
+ * access beyond `_id` stays open at this boundary.
+ */
+export type HeaderDoc = { _id: string } & Record<
+  string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see HeaderDoc
+  any
+>;
+
 export interface IMainContext {
-  res: any;
+  res: ApiResponse;
   req: ApiRequest;
-  requestInfo: any;
+  subdomain: string;
+  requestInfo: IRequestInfo;
   user: IUserDocument;
-  cpUser?: any;
-  clientPortal?: any;
-  models?: any;
+  /**
+   * Client-portal user document forwarded through the `cpuser` request
+   * header. The document shape lives in each service's client-portal module
+   * (core-api overrides this with `ICPUserDocument` in `IContext`), so it
+   * stays opaque here.
+   */
+  cpUser?: unknown;
+  /** Client portal document forwarded through the `clientportal` header. */
+  clientPortal?: unknown;
+  /**
+   * Per-service Mongoose model map, injected by the service's context factory
+   * (core-api: `IModels`). Opaque at this layer.
+   */
+  models?: unknown;
   __: <T extends object>(doc: T) => T & { processId: string };
   processId: string;
   eventHandlers: ScopedEventHandlers;
@@ -137,10 +188,13 @@ export interface IResolverSymbol {
 }
 
 export type Resolver<
-  Parent = any,
-  Args = any,
+  Parent = unknown,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — bare
+  // `Resolver` is used for field maps whose args live only in the declaring
+  // module's GraphQL schema; `unknown` breaks unannotated `params` callers.
+  Args = Record<string, any>,
   Context = { subdomain: string } & IMainContext,
-  Result = any,
+  Result = unknown,
 > = {
   resolve(
     parent: Parent,
@@ -150,6 +204,23 @@ export type Resolver<
   ): Promise<Result> | Result;
 }['resolve'] &
   Partial<IResolverSymbol>;
+
+/**
+ * Resolver stored in a resolver map. Apollo invokes resolvers with
+ * per-field parent/args/context values whose precise types live only at the
+ * declaring module, so the erased boundary positions stay `any` — narrowing
+ * them (e.g. to `unknown`) would reject resolvers declared against narrower
+ * service contexts such as core-api's `IContext`.
+ */
+export type AnyResolver = Resolver<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see AnyResolver doc
+  any,
+  unknown
+>;
 
 export interface ILocationOption {
   lat: number;

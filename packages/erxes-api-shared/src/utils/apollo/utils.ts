@@ -1,6 +1,6 @@
 import { ExpressContextFunctionArgument } from '@apollo/server/dist/esm/express4';
 import { Request as ApiRequest, Response as ApiResponse } from 'express';
-import { IMainContext } from '../../core-types';
+import { IMainContext, IUserDocument } from '../../core-types';
 import {
   extractCPUserFromHeader,
   extractClientPortalFromHeader,
@@ -28,9 +28,9 @@ export const generateApolloContext =
       return {};
     }
 
-    const user: any = extractUserFromHeader(req.headers);
-    const cpUser: any = extractCPUserFromHeader(req.headers);
-    const clientPortal: any = extractClientPortalFromHeader(req.headers);
+    const user = extractUserFromHeader(req.headers);
+    const cpUser = extractCPUserFromHeader(req.headers);
+    const clientPortal = extractClientPortalFromHeader(req.headers);
 
     const subdomain = getSubdomain(req);
 
@@ -44,15 +44,20 @@ export const generateApolloContext =
         : incomingProcessId,
     );
 
-    const __ = (doc: any) => ({ ...processInfo, ...doc });
+    const __ = <T extends object>(doc: T): T & { processId: string } => ({
+      ...processInfo,
+      ...doc,
+    });
     setEventHandlerRuntimeContext(subdomain, {
       subdomain,
       processId: processInfo.processId || '',
       userId: user?._id || '',
     });
 
-    const context = {
-      user,
+    const context: IMainContext = {
+      // The header carries a user only for authenticated requests; resolvers
+      // are gated by checkLogin/permission wrappers before reading `user`.
+      user: user as IUserDocument,
       cpUser,
       clientPortal,
       req,
@@ -69,7 +74,7 @@ export const generateApolloContext =
         processId: processInfo.processId || '',
         userId: user?._id || '',
       }),
-      checkPermission: checkPermissionGroup(subdomain, user),
+      checkPermission: checkPermissionGroup(subdomain, user ?? undefined),
     };
 
     if (apolloServerContext) {

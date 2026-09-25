@@ -4,6 +4,7 @@ import {
   getPlugin,
   getSaasOrganizationDetail,
   getSubdomain,
+  ISaasOrganizationDetail,
 } from 'erxes-api-shared/utils';
 import { Request, Response, Router } from 'express';
 import rateLimit from 'express-rate-limit';
@@ -24,7 +25,7 @@ router.get('/initial-setup', async (req: Request, res: Response) => {
   const subdomain = getSubdomain(req);
   const models = await generateModels(subdomain);
 
-  let organizationInfo = {
+  let organizationInfo: ISaasOrganizationDetail = {
     type: 'os',
     config: {},
     hasOwner: false,

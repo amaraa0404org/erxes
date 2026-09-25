@@ -1,6 +1,15 @@
 import * as path from 'path';
 
-const Segmenter = (Intl as any).Segmenter;
+// `Intl.Segmenter` predates this package's TS lib target, so its constructor
+// is declared structurally here instead of relying on lib types.
+const Segmenter = (
+  Intl as unknown as {
+    Segmenter: new (
+      locale?: string,
+      options?: { granularity: 'grapheme' | 'word' | 'sentence' },
+    ) => { segment(input: string): Iterable<{ segment: string }> };
+  }
+).Segmenter;
 const segmenter = new Segmenter(undefined, { granularity: 'grapheme' });
 
 const truncate = (input: string, length: number): string => {

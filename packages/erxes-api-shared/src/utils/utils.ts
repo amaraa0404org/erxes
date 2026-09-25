@@ -1,5 +1,11 @@
 import dayjs from 'dayjs';
-import { Application, Request, Response } from 'express';
+import {
+  Application,
+  CookieOptions,
+  Request,
+  Response,
+} from 'express';
+import { IncomingHttpHeaders } from 'http';
 import mongoose from 'mongoose';
 import fetch from 'node-fetch'; // or global fetch in Node 18+
 import { IOrderInput } from '../core-types';
@@ -61,10 +67,22 @@ export const applyTrustProxy = (app: Application) => {
   app.set('trust proxy', getTrustProxySetting());
 };
 
-export const getSubdomain = (req: any): string => {
-  const hostname =
-    req.headers['nginx-hostname'] || req.headers.hostname || req.hostname;
-  const subdomain = hostname.replace(/(^\w+:|^)\/\//, '').split('.')[0];
+export const getSubdomain = (
+  req:
+    | {
+        headers: IncomingHttpHeaders;
+        hostname?: string;
+      }
+    | string,
+): string => {
+  const rawHostname =
+    typeof req === 'string'
+      ? req
+      : req.headers['nginx-hostname'] || req.headers.hostname || req.hostname;
+  const hostname = Array.isArray(rawHostname) ? rawHostname[0] : rawHostname;
+  const subdomain = (hostname || '')
+    .replace(/(^\w+:|^)\/\//, '')
+    .split('.')[0];
   return subdomain;
 };
 
@@ -72,7 +90,9 @@ export const connectionOptions: mongoose.ConnectOptions = {
   family: 4,
 };
 
-export const authCookieOptions = (options: any = {}) => {
+export const authCookieOptions = (
+  options: Omit<CookieOptions, 'expires'> & { expires?: number } = {},
+): CookieOptions & { maxAge: number } => {
   const NODE_ENV = getEnv({ name: 'NODE_ENV' });
   const maxAge = options.expires || 14 * 24 * 60 * 60 * 1000;
 
@@ -88,21 +108,26 @@ export const authCookieOptions = (options: any = {}) => {
     maxAge,
     secure,
     ...options,
-  };
+  } as CookieOptions & { maxAge: number };
 
   return cookieOptions;
 };
 
-export const paginate = (
-  collection: any,
+export const paginate = <
+  TCollection extends {
+    limit(limit: number): TCollection;
+    skip(skip: number): TCollection;
+  },
+>(
+  collection: TCollection,
   params: {
     ids?: string[];
     page?: number;
     perPage?: number;
     excludeIds?: boolean;
   },
-) => {
-  const { page = 1, perPage = 20, ids, excludeIds } = params || { ids: null };
+): TCollection => {
+  const { page = 1, perPage = 20, ids, excludeIds } = params || {};
 
   const _page = Number(page || '1');
   const _limit = Number(perPage || '20');
@@ -139,7 +164,9 @@ export const regexSearchText = (
   searchValue: string,
   searchKey = 'searchText',
 ) => {
-  const result: any[] = [];
+  const result: Array<
+    Record<string, { $regex: string; $options: string }>
+  > = [];
 
   searchValue = searchValue.replaceAll(/\s\s+/g, ' ');
 
@@ -165,33 +192,37 @@ export const getCoreDomain = () => {
 export const escapeRegExp = (str: string) => {
   return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 };
-export const updateOrder = async (collection: any, orders: IOrderInput[]) => {
+export const updateOrder = async <TDocument extends { _id?: unknown }>(
+  collection: mongoose.Model<TDocument>,
+  orders: IOrderInput[],
+): Promise<TDocument[]> => {
   if (orders.length === 0) {
     return [];
   }
 
   const ids: string[] = [];
   const bulkOps: Array<{
-    updateOne: {
-      filter: { _id: string };
-      update: { order: number };
-    };
+    updateOne: { filter: { _id: string }; update: { order: number } };
   }> = [];
 
   for (const { _id, order } of orders) {
     ids.push(_id);
 
-    const selector: { order: number } = { order };
-
     bulkOps.push({
       updateOne: {
         filter: { _id },
-        update: selector,
+        update: { order },
       },
     });
   }
 
-  await collection.bulkWrite(bulkOps);
+  // Model.bulkWrite's op type is conditional on the document type and does
+  // not reduce for generics; the ops built here are plain driver write ops.
+  await collection.bulkWrite(
+    bulkOps as unknown as Parameters<
+      mongoose.Model<TDocument>['bulkWrite']
+    >[0],
+  );
 
   return collection.find({ _id: { $in: ids } }).sort({ order: 1 });
 };
@@ -244,7 +275,9 @@ const generateRandomEmail = () => {
 };
 
 export const getUniqueValue = async (
-  collection: any,
+  collection: {
+    findOne(filter: Record<string, unknown>): PromiseLike<unknown>;
+  },
   fieldName = 'code',
   defaultValue?: string,
 ) => {
@@ -316,8 +349,8 @@ export const getNextMonth = (date: Date): { start: number; end: number } => {
   return { start, end };
 };
 
-export const fixNum = (value: any, p = 4) => {
-  const cleanNumber = Number((value ?? '').toString().replaceAll(',', ''));
+export const fixNum = (value: unknown, p = 4) => {
+  const cleanNumber = Number(String(value ?? '').replaceAll(',', ''));
 
   if (Number.isNaN(cleanNumber)) {
     return 0;
@@ -474,24 +507,24 @@ export const generateRequestProcess = (incomingProcessId?: string) => {
   return { processId };
 };
 
-export function getDiffObjects<TDocument = any>(
+export function getDiffObjects<TDocument = unknown>(
   obj1: mongoose.Document<TDocument> | undefined,
   obj2: mongoose.Document<TDocument>,
 ) {
-  const plainObj1 = obj1?.toObject ? obj1.toObject() : obj1;
-  const plainObj2 = obj2?.toObject ? obj2.toObject() : obj2;
+  const plainObj1: unknown = obj1?.toObject ? obj1.toObject() : obj1;
+  const plainObj2: unknown = obj2?.toObject ? obj2.toObject() : obj2;
 
-  const added: Record<string, any> = {};
-  const removed: Record<string, any> = {};
-  const updated: Record<string, { prev: any; current: any }> = {};
+  const added: Record<string, unknown> = {};
+  const removed: Record<string, unknown> = {};
+  const updated: Record<string, { prev: unknown; current: unknown }> = {};
 
   function deepDiff(
-    oldObj: any,
-    newObj: any,
-    path: string = '',
-    addedAcc: Record<string, any>,
-    removedAcc: Record<string, any>,
-    updatedAcc: Record<string, { prev: any; current: any }>,
+    oldObj: unknown,
+    newObj: unknown,
+    path: string,
+    addedAcc: Record<string, unknown>,
+    removedAcc: Record<string, unknown>,
+    updatedAcc: Record<string, { prev: unknown; current: unknown }>,
   ) {
     // Handle null/undefined cases
     if (oldObj === null || oldObj === undefined) {
@@ -553,22 +586,25 @@ export function getDiffObjects<TDocument = any>(
     }
 
     // Get all keys from both objects
+    const oldRecord = oldObj as Record<string, unknown>;
+    const newRecord = newObj as Record<string, unknown>;
+
     const allKeys = new Set([
-      ...Object.keys(oldObj || {}),
-      ...Object.keys(newObj || {}),
+      ...Object.keys(oldRecord || {}),
+      ...Object.keys(newRecord || {}),
     ]);
 
     for (const key of allKeys) {
       const currentPath = path ? `${path}.${key}` : key;
-      const oldValue = oldObj?.[key];
-      const newValue = newObj?.[key];
+      const oldValue = oldRecord?.[key];
+      const newValue = newRecord?.[key];
 
       // Key exists in new but not in old
-      if (!(key in (oldObj || {})) && key in (newObj || {})) {
+      if (!(key in (oldRecord || {})) && key in (newRecord || {})) {
         _loadash.set(addedAcc, currentPath, newValue);
       }
       // Key exists in old but not in new
-      else if (key in (oldObj || {}) && !(key in (newObj || {}))) {
+      else if (key in (oldRecord || {}) && !(key in (newRecord || {}))) {
         _loadash.set(removedAcc, currentPath, oldValue);
       }
       // Key exists in both - need to compare

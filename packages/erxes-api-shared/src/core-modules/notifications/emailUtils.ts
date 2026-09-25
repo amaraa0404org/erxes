@@ -7,7 +7,7 @@ export const getUserDetail = async (subdomain: string, userId?: string) => {
     return;
   }
 
-  const user: IUserDocument = await sendTRPCMessage({
+  const user = await sendTRPCMessage<IUserDocument>({
     subdomain,
 
     pluginName: 'core',
@@ -15,7 +15,7 @@ export const getUserDetail = async (subdomain: string, userId?: string) => {
     module: 'users',
     action: 'findOne',
     input: { query: { _id: userId } },
-    defaultValue: {},
+    defaultValue: {} as IUserDocument,
   });
 
   if (user.details) {

@@ -5,7 +5,13 @@ import {
 } from 'express';
 import { IUserDocument } from '../../core-types';
 import { checkPermissionGroup } from '../../core-modules/permissions/utils';
-import { createPluginTRPCContext, err, ok, sendTRPCMessage } from '../trpc';
+import {
+  createPluginTRPCContext,
+  err,
+  ok,
+  sendTRPCMessage,
+  TRPCContext,
+} from '../trpc';
 import { decodeAgentToolsAuthHeader } from './auth';
 import { buildAgentToolManifest } from './manifest';
 import {
@@ -26,7 +32,7 @@ export interface AgentToolsOptions {
   trpcRouter?: AgentTrpcRouter;
   createContext?: (
     subdomain: string,
-    context: Record<string, unknown>,
+    context: TRPCContext,
   ) => Promise<unknown>;
   /** Prefixes of tRPC procedure paths to keep out of the manifest. */
   exclude?: string[];
@@ -207,7 +213,7 @@ export const mountAgentTools = (
           );
       }
 
-      const user = (await sendTRPCMessage({
+      const user = await sendTRPCMessage<IUserDocument | null>({
         subdomain,
         pluginName: 'core',
         module: 'users',
@@ -215,7 +221,7 @@ export const mountAgentTools = (
         method: 'query',
         input: { query: { _id: userId } },
         defaultValue: null,
-      })) as IUserDocument | null;
+      });
 
       if (!user) {
         return res

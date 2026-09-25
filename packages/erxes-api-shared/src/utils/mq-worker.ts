@@ -42,7 +42,7 @@ const makeQueueSerializable = (queue: Queue) => {
 export const createMQWorkerWithListeners = (
   service: string,
   queueName: string,
-  processor: (job: Job) => Promise<any>,
+  processor: (job: Job) => Promise<unknown>,
   redis: Redis,
   onReady: () => void,
   workerOptions: Omit<WorkerOptions, 'connection'> = {},
@@ -109,8 +109,8 @@ export const sendWorkerMessage = async ({
   queueName: string;
   jobName: string;
   subdomain: string;
-  data: any;
-  defaultValue?: any;
+  data: unknown;
+  defaultValue?: unknown;
   timeout?: number;
   options?: DefaultJobOptions;
 }) => {

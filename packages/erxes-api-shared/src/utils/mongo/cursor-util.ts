@@ -39,8 +39,11 @@ export interface CursorResult<T> {
   pageInfo: PageInfo;
 }
 
-export const encodeCursor = (item: any, sortFields: string[]): string => {
-  const cursorData: any = {};
+export const encodeCursor = (
+  item: Record<string, unknown>,
+  sortFields: string[],
+): string => {
+  const cursorData: Record<string, unknown> = {};
 
   for (const field of sortFields) {
     if (item[field] !== undefined) {
@@ -49,19 +52,22 @@ export const encodeCursor = (item: any, sortFields: string[]): string => {
   }
 
   // Handle ObjectId serialization
-  cursorData._id =
-    item._id instanceof Types.ObjectId ? item._id.toString() : item._id;
+  const id = item._id;
+  cursorData._id = id instanceof Types.ObjectId ? id.toString() : id;
 
   return Buffer.from(JSON.stringify(cursorData)).toString('base64');
 };
 
-export const decodeCursor = (cursor: string): any => {
+export const decodeCursor = (cursor: string): Record<string, unknown> => {
   try {
-    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString());
+    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString()) as
+      Record<string, unknown>;
 
     // Convert _id back to ObjectId if it's a valid ObjectId string
-    if (decoded._id && Types.ObjectId.isValid(decoded._id)) {
-      decoded._id = new Types.ObjectId(decoded._id);
+    const id = decoded._id as string | number | Types.ObjectId | undefined;
+
+    if (id && Types.ObjectId.isValid(id)) {
+      decoded._id = new Types.ObjectId(id);
     }
 
     return decoded;
@@ -71,12 +77,12 @@ export const decodeCursor = (cursor: string): any => {
 };
 
 type CursorFieldType = 'date' | 'number' | 'boolean';
-const convertValue = (value: any, type: CursorFieldType) => {
+const convertValue = (value: unknown, type: CursorFieldType) => {
   if (value == null) return value;
 
   switch (type) {
     case 'date':
-      return new Date(value);
+      return new Date(value as string | number | Date);
     case 'number':
       return fixNum(value, 10);
     case 'boolean':
@@ -91,7 +97,7 @@ export const buildCursorQuery = (
   orderBy: Record<string, SortOrder>,
   direction: 'forward' | 'backward',
   formatter?: Record<string, CursorFieldType>,
-): Record<string, any> => {
+): Record<string, unknown> => {
   const cursorData = decodeCursor(cursor);
 
   if (formatter) {
@@ -109,14 +115,14 @@ export const buildCursorQuery = (
     return { _id: { [operator]: cursorData._id } };
   }
 
-  const orConditions: Record<string, any>[] = [];
+  const orConditions: Record<string, unknown>[] = [];
 
   for (let i = 0; i < sortFields.length; i++) {
     const field = sortFields[i];
     const sortOrder = orderBy[field];
     const isAscending = sortOrder === 1 || sortOrder === 'asc';
 
-    const condition: Record<string, any> = {};
+    const condition: Record<string, unknown> = {};
 
     for (let j = 0; j < i; j++) {
       const prevField = sortFields[j];
@@ -138,7 +144,7 @@ export const buildCursorQuery = (
     }
   }
 
-  const finalCondition: Record<string, any> = {};
+  const finalCondition: Record<string, unknown> = {};
   for (const field of sortFields) {
     if (cursorData[field] !== undefined) {
       finalCondition[field] = cursorData[field];

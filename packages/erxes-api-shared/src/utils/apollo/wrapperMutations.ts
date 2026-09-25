@@ -3,8 +3,11 @@ import { GraphQLResolveInfo } from 'graphql';
 import { logHandler } from '../logs';
 import { runBeforeResolvers } from './runBeforeResolvers';
 
-type GraphqlLogHandler<TArgs = any, TReturn = any> = (
-  root: any,
+type GraphqlLogHandler<
+  TArgs = Record<string, unknown>,
+  TReturn = unknown,
+> = (
+  root: unknown,
   args: TArgs,
   context: { subdomain: string } & IMainContext,
   info: GraphQLResolveInfo,
@@ -40,7 +43,7 @@ const withBefore = (
   return async (root, args, context, info) => {
     const { subdomain, user } = context;
 
-    const headers = (context as any).requestInfo?.headers || (context as any).req?.headers;
+    const headers = context.requestInfo?.headers || context.req?.headers;
 
     const result = await runBeforeResolvers(resolverKey, args, {
       subdomain,

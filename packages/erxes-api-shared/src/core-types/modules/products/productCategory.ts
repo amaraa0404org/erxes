@@ -8,9 +8,13 @@ export interface IProductCategory {
   description?: string;
   meta?: string;
   parentId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — attachment
+  // documents are owned by the file/core attachment contract
   attachment?: any;
   status?: string;
   maskType?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — mask
+  // payloads are variant-shaped per maskType
   mask?: any;
   isSimilarity?: boolean;
   similarities?: {

@@ -1,5 +1,5 @@
 import { BlobServiceClient } from '@azure/storage-blob';
-import { Storage } from '@google-cloud/storage';
+import { Storage, type File } from '@google-cloud/storage';
 import AWS from 'aws-sdk';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -323,24 +323,26 @@ const uploadToAWS = async (
   const finalFileName = `${awsPrefix}${randomAlphanumeric()}${sanitizedFilename}`;
   const buffer = await fs.promises.readFile(filePath);
 
-  const response: any = await new Promise((resolve, reject) => {
-    s3.upload(
-      {
-        ContentType: mimetype,
-        Bucket: bucket,
-        Key: finalFileName,
-        Body: buffer,
-        ...(isPublic && !disableAcl ? { ACL: 'public-read' } : {}),
-      },
-      (err, res) => {
-        if (err) {
-          return reject(err);
-        }
+  const response = await new Promise<AWS.S3.ManagedUpload.SendData>(
+    (resolve, reject) => {
+      s3.upload(
+        {
+          ContentType: mimetype,
+          Bucket: bucket,
+          Key: finalFileName,
+          Body: buffer,
+          ...(isPublic && !disableAcl ? { ACL: 'public-read' } : {}),
+        },
+        (err, res) => {
+          if (err) {
+            return reject(err);
+          }
 
-        return resolve(res);
-      },
-    );
-  });
+          return resolve(res);
+        },
+      );
+    },
+  );
 
   return isPublic ? response.Location : finalFileName;
 };
@@ -376,7 +378,7 @@ const uploadToGCS = async (
   const bucketClient = storage.bucket(bucket);
   const finalFileName = `${randomAlphanumeric()}${sanitizedFilename}`;
 
-  const response: any = await new Promise((resolve, reject) => {
+  const response = await new Promise<File>((resolve, reject) => {
     bucketClient.upload(
       filePath,
       {
@@ -397,7 +399,7 @@ const uploadToGCS = async (
 
   const { metadata, name } = response;
 
-  return isPublic ? metadata.mediaLink : name;
+  return isPublic && metadata.mediaLink ? metadata.mediaLink : name;
 };
 
 const uploadToCloudflare = async (
@@ -452,24 +454,26 @@ const uploadToCloudflare = async (
   const buffer = await fs.promises.readFile(filePath);
   const r2 = createCloudflareR2Client(configs);
 
-  const response: any = await new Promise((resolve, reject) => {
-    r2.upload(
-      {
-        ContentType: mimetype,
-        Bucket: bucketName,
-        Key: finalFileName,
-        Body: buffer,
-        ...(isPublic ? { ACL: 'public-read' } : {}),
-      },
-      (err, res) => {
-        if (err) {
-          return reject(err);
-        }
+  const response = await new Promise<AWS.S3.ManagedUpload.SendData>(
+    (resolve, reject) => {
+      r2.upload(
+        {
+          ContentType: mimetype,
+          Bucket: bucketName,
+          Key: finalFileName,
+          Body: buffer,
+          ...(isPublic ? { ACL: 'public-read' } : {}),
+        },
+        (err, res) => {
+          if (err) {
+            return reject(err);
+          }
 
-        return resolve(res);
-      },
-    );
-  });
+          return resolve(res);
+        },
+      );
+    },
+  );
 
   return isPublic ? response.Location : finalFileName;
 };

@@ -5,17 +5,18 @@ import { initializePluginConfig } from '../service-discovery';
 import { Express } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { initTRPC } from '@trpc/server';
+import type { RouterRecord } from '@trpc/server/unstable-core-do-not-import';
 import { createTRPCContext } from '../trpc';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
-export const logHandler = async (
-  resolver: () => Promise<any> | any,
+export const logHandler = async <TResult>(
+  resolver: () => Promise<TResult> | TResult,
   logDoc: ILogDoc,
-  onSuccess?: any,
-  onError?: any,
+  onSuccess?: Record<string, unknown> | null,
+  onError?: Record<string, unknown> | null,
   skipSaveResult?: boolean,
-) => {
+): Promise<TResult> => {
   if (!(await checkServiceRunning('logs'))) {
     return await resolver();
   }
@@ -118,8 +119,8 @@ export interface AfterProcessConfigs {
     args: {
       data: {
         mutationName: string;
-        args: { [key: string]: any };
-        result: any;
+        args: Record<string, unknown>;
+        result: unknown;
         userId?: string;
       };
     },
@@ -128,18 +129,18 @@ export interface AfterProcessConfigs {
     context: IContext,
     args: { userId: string; email: string; result: string },
   ) => void;
-  afterApiRequest?: (context: IContext, args: any) => void;
-  afterDocumentUpdated?: <TDocument = any>(
+  afterApiRequest?: (context: IContext, args: unknown) => void;
+  afterDocumentUpdated?: <TDocument = unknown>(
     context: IContext,
     args: {
       data: {
         collectionName: string;
         docId: string;
-        prevDocument?: any;
-        currentDocument?: any;
+        prevDocument?: TDocument;
+        currentDocument?: TDocument;
         updateDescription: {
-          added: { [key: string]: any };
-          updated: { [key: string]: any };
+          added: Record<string, unknown>;
+          updated: Record<string, unknown>;
           removed: string[];
         };
         userId: string;
@@ -148,13 +149,13 @@ export interface AfterProcessConfigs {
       };
     },
   ) => void;
-  afterDocumentCreated?: <TDocument = any>(
+  afterDocumentCreated?: <TDocument = unknown>(
     context: IContext,
     args: {
       data: {
         collectionName: string;
         docId: string;
-        currentDocument?: any;
+        currentDocument?: TDocument;
         userId: string;
         processId: string;
         contentType: string;
@@ -163,23 +164,23 @@ export interface AfterProcessConfigs {
   ) => void;
 }
 
-export interface AfterProcessModuleConfig<TModels = any> {
+export interface AfterProcessModuleConfig<TModels = unknown> {
   rules: IAfterProcessRule[];
   createdDocument?: Record<
     string,
-    (models: TModels, data: any) => Promise<void>
+    (models: TModels, data: unknown) => Promise<void>
   >;
   updatedDocument?: Record<
     string,
-    (subdomain: string, models: TModels, data: any) => Promise<void>
+    (subdomain: string, models: TModels, data: unknown) => Promise<void>
   >;
   afterMutation?: Record<
     string,
-    (subdomain: string, models: TModels, data: any) => Promise<void>
+    (subdomain: string, models: TModels, data: unknown) => Promise<void>
   >;
 }
 
-export interface AfterProcessModules<TModels = any> {
+export interface AfterProcessModules<TModels = unknown> {
   [moduleName: string]: AfterProcessModuleConfig<TModels>;
 }
 
@@ -200,7 +201,7 @@ export const startAfterProcess = async (
     afterDocumentCreated,
   } = config || {};
 
-  const routes: Record<string, any> = {};
+  const routes: RouterRecord = {};
 
   if (afterMutation) {
     routes.afterMutation = t.procedure

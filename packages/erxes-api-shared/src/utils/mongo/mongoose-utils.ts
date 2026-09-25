@@ -25,7 +25,11 @@ export interface IOrderInput {
   order: number;
 }
 
-export const mongooseField = (options: any) => {
+export const mongooseField = <
+  TOptions extends mongoose.SchemaTypeOptions<unknown>,
+>(
+  options: TOptions,
+): TOptions => {
   const { pkey, type, optional } = options;
 
   if (type === String && !pkey && !optional) {
@@ -40,10 +44,15 @@ export const mongooseField = (options: any) => {
   return options;
 };
 
-export const updateMongoDocumentOrder = async (
-  collection: any,
+export const updateMongoDocumentOrder = async <TDocument>(
+  collection: {
+    bulkWrite(ops: object[]): Promise<unknown>;
+    find(filter: { _id: { $in: string[] } }): {
+      sort(sort: Record<string, unknown>): PromiseLike<TDocument[]>;
+    };
+  },
   orders: IOrderInput[],
-) => {
+): Promise<TDocument[]> => {
   if (orders.length === 0) {
     return [];
   }
@@ -74,16 +83,21 @@ export const updateMongoDocumentOrder = async (
   return collection.find({ _id: { $in: ids } }).sort({ order: 1 });
 };
 
-export const defaultPaginate = (
-  collection: mongoose.Query<any, any>,
+export const defaultPaginate = <
+  TCollection extends {
+    limit(limit: number): TCollection;
+    skip(skip: number): TCollection;
+  },
+>(
+  collection: TCollection,
   params: {
     ids?: string[];
     page?: number;
     perPage?: number;
     excludeIds?: boolean;
   },
-) => {
-  const { page = 1, perPage = 20, ids, excludeIds } = params || { ids: null };
+): TCollection => {
+  const { page = 1, perPage = 20, ids, excludeIds } = params || {};
 
   const _page = Number(page || '1');
   const _limit = Number(perPage || '20');
@@ -195,7 +209,7 @@ export async function cursorPaginateAggregation<T>({
   }
 
   // --- sorting ---
-  aggPipeline.push({ $sort: orderBy as any });
+  aggPipeline.push({ $sort: orderBy as PipelineStage.Sort['$sort'] });
 
   // --- unwind if needed ---
   if (uniqConcatFields) {
@@ -252,7 +266,9 @@ export async function cursorPaginateAggregation<T>({
 }
 
 export const checkCollectionCodeDuplication = async (
-  collection: any,
+  collection: {
+    findOne(filter: Record<string, unknown>): PromiseLike<unknown>;
+  },
   code: string,
 ) => {
   if (code.includes('/')) {

@@ -10,7 +10,7 @@ const documentQuerySchema = z.record(z.unknown());
 
 /** Resolve the tenant-scoped acting user for document approval checks. */
 const getDocumentUser = async (
-  ctx: Awaited<ReturnType<CoreTRPCContext>>,
+  ctx: CoreTRPCContext,
 ): Promise<DocumentAccessUser | undefined> => {
   if (!ctx.userId) return undefined;
   const user = await ctx.models.Users.findOne({ _id: ctx.userId })

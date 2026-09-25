@@ -62,8 +62,26 @@ const toDomainSender = (domain: TSendgridDomain): ISender => ({
   dnsRecords: toDnsRecords(domain.dns),
 });
 
-const toSendError = (error: any) => {
-  const response = error?.response;
+interface ISendgridErrorResponse {
+  statusCode?: number;
+  body?: unknown;
+}
+
+/** Response shape returned by `@sendgrid/mail`'s `MailService.send`. */
+interface ISendgridClientResponse {
+  headers?: Record<string, string>;
+}
+
+/** Structural subset of `MailService`; the SDK is loaded via `require`. */
+interface ISendgridMailer {
+  send(
+    payload: Record<string, unknown>,
+  ): Promise<ISendgridClientResponse[]>;
+}
+
+const toSendError = (error: unknown) => {
+  const response = (error as { response?: ISendgridErrorResponse } | null)
+    ?.response;
 
   if (!response) {
     return error;
@@ -83,7 +101,7 @@ export class SendgridEmailProvider implements IEmailProvider {
 
   private apiKey: string;
   private subuser?: string;
-  private mailer: any;
+  private mailer: ISendgridMailer;
 
   constructor(config: IEmailProviderConfig) {
     if (!config.SENDGRID_API_KEY) {
@@ -121,7 +139,7 @@ export class SendgridEmailProvider implements IEmailProvider {
       customArgs: message.customArgs,
     };
 
-    let response: any;
+    let response: ISendgridClientResponse | undefined;
 
     try {
       [response] = await this.mailer.send(payload);

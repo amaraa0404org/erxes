@@ -1,10 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
+import type { HeaderDoc, IUserDocument } from '../../core-types';
 
 export const userHeaderName = 'user';
 export const clientPortalHeaderName = 'clientportal';
 export const cpUserHeaderName = 'cpuser';
 
-export function extractUserFromHeader(headers: IncomingHttpHeaders): any {
+export function extractUserFromHeader(
+  headers: IncomingHttpHeaders,
+): IUserDocument | null {
   const userHeader = headers[userHeaderName];
   if (!userHeader) {
     return null;
@@ -13,10 +16,12 @@ export function extractUserFromHeader(headers: IncomingHttpHeaders): any {
     throw new Error(`Multiple user headers`);
   }
   const userJson = Buffer.from(userHeader, 'base64').toString('utf-8');
-  return JSON.parse(userJson);
+  return JSON.parse(userJson) as IUserDocument;
 }
 
-export function extractCPUserFromHeader(headers: IncomingHttpHeaders): any {
+export function extractCPUserFromHeader(
+  headers: IncomingHttpHeaders,
+): HeaderDoc | null {
   const cpUserHeader = headers[cpUserHeaderName];
 
   if (!cpUserHeader) {
@@ -32,7 +37,7 @@ export function extractCPUserFromHeader(headers: IncomingHttpHeaders): any {
 
 export function extractClientPortalFromHeader(
   headers: IncomingHttpHeaders,
-): any {
+): HeaderDoc | null {
   const clientPortalHeader = headers[clientPortalHeaderName];
 
   if (!clientPortalHeader) {
@@ -70,7 +75,7 @@ function encodeHeader(name: string, id: string, value: unknown): string {
   return encoded;
 }
 
-export function compactUserForHeader<T extends Record<string, unknown>>(
+export function compactUserForHeader<T extends object>(
   user: T,
 ): Omit<T, (typeof USER_HEADER_OMITTED_FIELDS)[number]> {
   const omitted: readonly string[] = USER_HEADER_OMITTED_FIELDS;
@@ -80,28 +85,34 @@ export function compactUserForHeader<T extends Record<string, unknown>>(
   ) as Omit<T, (typeof USER_HEADER_OMITTED_FIELDS)[number]>;
 }
 
-export function setUserHeader(headers: IncomingHttpHeaders, user: any) {
+export function setUserHeader(
+  headers: IncomingHttpHeaders,
+  user: { _id?: unknown } | null | undefined,
+) {
   if (!user) return;
   headers[userHeaderName] = encodeHeader(
     userHeaderName,
-    user._id,
+    String(user._id ?? ''),
     compactUserForHeader(user),
   );
-  headers['userid'] = user._id || '';
+  headers['userid'] = user._id ? String(user._id) : '';
 }
 
-export function setCPUserHeader(headers: IncomingHttpHeaders, cpUser: any) {
+export function setCPUserHeader(
+  headers: IncomingHttpHeaders,
+  cpUser: { _id?: unknown } | null | undefined,
+) {
   if (!cpUser) return;
   headers[cpUserHeaderName] = encodeHeader(
     cpUserHeaderName,
-    cpUser._id,
+    String(cpUser._id ?? ''),
     cpUser,
   );
 }
 
 export function setClientPortalHeader(
   headers: IncomingHttpHeaders,
-  clientPortal: any,
+  clientPortal: unknown,
 ) {
   if (!clientPortal) return;
   const clientPortalJson = JSON.stringify(clientPortal);

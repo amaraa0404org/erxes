@@ -32,7 +32,9 @@ type TModuleProducerInputMap = {
     [K in TSegmentProducers]: TSegmentProducersInput[K];
   };
   afterProcess: {
-    [K in TAfterProcessProducers]: any;
+    // After-process producer payloads are free-form log/event documents whose
+    // shape is declared by each plugin's AfterProcessConfigs; no shared schema.
+    [K in TAfterProcessProducers]: unknown;
   };
   beforeResolvers: {
     [K in TBeforeResolversProducers]: TBeforeResolversProducersInput[K];
@@ -53,6 +55,11 @@ type TCoreModuleProducer<
     keyof TModuleProducerInputMap,
   TProducerName extends keyof TModuleProducerInputMap[TModuleName] =
     keyof TModuleProducerInputMap[TModuleName],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — dynamic
+  // cross-service producer boundary: producers are discovered at runtime, so
+  // `any` keeps existing callers compiling; an explicit `TOutput` remains
+  // available for caller-declared outputs.
+  TOutput = any,
 > = {
   subdomain: string;
   moduleName: TModuleName;
@@ -60,7 +67,9 @@ type TCoreModuleProducer<
   method?: 'query' | 'mutation';
   pluginName: string;
   input: TModuleProducerInputMap[TModuleName][TProducerName];
-  defaultValue?: any;
+  // `NoInfer` keeps `defaultValue: []`/`null` from narrowing TOutput when the
+  // caller did not declare an output type.
+  defaultValue?: NoInfer<TOutput>;
   options?: TRPCRequestOptions;
   context?: TRPCContext;
 };
@@ -70,6 +79,10 @@ export const sendCoreModuleProducer = async <
     keyof TModuleProducerInputMap,
   TProducerName extends keyof TModuleProducerInputMap[TModuleName] =
     keyof TModuleProducerInputMap[TModuleName],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see
+  // TCoreModuleProducer: dynamic boundary, `TOutput` available for
+  // caller-declared outputs.
+  TOutput = any,
 >({
   subdomain,
   moduleName,
@@ -80,9 +93,11 @@ export const sendCoreModuleProducer = async <
   defaultValue,
   options,
   context,
-}: TCoreModuleProducer<TModuleName, TProducerName>): Promise<any> => {
+}: TCoreModuleProducer<TModuleName, TProducerName, TOutput>): Promise<
+  TOutput
+> => {
   if (pluginName && !(await isEnabled(pluginName))) {
-    return defaultValue;
+    return defaultValue as TOutput;
   }
 
   const pluginInfo = await getPlugin(pluginName);
@@ -92,7 +107,7 @@ export const sendCoreModuleProducer = async <
     console.warn(
       `Plugin "${pluginName}" address is not available. Returning defaultValue.`,
     );
-    return defaultValue;
+    return defaultValue as TOutput;
   }
   const contextHeader = encodeTRPCContextHeader(subdomain, method, context);
 
@@ -116,10 +131,18 @@ export const sendCoreModuleProducer = async <
       options,
     );
 
-    return result || defaultValue;
-  } catch (error: any) {
-    const errorMessage = error?.message || 'Unknown error';
-    const errorCode = error?.cause?.code || error?.code;
+    return (result || defaultValue) as TOutput;
+  } catch (error) {
+    const trpcError =
+      error !== null && typeof error === 'object'
+        ? (error as {
+            message?: string;
+            code?: string;
+            cause?: { code?: string };
+          })
+        : {};
+    const errorMessage = trpcError.message || 'Unknown error';
+    const errorCode = trpcError.cause?.code || trpcError.code;
 
     if (errorCode === 'ECONNREFUSED') {
       console.warn(

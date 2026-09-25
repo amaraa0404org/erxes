@@ -24,7 +24,7 @@ interface PluginConfig {
   name: string;
   port: number;
   hasSubscriptions?: boolean;
-  meta?: any;
+  meta?: Record<string, unknown>;
   uiRemoteEntry?: string;
 }
 
@@ -92,6 +92,10 @@ export const getAvailablePlugins = async (
   }
 };
 
+// `config` is the plugin-authored JSON blob stored in Redis; consumers read
+// deep plugin-defined paths (e.g. `config.meta.afterProcess`), so it stays a
+// dynamic boundary.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ServiceInfo = { address: string; config: any };
 type CacheEntry<T> = { value: T; expiresAt: number };
 

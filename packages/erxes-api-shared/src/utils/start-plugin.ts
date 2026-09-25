@@ -4,6 +4,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import * as trpcExpress from '@trpc/server/adapters/express';
+import type { AnyTRPCRouter } from '@trpc/server';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
@@ -16,6 +17,7 @@ import express, {
 import { DocumentNode, GraphQLScalarType } from 'graphql';
 import * as fs from 'fs';
 import * as http from 'http';
+import { IncomingMessage } from 'http';
 import * as path from 'path';
 import rateLimit from 'express-rate-limit';
 import { startPayments } from '../common-modules/payment/worker';
@@ -35,13 +37,18 @@ import {
 import { AutomationConfigs } from '../core-modules/automations/types';
 import type { ImportExportConfigs } from '../core-modules/import-export/types';
 import { startImportExportWorker } from '../core-modules/import-export/worker';
-import { IMainContext, IPermissionConfig } from '../core-types';
+import {
+  AnyResolver,
+  IMainContext,
+  IPermissionConfig,
+} from '../core-types';
 import {
   generateApolloContext,
   startBeforeResolvers,
   wrapApolloResolvers,
   expectedErrorPlugin,
 } from './apollo';
+import type { AgentTrpcRouter } from './agent-tools/types';
 import { BeforeResolversConfig } from './apollo/beforeResolvers';
 import { extractUserFromHeader } from './headers';
 import { AfterProcessConfigs, logHandler, startAfterProcess } from './logs';
@@ -51,7 +58,7 @@ import {
   joinErxesGateway,
   leaveErxesGateway,
 } from './service-discovery';
-import { createTRPCContext } from './trpc';
+import { createTRPCContext, TRPCContext } from './trpc';
 import { mountAgentTools } from './agent-tools';
 import { applyTrustProxy, getSubdomain } from './utils';
 import * as Sentry from '@sentry/node';
@@ -84,9 +91,19 @@ type IMeta = {
   segments?: SegmentConfigs;
   logs?: LogsConfigs;
   afterProcess?: AfterProcessConfigs;
-  payments?: any;
-  notifications?: any;
-  tags?: any;
+  payments?: Record<
+    string,
+    (context: { subdomain: string }, data: unknown) => unknown
+  >;
+  notifications?: Record<string, unknown>;
+  tags?: {
+    types?: Array<{
+      type: string;
+      description?: string;
+      [key: string]: unknown;
+    }>;
+    [key: string]: unknown;
+  };
   documents?: {
     types: {
       label: string;
@@ -109,12 +126,10 @@ type ApiHandler = {
   path: string;
   resolver: (req: ApiRequest, res: ApiResponse) => Promise<void> | void;
 };
-type ResolverObject = {
-  [key: string]: (...args: any[]) => any;
-};
+type ResolverObject = Record<string, AnyResolver>;
 
 type GraphqlResolver = {
-  [key: string]: ResolverObject | GraphQLScalarType;
+  [key: string]: ResolverObject | GraphQLScalarType | AnyResolver;
 };
 
 type ConfigTypes = {
@@ -127,22 +142,27 @@ type ConfigTypes = {
   expressRouter?: Router;
   apolloServerContext: (
     subdomain: string,
-    context: any,
+    context: IMainContext,
     req: ApiRequest,
     res: ApiResponse,
   ) => Promise<IMainContext>;
   onServerInit?: (app: express.Express) => Promise<void>;
-  middlewares?: any;
+  middlewares?: express.RequestHandler[];
   apiHandlers?: ApiHandler[];
   hasSubscriptions?: boolean;
-  corsOptions?: any;
-  subscriptionPluginPath?: any;
+  corsOptions?: cors.CorsOptions;
+  subscriptionPluginPath?: string;
   trpcAppRouter?: {
-    router: any;
-    createContext: <TContext>(
+    /**
+     * Structural (rather than `AnyTRPCRouter`) so plugins bundling their own
+     * `@trpc/server` instance still typecheck — nominal internals differ
+     * across duplicated installs.
+     */
+    router: AgentTrpcRouter;
+    createContext: (
       subdomain: string,
-      context: any,
-    ) => Promise<TContext>;
+      context: TRPCContext,
+    ) => Promise<TRPCContext>;
   };
   /**
    * tRPC procedure paths to exclude from the agent capability manifest.
@@ -208,7 +228,11 @@ export async function startPlugin(
   app.use(
     express.json({
       limit: '15mb',
-      verify: (req: any, _res, buf: Buffer) => {
+      verify: (
+        req: IncomingMessage & { rawBody?: Buffer },
+        _res,
+        buf: Buffer,
+      ) => {
         req.rawBody = buf;
       },
     }),
@@ -325,7 +349,10 @@ export async function startPlugin(
     app.use(
       '/trpc',
       trpcExpress.createExpressMiddleware({
-        router,
+        // The plugin-supplied router is structurally typed (AgentTrpcRouter)
+        // to tolerate a plugin-bundled @trpc/server instance; the express
+        // adapter needs the nominal AnyTRPCRouter, so cast here.
+        router: router as AnyTRPCRouter,
         createContext: createTRPCContext(createContext),
       }),
     );
@@ -344,26 +371,19 @@ export async function startPlugin(
     });
   }
 
-  app.use((req: any, _res, next) => {
-    if (req.rawBody === undefined) {
-      req.rawBody = '';
+  app.use(
+    (req: ApiRequest & { rawBody?: Buffer | string }, _res, next) => {
+      if (req.rawBody === undefined) {
+        req.rawBody = '';
 
-      req.on('data', (chunk: any) => {
-        req.rawBody += chunk.toString();
-      });
-    }
+        req.on('data', (chunk: Buffer | string) => {
+          req.rawBody = `${req.rawBody}` + chunk.toString();
+        });
+      }
 
-    next();
-  });
-
-  // Error handling middleware
-  // app.use((error: any, _req: any, res: any) => {
-  //   const msg = filterXSS(error.message);
-
-  //   // debugError(`Error: ${msg}`);
-
-  //   res.status(500).send(msg);
-  // });
+      next();
+    },
+  );
 
   const httpServer = http.createServer(
     { maxHeaderSize: MAX_HEADER_BYTES },
@@ -420,7 +440,7 @@ export async function startPlugin(
       schema: buildSubgraphSchema([
         {
           typeDefs,
-          resolvers: wrapApolloResolvers(resolvers as any),
+          resolvers: wrapApolloResolvers(resolvers),
         },
       ]),
 

@@ -418,6 +418,13 @@ export interface IModels {
 
 export interface IContext extends IMainContext {
   models: IModels;
+  /**
+   * Client-portal documents forwarded through request headers. Declared
+   * non-null like `user` — CP resolvers are gated by `cpUserRequired` /
+   * `forClientPortal` wrappers or guard with truthy checks before use.
+   */
+  cpUser: ICPUserDocument;
+  clientPortal: IClientPortalDocument;
   commonQuerySelector: any;
   subdomain: string;
 }

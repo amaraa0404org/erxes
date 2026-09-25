@@ -4,6 +4,8 @@ export interface ILogDoc {
   subdomain: string;
   source: 'webhook' | 'graphql' | 'mongo' | 'auth';
   action: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — persisted
+  // log payload is arbitrary per source/action
   payload: any;
   userId?: string;
   executionTime?: {
@@ -19,6 +21,8 @@ export interface ILog {
   createdAt: Date;
   userId?: string;
   status: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — persisted
+  // log payload is arbitrary per source/action
   payload?: any;
   action?: string;
   docId?: string;

@@ -1,5 +1,11 @@
 import { keyBy } from 'lodash';
-import { IBrand, ICustomer, IProduct, IUser } from '../core-types';
+import {
+  IBrand,
+  ICustomField,
+  ICustomer,
+  IProduct,
+  IUser,
+} from '../core-types';
 import { isValidURL } from './string';
 import { sendTRPCMessage } from './trpc';
 
@@ -8,12 +14,33 @@ export interface IReplacer {
   value: string;
 }
 
+/**
+ * Deal/ticket/task-shaped record consumed by `{{ item* }}` replacers. The
+ * concrete doc type lives in the owning plugin, so this stays structural.
+ */
+export interface IEditorItem {
+  name?: string;
+  description?: string;
+  closeDate?: string | number | Date;
+  createdAt?: string | number | Date;
+  modifiedAt?: string | number | Date;
+  contentType?: string;
+  productsData?: IProduct[];
+  customFieldsData?: ICustomField[];
+}
+
+/** Field metadata returned by the `fields.find` core query. */
+export interface IEditorFieldMeta {
+  _id: string;
+  type?: string;
+}
+
 export interface IArgs {
   content: string;
-  customer?: any;
+  customer?: ICustomer;
   user?: IUser;
   customerFields?: string[];
-  item?: any;
+  item?: IEditorItem;
   brand?: IBrand;
 }
 
@@ -95,9 +122,11 @@ export class EditorAttributeUtil {
   }
 
   async customFieldsDataItemToFileLink(
-    customFieldDataItem: any,
+    customFieldDataItem: ICustomField,
   ): Promise<string> {
-    const value = customFieldDataItem.value;
+    const value = customFieldDataItem.value as
+      | { url?: string; name?: string }
+      | Array<{ url?: string; name?: string }>;
 
     if (Array.isArray(value)) {
       const links = await Promise.all(
@@ -110,7 +139,7 @@ export class EditorAttributeUtil {
   }
 
   async getPossibleCustomerFields(): Promise<ICustomerField[]> {
-    this._possibleCustomerFields ??= await sendTRPCMessage({
+    this._possibleCustomerFields ??= await sendTRPCMessage<ICustomerField[]>({
       subdomain: this.subdomain,
 
       pluginName: 'core',
@@ -156,7 +185,7 @@ export class EditorAttributeUtil {
 
   async fillMissingCustomFieldsDataItemOfCustomer(
     content: string,
-    customer: any,
+    customer: ICustomer,
   ): Promise<void> {
     if (!customer.customFieldsData) {
       customer.customFieldsData = [];
@@ -187,11 +216,13 @@ export class EditorAttributeUtil {
     }
   }
 
-  async generateAmounts(productsData: IProduct[]) {
+  async generateAmounts(
+    productsData?: IProduct[],
+  ): Promise<Record<string, unknown>> {
     if (!this.availableServices.has('sales')) {
       throw new Error('Sales service is not running.');
     }
-    return sendTRPCMessage({
+    return sendTRPCMessage<Record<string, unknown>>({
       subdomain: this.subdomain,
       pluginName: 'sales',
       method: 'query',
@@ -201,12 +232,14 @@ export class EditorAttributeUtil {
     });
   }
 
-  async generateProducts(productsData: IProduct[]): Promise<any> {
+  async generateProducts(
+    productsData?: IProduct[],
+  ): Promise<Array<{ product: { name: string } }>> {
     if (!this.availableServices.has('sales')) {
       throw new Error('Sales service is not running.');
     }
 
-    return sendTRPCMessage({
+    return sendTRPCMessage<Array<{ product: { name: string } }>>({
       subdomain: this.subdomain,
       pluginName: 'sales',
       method: 'query',
@@ -236,7 +269,7 @@ export class EditorAttributeUtil {
         value: getCustomerName(customer) || 'Unknown',
       });
 
-      const fields = await sendTRPCMessage({
+      const fields = await sendTRPCMessage<ICustomerField[]>({
         subdomain: this.subdomain,
 
         pluginName: 'core',
@@ -262,7 +295,9 @@ export class EditorAttributeUtil {
             ? 'trackedData'
             : 'customFieldsData';
 
-          for (const customFieldsDataItem of customer[dbFieldName] || []) {
+          for (const customFieldsDataItem of customer[
+            dbFieldName as 'trackedData' | 'customFieldsData'
+          ] || []) {
             const replaceValue = customerFileFieldsById[
               customFieldsDataItem.field
             ]
@@ -282,7 +317,8 @@ export class EditorAttributeUtil {
 
         replacers.push({
           key: `{{ customer.${field} }}`,
-          value: customer[field] || '',
+          value:
+            ((customer as Record<string, unknown>)[field] as string) || '',
         });
       }
     }
@@ -344,7 +380,7 @@ export class EditorAttributeUtil {
       replacers.push(
         {
           key: '{{ dealProducts }}',
-          value: products.map((p: any) => p.product.name).join(','),
+          value: products.map((p) => p.product.name).join(','),
         },
         {
           key: '{{ dealAmounts }}',
@@ -354,7 +390,7 @@ export class EditorAttributeUtil {
         },
       );
 
-      const fieldMetaDatas: any = await sendTRPCMessage({
+      const fieldMetaDatas = await sendTRPCMessage<IEditorFieldMeta[]>({
         subdomain: this.subdomain,
 
         pluginName: 'core',
@@ -370,7 +406,7 @@ export class EditorAttributeUtil {
       });
 
       for (const fieldMetaData of fieldMetaDatas) {
-        const customFieldsData: any[] = item.customFieldsData || [];
+        const customFieldsData: ICustomField[] = item.customFieldsData || [];
         const customFieldsDataItem = customFieldsData.find(
           (c) => c.field === fieldMetaData._id,
         );

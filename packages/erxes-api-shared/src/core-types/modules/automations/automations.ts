@@ -9,7 +9,11 @@ export type ICheckTriggerData = {
   collectionType: string;
   automationId: string;
   trigger: IAutomationTrigger;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — target shape
+  // is defined by the automation's trigger type at runtime
   target: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — action
+  // config shape is defined per action type by the owning service
   config: any;
 };
 

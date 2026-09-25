@@ -1,9 +1,12 @@
 import * as Sentry from '@sentry/node';
+import type { GraphQLSchemaModule } from '@apollo/subgraph/dist/buildSubgraphSchema';
 import {
   wrapPermission,
   wrapPublicResolver,
 } from '../../core-modules/permissions/utils';
+import { GraphQLScalarType } from 'graphql';
 import {
+  AnyResolver,
   IMainContext,
   IResolverSymbol,
   Resolver,
@@ -53,7 +56,7 @@ const withBeforeResolvers = (
   return async (root, args, context, info) => {
     const { subdomain, user } = context;
 
-    const headers = (context as any).requestInfo?.headers || (context as any).req?.headers;
+    const headers = context.requestInfo?.headers || context.req?.headers;
 
     const result = await runBeforeResolvers(resolverKey, args, {
       subdomain,
@@ -92,87 +95,101 @@ const withLogging = (resolver: Resolver): Resolver => {
   };
 };
 
-export const wrapApolloResolvers = (resolvers: Record<string, Resolver>) => {
-  const wrappedResolvers: any = {};
+/**
+ * The top-level resolver map handed to Apollo: each key holds a field map
+ * (`Query`, `Mutation`, type resolvers), a custom scalar, or a bare resolver.
+ */
+export type GraphqlResolverMap = Record<
+  string,
+  Record<string, AnyResolver> | GraphQLScalarType | AnyResolver
+>;
+
+const isResolverFieldMap = (
+  value: GraphqlResolverMap[string],
+): value is Record<string, AnyResolver> =>
+  typeof value === 'object' &&
+  value !== null &&
+  !(value instanceof GraphQLScalarType);
+
+/** The resolver-map shape `buildSubgraphSchema` accepts (graphql-tools). */
+export type SubgraphResolverMap = NonNullable<
+  GraphQLSchemaModule['resolvers']
+>;
+
+export const wrapApolloResolvers = (
+  resolvers: GraphqlResolverMap,
+): SubgraphResolverMap => {
+  const wrappedResolvers: Record<string, GraphqlResolverMap[string]> = {};
 
   for (const [key, resolver] of Object.entries(resolvers)) {
-    if (key === 'Mutation') {
-      const mutationResolvers: any = {};
+    if (key === 'Mutation' || key === 'Query') {
+      const operation = key === 'Mutation' ? 'mutation' : 'query';
+      const fieldResolvers: Record<string, AnyResolver> = {};
 
-      for (const [mutationKey, mutationResolver] of Object.entries(resolver)) {
-        const { skipPermission, cpUserRequired, forClientPortal } =
-          mutationResolver.wrapperConfig || {};
-        const isPublic = skipPermission || forClientPortal || cpUserRequired;
+      if (isResolverFieldMap(resolver)) {
+        for (const [fieldKey, fieldResolver] of Object.entries(resolver)) {
+          const { skipPermission, cpUserRequired, forClientPortal } =
+            fieldResolver.wrapperConfig || {};
+          const isPublic =
+            skipPermission || forClientPortal || cpUserRequired;
 
-        let wrapped: Resolver;
-        if (isPublic) {
-          wrapped = wrapPublicResolver(
-            withBeforeResolvers(mutationResolver, mutationKey),
-            mutationResolver.wrapperConfig,
-          );
-        } else {
-          wrapped = withLogging(
-            wrapPermission(
-              withBeforeResolvers(mutationResolver, mutationKey),
-              mutationKey,
-            ),
-          );
-        }
+          let wrapped: Resolver;
+          if (isPublic) {
+            wrapped = wrapPublicResolver(
+              withBeforeResolvers(fieldResolver, fieldKey),
+              fieldResolver.wrapperConfig,
+            );
+          } else if (key === 'Mutation') {
+            wrapped = withLogging(
+              wrapPermission(
+                withBeforeResolvers(fieldResolver, fieldKey),
+                fieldKey,
+              ),
+            );
+          } else {
+            wrapped = wrapPermission(
+              withBeforeResolvers(fieldResolver, fieldKey),
+              fieldKey,
+            );
+          }
 
-        mutationResolvers[mutationKey] = withSentryCapture(
-          wrapped,
-          mutationKey,
-          'mutation',
-        );
-      }
-
-      wrappedResolvers[key] = mutationResolvers;
-      continue;
-    }
-
-    if (key === 'Query') {
-      const queryResolvers: any = {};
-
-      for (const [queryKey, queryResolver] of Object.entries(resolver)) {
-        const { skipPermission, cpUserRequired, forClientPortal } =
-          queryResolver.wrapperConfig || {};
-        const isPublic = skipPermission || forClientPortal || cpUserRequired;
-
-        let wrapped: Resolver;
-        if (isPublic) {
-          wrapped = wrapPublicResolver(
-            withBeforeResolvers(queryResolver, queryKey),
-            queryResolver.wrapperConfig,
-          );
-        } else {
-          wrapped = wrapPermission(
-            withBeforeResolvers(queryResolver, queryKey),
-            queryKey,
+          fieldResolvers[fieldKey] = withSentryCapture(
+            wrapped,
+            fieldKey,
+            operation,
           );
         }
-
-        queryResolvers[queryKey] = withSentryCapture(
-          wrapped,
-          queryKey,
-          'query',
-        );
       }
 
-      wrappedResolvers[key] = queryResolvers;
+      wrappedResolvers[key] = fieldResolvers;
       continue;
     }
 
     wrappedResolvers[key] = resolver;
   }
 
-  return wrappedResolvers;
+  // Plugin resolver maps are runtime-composed (scalar | field-map | bare
+  // resolver unions), which is broader than the graphql-tools resolver-map
+  // contract — cast at the federation boundary.
+  return wrappedResolvers as SubgraphResolverMap;
 };
-type TResolverMap<TContext = any> = Record<
+type TResolverMap<TContext = unknown> = Record<
   string,
-  Resolver<any, any, TContext & { subdomain: string } & IMainContext, any>
+  Resolver<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
+    // parent type at the resolver-map boundary (see AnyResolver).
+    any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
+    // args type at the resolver-map boundary (see AnyResolver).
+    any,
+    TContext & { subdomain: string } & IMainContext,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any — erased
+    // result type at the resolver-map boundary (see AnyResolver).
+    any
+  >
 >;
 
-export const markResolvers = <TContext = any>(
+export const markResolvers = <TContext = unknown>(
   resolvers: TResolverMap<TContext>,
   symbols: IResolverSymbol,
 ) => {

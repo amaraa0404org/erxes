@@ -25,7 +25,7 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import * as http from 'http';
 import { IncomingMessage } from 'http';
 import * as path from 'path';
-import { appRouter } from '~/init-trpc';
+import { appRouter, CoreTRPCContext } from '~/init-trpc';
 import { initApolloServer } from './apollo/apolloServer';
 import { generateModels } from './connectionResolvers';
 import meta from './meta';
@@ -130,13 +130,15 @@ app.use(
   '/trpc',
   trpcExpress.createExpressMiddleware({
     router: appRouter,
-    createContext: createTRPCContext(async (subdomain, context) => {
-      const models = await generateModels(subdomain, context);
+    createContext: createTRPCContext<CoreTRPCContext>(
+      async (subdomain, context) => {
+        const models = await generateModels(subdomain, context);
 
-      context.models = models;
+        context.models = models;
 
-      return context;
-    }),
+        return context as CoreTRPCContext;
+      },
+    ),
   }),
 );
 

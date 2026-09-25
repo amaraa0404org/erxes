@@ -16,21 +16,41 @@ import {
   IOrganization,
   ISaasAddon,
   ISaasBundle,
+  ISaasEndpoint,
+  ISaasExperience,
+  ISaasInstallation,
+  ISaasOrganizationDetail,
+  ISaasOrganizationDoc,
   ISaasOrganizationPlanHistory,
+  ISaasPlugin,
+  ISaasPromoCode,
+  ISaasUser,
 } from './types';
 import { redis } from '../redis';
 import { mongooseConnectionOptions } from '../mongo';
 
-export let coreModelOrganizations: any;
-export let coreModelAddons: any;
-export let coreModelBundles: any;
-export let coreModelInstallations: any;
-export let coreModelUsers: any;
-export let coreModelEndpoints: any;
-export let coreModelPromoCodes: any;
-export let coreModelPlugins: any;
-export let coreModelExperiences: any;
+export let coreModelOrganizations: mongoose.Model<ISaasOrganizationDoc>;
+export let coreModelAddons: mongoose.Model<ISaasAddon>;
+export let coreModelBundles: mongoose.Model<ISaasBundle>;
+export let coreModelInstallations: mongoose.Model<ISaasInstallation>;
+export let coreModelUsers: mongoose.Model<ISaasUser>;
+export let coreModelEndpoints: mongoose.Model<ISaasEndpoint>;
+export let coreModelPromoCodes: mongoose.Model<ISaasPromoCode>;
+export let coreModelPlugins: mongoose.Model<ISaasPlugin>;
+export let coreModelExperiences: mongoose.Model<ISaasExperience>;
 export let coreModelOrganizationPlanHistories: mongoose.Model<ISaasOrganizationPlanHistory>;
+
+/**
+ * Bind a declared document type to a SaaS-core collection schema. The shared
+ * doc interfaces are partial views of schemas owned outside this repository,
+ * so the schema argument is cast to the declared doc type once, here.
+ */
+const bindSaasCoreModel = <TDoc>(
+  connection: mongoose.Connection,
+  name: string,
+  schema: mongoose.Schema,
+): mongoose.Model<TDoc> =>
+  connection.model<TDoc>(name, schema as mongoose.Schema<TDoc>);
 
 export const getSaasCoreConnection = async (): Promise<void> => {
   if (coreModelOrganizations) {
@@ -55,29 +75,57 @@ export const getSaasCoreConnection = async (): Promise<void> => {
     mongooseConnectionOptions,
   );
 
-  coreModelOrganizations = coreConnection.model(
+  coreModelOrganizations = bindSaasCoreModel<ISaasOrganizationDoc>(
+    coreConnection,
     'organizations',
     saasOrganizationsSchema,
   );
 
-  coreModelInstallations = coreConnection.model(
+  coreModelInstallations = bindSaasCoreModel<ISaasInstallation>(
+    coreConnection,
     'installations',
     saasInstallationSchema,
   );
-  coreModelExperiences = coreConnection.model('experiences', experiencesSchema);
-  coreModelUsers = coreConnection.model('users', saasUserSchema);
-  coreModelEndpoints = coreConnection.model('endpoints', endPointSchema);
-  coreModelPromoCodes = coreConnection.model(
+  coreModelExperiences = bindSaasCoreModel<ISaasExperience>(
+    coreConnection,
+    'experiences',
+    experiencesSchema,
+  );
+  coreModelUsers = bindSaasCoreModel<ISaasUser>(
+    coreConnection,
+    'users',
+    saasUserSchema,
+  );
+  coreModelEndpoints = bindSaasCoreModel<ISaasEndpoint>(
+    coreConnection,
+    'endpoints',
+    endPointSchema,
+  );
+  coreModelPromoCodes = bindSaasCoreModel<ISaasPromoCode>(
+    coreConnection,
     'promo_codes',
     saasPromoCodeSchema,
   );
-  coreModelAddons = coreConnection.model('addons', saasAddonSchema);
-  coreModelBundles = coreConnection.model('bundles', saasBundleSchema);
-  coreModelPlugins = coreConnection.model('plugins', saasPluginSchema);
+  coreModelAddons = bindSaasCoreModel<ISaasAddon>(
+    coreConnection,
+    'addons',
+    saasAddonSchema,
+  );
+  coreModelBundles = bindSaasCoreModel<ISaasBundle>(
+    coreConnection,
+    'bundles',
+    saasBundleSchema,
+  );
+  coreModelPlugins = bindSaasCoreModel<ISaasPlugin>(
+    coreConnection,
+    'plugins',
+    saasPluginSchema,
+  );
   coreModelOrganizationPlanHistories =
-    coreConnection.model<ISaasOrganizationPlanHistory>(
+    bindSaasCoreModel<ISaasOrganizationPlanHistory>(
+      coreConnection,
       'organization_plan_histories',
-      saasOrganizationPlanHistorySchema as any,
+      saasOrganizationPlanHistorySchema,
     );
 };
 
@@ -98,26 +146,41 @@ export const getSaasOrganizationIdBySubdomain = async (
     throw new Error(`Invalid host, subdomain: ${subdomain}`);
   }
 
-  ORGANIZATION_ID_MAPPING[subdomain] = organization._id;
+  ORGANIZATION_ID_MAPPING[subdomain] = String(organization._id);
 
   return ORGANIZATION_ID_MAPPING[subdomain];
 };
 
-export const getSaasOrgsCache = async ({
-  subdomain,
-  excludeSubdomains,
-  domain,
-}: {
+type SaasOrgsCacheParams = {
   subdomain?: string;
   excludeSubdomains?: string[];
   domain?: string;
-}): Promise<any> => {
+};
+
+export function getSaasOrgsCache(
+  params: SaasOrgsCacheParams & { subdomain: string },
+): Promise<IOrganization | undefined>;
+export function getSaasOrgsCache(
+  params: SaasOrgsCacheParams & { domain: string },
+): Promise<IOrganization | undefined>;
+export function getSaasOrgsCache(
+  params?: SaasOrgsCacheParams,
+): Promise<IOrganization[]>;
+export async function getSaasOrgsCache({
+  subdomain,
+  excludeSubdomains,
+  domain,
+}: SaasOrgsCacheParams = {}): Promise<
+  IOrganization | IOrganization[] | undefined
+> {
   const value = await redis.get('core_organizations');
 
   let organizations: IOrganization[] = value ? JSON.parse(value) : [];
 
   if (organizations.length === 0) {
-    organizations = await coreModelOrganizations.find({}).lean();
+    organizations = (await coreModelOrganizations
+      .find({})
+      .lean()) as IOrganization[];
 
     redis.set('core_organizations', JSON.stringify(organizations));
   }
@@ -137,7 +200,7 @@ export const getSaasOrgsCache = async ({
   }
 
   return organizations;
-};
+}
 
 export const getSaasOrganizations = async (email?: string) => {
   await getSaasCoreConnection();
@@ -149,7 +212,9 @@ export const getSaasOrganizations = async (email?: string) => {
   return coreModelOrganizations.find({});
 };
 
-export const getSaasOrganizationsByFilter = async (filter: any) => {
+export const getSaasOrganizationsByFilter = async (
+  filter?: mongoose.FilterQuery<ISaasOrganizationDoc>,
+) => {
   await getSaasCoreConnection();
 
   if (filter) {
@@ -161,7 +226,7 @@ export const getSaasOrganizationsByFilter = async (filter: any) => {
 
 export const updateSaasOrganization = async (
   subdomain: string,
-  update: object,
+  update: Record<string, unknown>,
 ) => {
   await getSaasCoreConnection();
 
@@ -172,7 +237,7 @@ export const getSaasOrganizationDetail = async ({
   subdomain,
 }: {
   subdomain: string;
-}) => {
+}): Promise<ISaasOrganizationDetail> => {
   await getSaasCoreConnection();
 
   const organization = await coreModelOrganizations
@@ -219,7 +284,9 @@ export const getSaasOrganizationDetail = async ({
         type: activeBundle.kind,
       });
 
-      bundleNames.push(bundle.title);
+      if (bundle?.title) {
+        bundleNames.push(bundle.title);
+      }
     }
 
     for (const plugin of plugins) {
@@ -243,8 +310,8 @@ export const getSaasOrganizationDetail = async ({
       }
 
       addons
-        .filter((addon: any) => addon.kind === plugin.type)
-        .forEach((addon: any) => {
+        .filter((addon) => addon.kind === plugin.type)
+        .forEach((addon) => {
           quantity += addon.quantity || 0;
         });
 
@@ -254,7 +321,7 @@ export const getSaasOrganizationDetail = async ({
         });
 
         if (experience) {
-          experienceName = experience.title;
+          experienceName = experience.title || '';
           free =
             free +
             (experience.pluginLimits
@@ -282,7 +349,9 @@ export const getSaasOrganizationDetail = async ({
     );
 
     for (const addon of setupAddons) {
-      setupService[addon.subkind] = true;
+      if (addon.subkind) {
+        setupService[addon.subkind] = true;
+      }
     }
   }
 
@@ -339,7 +408,7 @@ export const getSaasOrganizationPlanHistories = async ({
     .lean();
 
   const bundleById = new Map<string, ISaasBundle>(
-    bundles.map((bundle: any) => [String(bundle._id), bundle as ISaasBundle]),
+    bundles.map((bundle) => [String(bundle._id), bundle]),
   );
 
   return histories.map((history) => ({
@@ -363,7 +432,7 @@ export const getSaasOrganizationActiveAddons = async ({
     return [];
   }
 
-  const addons = (await coreModelAddons
+  const addons = await coreModelAddons
     .find({
       installationId: String(installation._id),
       paymentStatus: 'complete',
@@ -371,7 +440,7 @@ export const getSaasOrganizationActiveAddons = async ({
       $or: [{ expiryDate: { $gt: new Date() } }, { interval: 'oneTime' }],
     })
     .sort({ createdAt: -1 })
-    .lean()) as ISaasAddon[];
+    .lean<ISaasAddon[]>();
 
   const bundleTypes = Array.from(
     new Set(addons.map((addon) => addon.kind).filter(Boolean)),
@@ -386,7 +455,7 @@ export const getSaasOrganizationActiveAddons = async ({
     .lean();
 
   const bundleByType = new Map<string, ISaasBundle>(
-    bundles.map((bundle: any) => [String(bundle.type), bundle as ISaasBundle]),
+    bundles.map((bundle) => [String(bundle.type), bundle]),
   );
 
   return addons.map((addon) => ({
@@ -401,19 +470,25 @@ export const removeOrgsCache = (source: string) => {
   return redis.set('core_organizations', '');
 };
 
-export const getSaasPlugins = async (query: any = {}) => {
+export const getSaasPlugins = async (
+  query: mongoose.FilterQuery<ISaasPlugin> = {},
+) => {
   await getSaasCoreConnection();
 
   return coreModelPlugins.find(query).lean();
 };
 
-export const getSaasPlugin = async (query: any = {}) => {
+export const getSaasPlugin = async (
+  query: mongoose.FilterQuery<ISaasPlugin> = {},
+) => {
   await getSaasCoreConnection();
 
   return coreModelPlugins.findOne(query).lean();
 };
 
-export const getSaasPromoCodes = async (query: any = {}) => {
+export const getSaasPromoCodes = async (
+  query: mongoose.FilterQuery<ISaasPromoCode> = {},
+) => {
   await getSaasCoreConnection();
 
   return coreModelPromoCodes.find(query).lean();

@@ -519,7 +519,7 @@ over.
 
 ### Milestone 6: Core GraphQL and tRPC types (D4)
 
-- [ ] 6.1 Shared contract types in `erxes-api-shared`: tRPC context and setup
+- [x] 6.1 Shared contract types in `erxes-api-shared`: tRPC context and setup
   types, the `start-plugin` types, `IMainContext`, the `Resolver` defaults,
   and the generic `sendTRPCMessage` / `sendCoreModuleProducer`.
 - [ ] 6.2 core-api tRPC: real zod inputs for every procedure, worst files
@@ -657,6 +657,23 @@ _Append one line per removed or changed core contract:
 - 4.3 `scripts/create-plugin.js` / `create-backend-plugin.js` and the
   `create-plugin` npm script removed; `examples/plugin-hello` is the
   reference plugin — owner: core
+- 6.1 `sendTRPCMessage` / `MessageProps` and `sendCoreModuleProducer` are
+  generic over a caller-declared `TOutput` (defaults to `any`, so existing
+  callers compile; router-path validation stays dynamic) — owner: core
+- 6.1 `TRPCContext` carries `eventHandlers` plus an opaque `models` slot, and
+  `IMainContext` leaves `cpUser`/`clientPortal`/`models` opaque because
+  concrete document/model types are owned by each service — owner: core
+- 6.1 `setupTRPCRoute` drops the dormant `rateLimitConfig`/`securityConfig`
+  options and their commented-out middleware (the function has no callers)
+  — owner: core
+- 6.1 `sendWorkerMessage` takes `data`/`defaultValue` as `unknown` and worker
+  processors return `Promise<unknown>`; `PluginConfig.meta` is now
+  `Record<string, unknown>` — owner: core
+- 6.1 SaaS contracts added under `utils/saas/types.ts`
+  (`ISaasOrganizationDetail`, `ISaasBundle`, `ISaasAddon`,
+  `ISaasOrganizationPlanHistory`, `ISaasChargeMap`); `ISaasOrganizationDetail`
+  keeps an `[key: string]: any` slot for consumer-attached fields —
+  owner: core
 
 ## Open issues
 
@@ -676,6 +693,15 @@ _Append problems that block following this plan as written:
   `Cannot find module 'erxes-api-shared/utils'` / missing exported members.
   Passes on rerun once `erxes-api-shared` dist exists — pre-existing flake,
   not caused by the deletions — open
+- 2026-09-26 task 6.1: 18 `any` hits remain in the scoped
+  `erxes-api-shared` paths, all documented dynamic boundaries
+  (service-owned document payloads: `ILogDoc.payload`,
+  `IAutomationReceiveActionData`/`ICheckTriggerData` `target`/`config`,
+  `IProductCategory.attachment`/`mask`, `IProductsConfig.value`,
+  `ICustomField.value`, `ServiceInfo.config`, the SaaS detail index
+  signature) plus Sentry `Event` fixture casts in
+  `errorClassifier.test.ts`. Revisit when 6.6 enables scoped
+  `no-explicit-any: error`. — open
 
 ## Carry-over to the next phase
 

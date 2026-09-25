@@ -3,21 +3,31 @@ import {
   createTRPCUntypedClient,
   httpBatchLink,
   TRPCRequestOptions,
+  TRPCUntypedClient,
 } from '@trpc/client';
+import type { AnyTRPCRouter } from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { IncomingHttpHeaders } from 'http';
 import { getPlugin, isEnabled } from '../service-discovery';
 import { generateRequestProcess, getEnv } from '../utils';
 import { setEventHandlerRuntimeContext } from '../../core-modules/common/eventHandlers/runtimeContext';
 
-export type MessageProps = {
+export type MessageProps<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — dynamic
+  // cross-service boundary: the untyped tRPC client erases output types, so
+  // `any` keeps existing callers compiling; `sendTRPCMessage<T>` remains
+  // available for caller-declared outputs.
+  TOutput = any,
+> = {
   subdomain: string;
   method?: 'query' | 'mutation';
   pluginName: string;
   module: string;
   action: string;
-  input: any;
-  defaultValue?: any;
+  input?: unknown;
+  // `NoInfer` keeps `defaultValue: []`/`null` from narrowing TOutput to
+  // `never[]`/`null` when the caller did not declare an output type.
+  defaultValue?: NoInfer<TOutput>;
   options?: TRPCRequestOptions;
   context?: CommonTRPCContext;
   throwOnError?: boolean;
@@ -33,23 +43,29 @@ export type ScopedEventHandlers = ReturnType<typeof createScopedEventHandlers>;
 
 type RequestTRPCContext = {
   subdomain: string;
+  processId: string;
 } & CommonTRPCContext;
 
 export type TRPCContext = RequestTRPCContext & {
   eventHandlers: ScopedEventHandlers;
+  /**
+   * Service-specific model map, attached by each service's context factory
+   * (e.g. core-api assigns `IModels` here). Opaque at this layer.
+   */
+  models?: unknown;
 };
 
 export interface InterMessage {
   subdomain: string;
-  data?: any;
+  data?: unknown;
   timeout?: number;
-  defaultValue?: any;
+  defaultValue?: unknown;
   thirdService?: boolean;
 }
 
 export interface RPSuccess {
   status: 'success';
-  data?: any;
+  data?: unknown;
 }
 export interface RPError {
   status: 'error';
@@ -93,7 +109,10 @@ export function decodeTRPCContextHeader(headers: IncomingHttpHeaders): {
   }
   try {
     const contextJson = Buffer.from(contextHeader, 'base64').toString('utf-8');
-    const decoded = JSON.parse(contextJson);
+    const decoded = JSON.parse(contextJson) as {
+      subdomain: string;
+      method: 'query' | 'mutation';
+    } & CommonTRPCContext;
     const { subdomain, method, ...context } = decoded;
     return { subdomain, method, context };
   } catch (error) {
@@ -101,7 +120,11 @@ export function decodeTRPCContextHeader(headers: IncomingHttpHeaders): {
   }
 }
 
-export const sendTRPCMessage = async ({
+export const sendTRPCMessage = async <
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — see
+  // MessageProps: dynamic boundary, `T` available for caller-declared output.
+  TOutput = any,
+>({
   subdomain,
   pluginName,
   method,
@@ -112,20 +135,20 @@ export const sendTRPCMessage = async ({
   options,
   context,
   throwOnError,
-}: MessageProps) => {
+}: MessageProps<TOutput>): Promise<TOutput> => {
   if (!method) {
     method = 'query';
   }
 
   if (pluginName && !(await isEnabled(pluginName))) {
-    return defaultValue;
+    return defaultValue as TOutput;
   }
 
   const pluginInfo = await getPlugin(pluginName);
 
   const VERSION = getEnv({ name: 'VERSION' });
 
-  let client;
+  let client: TRPCUntypedClient<AnyTRPCRouter>;
 
   try {
     // Encode context into header
@@ -152,7 +175,7 @@ export const sendTRPCMessage = async ({
         console.warn(
           `Plugin "${pluginName}" address is not available. Returning defaultValue.`,
         );
-        return defaultValue;
+        return defaultValue as TOutput;
       }
 
       client = createTRPCUntypedClient({
@@ -168,13 +191,13 @@ export const sendTRPCMessage = async ({
     }
 
     const result = await client[method](`${module}.${action}`, input, options);
-    return result || defaultValue;
+    return (result || defaultValue) as TOutput;
   } catch (e) {
     if (throwOnError) {
       throw e;
     }
 
-    return defaultValue;
+    return defaultValue as TOutput;
   }
 };
 
@@ -187,7 +210,7 @@ export const sendTRPCMessage = async ({
 export const createPluginTRPCContext = async <TContext>(
   subdomain: string,
   reqContext: CommonTRPCContext,
-  trpcContext?: (subdomain: string, context: any) => Promise<TContext>,
+  trpcContext?: (subdomain: string, context: TRPCContext) => Promise<TContext>,
 ): Promise<TContext | TRPCContext> => {
   const processInfo = generateRequestProcess();
 
@@ -221,17 +244,15 @@ export const createPluginTRPCContext = async <TContext>(
 };
 
 export const createTRPCContext =
-  <TContext>(
+  <TContext = TRPCContext>(
     trpcContext: (
       subdomain: string,
-      context: any,
-    ) => Promise<TContext & TRPCContext>,
+      context: TRPCContext,
+    ) => Promise<TContext>,
   ) =>
   async ({
     req,
-  }: trpcExpress.CreateExpressContextOptions): Promise<
-    TContext & TRPCContext
-  > => {
+  }: trpcExpress.CreateExpressContextOptions): Promise<TContext> => {
     // Extract context from header (encoded) or fallback to request body/input
     const decoded = decodeTRPCContextHeader(req.headers);
     const subdomain = decoded?.subdomain;
@@ -246,14 +267,13 @@ export const createTRPCContext =
       subdomain,
       reqContext || {},
       trpcContext,
-    )) as TContext & TRPCContext;
+    )) as TContext;
   };
 
-export type ITRPCContext<TExtraContext = object> = Awaited<
-  ReturnType<typeof createTRPCContext<TExtraContext>>
->;
+export type ITRPCContext<TExtraContext extends object = object> =
+  TExtraContext & TRPCContext;
 
-export const ok = (data: any) => {
+export const ok = (data: unknown) => {
   return {
     status: 'success',
     data,
@@ -261,17 +281,22 @@ export const ok = (data: any) => {
   };
 };
 
-export const err = (error: any) => {
+export const err = (error: unknown) => {
+  const e =
+    error !== null && typeof error === 'object'
+      ? (error as { code?: string; message?: string; suggestion?: string })
+      : {};
+
   return {
     status: 'error',
     error: {
-      code: error.code || 'SERVER_ERROR',
-      message: error.message || error.message,
+      code: e.code || 'SERVER_ERROR',
+      message: e.message || e.message,
       details: error instanceof Error ? error.message : 'Database error',
       ...(process.env.NODE_ENV === 'development' && {
         stack: error instanceof Error ? error.stack : undefined,
       }),
-      ...(error.suggestion && { suggestion: error.suggestion }),
+      ...(e.suggestion && { suggestion: e.suggestion }),
     },
     timestamp: new Date().toISOString(),
   };

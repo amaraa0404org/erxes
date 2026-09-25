@@ -1,4 +1,8 @@
-import type { ApolloServerPlugin, GraphQLRequestListener } from '@apollo/server';
+import type {
+  ApolloServerPlugin,
+  BaseContext,
+  GraphQLRequestListener,
+} from '@apollo/server';
 import { classifyError, IClassificationResult } from '../errorClassifier';
 
 /**
@@ -10,7 +14,7 @@ import { classifyError, IClassificationResult } from '../errorClassifier';
  * - Allows frontend to distinguish business errors from system errors
  */
 export const expectedErrorPlugin: ApolloServerPlugin = {
-  async requestDidStart(): Promise<GraphQLRequestListener<any>> {
+  async requestDidStart(): Promise<GraphQLRequestListener<BaseContext>> {
     // Store classifications from didEncounterErrors to use in willSendResponse
     const errorClassifications = new Map<string, IClassificationResult>();
 
@@ -61,14 +65,21 @@ export const expectedErrorPlugin: ApolloServerPlugin = {
         // Enrich error extensions with category metadata
         errors.forEach((error, index) => {
           const classification = classifications[index];
-          
-          if (!error.extensions) {
-            (error as any).extensions = {};
+
+          // `GraphQLFormattedError.extensions` is declared readonly; the
+          // enrichment happens before serialization, so mutate it through a
+          // structural alias rather than `any`.
+          const mutableError = error as {
+            extensions?: Record<string, unknown>;
+          };
+
+          if (!mutableError.extensions) {
+            mutableError.extensions = {};
           }
 
-          (error as any).extensions.category = classification.category;
-          (error as any).extensions.isExpected = classification.isExpected;
-          (error as any).extensions.statusCode = classification.statusCode;
+          mutableError.extensions.category = classification.category;
+          mutableError.extensions.isExpected = classification.isExpected;
+          mutableError.extensions.statusCode = classification.statusCode;
         });
 
         // If ALL errors are expected, override HTTP status to 200
