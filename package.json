@@ -6,7 +6,6 @@
     "dev:core-api": "npx nx run-many -t serve -p core-api gateway",
     "dev:api": "nx run-many -t serve -p core-api gateway automations-service logs-service",
     "dev:ui": "nx serve core-ui",
-    "create-plugin": "node scripts/create-plugin.js",
     "release": "release-it"
   },
   "engines": {

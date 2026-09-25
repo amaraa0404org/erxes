@@ -1,1 +1,4 @@
-export * from './hooks/useLoyaltyScoreCampaign';
+export {
+  default as PaymentIcon,
+  paymentIconOptions,
+} from './components/PaymentIcon';

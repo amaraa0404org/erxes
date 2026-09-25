@@ -5,4 +5,3 @@ export * from './useEditCustomer';
 export * from './useEditCompany';
 export * from './useAddCustomer';
 export * from './useAddCompany';
-export * from './useCompanyNameByRegister';

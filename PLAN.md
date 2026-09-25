@@ -474,7 +474,7 @@ over.
   for a sample file, and every D3 source path is present. **Ask the user**
   whether to create the GitHub repositories (visibility?) and push. Do this
   only if they confirm.
-- [ ] 4.3 Delete from this repository:
+- [x] 4.3 Delete from this repository:
   - `backend/plugins/`, `frontend/plugins/`
   - the plugin locale files and `mastra.json` in the gateway
   - the plugin directories in `backend/saas-migrations/`
