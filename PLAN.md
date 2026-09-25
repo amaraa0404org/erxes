@@ -537,7 +537,7 @@ over.
   subscription code.
 - [x] 6.6 Enforcement, per D4: backend eslint configs and scoped
   `no-explicit-any: error`. `pnpm nx lint` passes for every core project.
-- [ ] 6.7 Build and test every core project against the baseline, and run the
+- [x] 6.7 Build and test every core project against the baseline, and run the
   end-to-end checks. Boot with zero plugins; the gateway must compose with no
   schema errors.
 
