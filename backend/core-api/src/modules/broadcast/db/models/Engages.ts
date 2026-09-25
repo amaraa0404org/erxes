@@ -34,7 +34,7 @@ import {
 } from '@/broadcast/utils/schedule';
 import { AUTOMATION_STATUSES } from 'erxes-api-shared/core-modules';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
-import { sendTRPCMessage } from 'erxes-api-shared/utils';
+import { isEnabled, sendTRPCMessage } from 'erxes-api-shared/utils';
 import { Model, UpdateQuery } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
 import { ISESConfig } from '@/organization/settings/db/definitions/configs';
@@ -687,6 +687,10 @@ export const loadEngageMessageClass = (
         replacedContent,
       } = args;
 
+      if (!(await isEnabled('frontline'))) {
+        return null;
+      }
+
       let prevMessage: IMessageDocument | null;
 
       const query = customerId
@@ -720,6 +724,7 @@ export const loadEngageMessageClass = (
           module: 'conversationMessages',
           action: 'find',
           input: { conversationId },
+          defaultValue: [],
         });
 
         // leave conversations with responses alone

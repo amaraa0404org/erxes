@@ -13,16 +13,6 @@ dotenv.config();
 // fetches telnyx config & integrations from integrations plugin
 export const getTelnyxInfo = async (subdomain: string) => {
   const data: any = {};
-  // TODO: uncomment
-  // await sendTRPCMessage({
-  //   subdomain,
-
-  //   pluginName: 'frontline',
-  //   method: 'query',
-  //   module: 'integrations',
-  //   action: 'api_to_integrations',
-  //   input: { action: 'getTelnyxInfo' },
-  // });
 
   const { telnyxApiKey, integrations = [] } = data;
 
