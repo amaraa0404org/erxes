@@ -14,6 +14,17 @@ import {
   IDocumentFilterQueryParams,
 } from '../types';
 
+/**
+ * One placeholder a plugin's `documents.editorAttributes` offers the document
+ * editor: `value` is the token, `name` its label. Plugins may add their own
+ * members (e.g. `groupDetail`).
+ */
+interface IDocumentEditorAttribute {
+  value: string;
+  name: string;
+  [key: string]: unknown;
+}
+
 const generateFilter = (params: IDocumentFilterQueryParams) => {
   const { searchValue, contentType, subType, userIds, dateFilters, tagIds } =
     params;
@@ -198,7 +209,7 @@ export const documentQueries = {
       }
     }
 
-    return await sendTRPCMessage({
+    return await sendTRPCMessage<IDocumentEditorAttribute[]>({
       subdomain,
       pluginName,
       method: 'query',

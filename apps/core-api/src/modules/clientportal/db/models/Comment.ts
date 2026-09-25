@@ -38,7 +38,7 @@ export const loadCommentClass = (models: IModels, subdomain: string) => {
       // Create activity log via tRPC for sales deal comments
       if (doc.type === 'sales:deal') {
         try {
-          await sendTRPCMessage({
+          await sendTRPCMessage<unknown>({
             subdomain,
             pluginName: 'sales',
             method: 'mutation',

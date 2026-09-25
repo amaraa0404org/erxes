@@ -1,6 +1,7 @@
 import { IContext } from '~/connectionResolvers';
 import { cursorPaginate, sendCoreModuleProducer } from 'erxes-api-shared/utils';
 import {
+  ImportHeaderDefinition,
   splitType,
   TImportExportProducers,
 } from 'erxes-api-shared/core-modules';
@@ -145,7 +146,11 @@ export const exportQueries = {
       requireGetExportHeaders: true,
     });
 
-    return await sendCoreModuleProducer({
+    return await sendCoreModuleProducer<
+      'importExport',
+      TImportExportProducers.GET_EXPORT_HEADERS,
+      ImportHeaderDefinition[]
+    >({
       subdomain,
       pluginName,
       moduleName: 'importExport',

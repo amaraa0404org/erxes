@@ -44,7 +44,7 @@ export const internalNoteQueries = {
   ) {
     const [pluginName, moduleName] = contentType.split(':');
 
-    const contentIds = await sendTRPCMessage({
+    const contentIds = await sendTRPCMessage<string[]>({
       subdomain,
 
       pluginName,

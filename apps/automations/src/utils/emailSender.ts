@@ -12,7 +12,7 @@ export const assertSenderAllowed = async (
   let result: { allowed: boolean } | undefined;
 
   try {
-    result = await sendTRPCMessage({
+    result = await sendTRPCMessage<{ allowed: boolean } | undefined>({
       subdomain,
       method: 'query',
       pluginName: 'core',

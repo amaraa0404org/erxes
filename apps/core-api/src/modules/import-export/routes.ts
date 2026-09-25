@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSubdomain, sendCoreModuleProducer } from 'erxes-api-shared/utils';
 import {
+  ImportHeaderDefinition,
   splitType,
   TImportExportProducers,
 } from 'erxes-api-shared/core-modules';
@@ -58,7 +59,11 @@ router.get('/import-export/download-template', async (req, res) => {
       requireInsertImportRows: false,
     });
 
-    const headers = await sendCoreModuleProducer({
+    const headers = await sendCoreModuleProducer<
+      'importExport',
+      TImportExportProducers.GET_IMPORT_HEADERS,
+      ImportHeaderDefinition[] | null
+    >({
       subdomain,
       pluginName: pluginName,
       moduleName: 'importExport',

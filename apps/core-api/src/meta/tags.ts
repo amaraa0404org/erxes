@@ -61,7 +61,7 @@ export const tags = {
     }
 
     if (action === 'tagObject') {
-      return await sendTRPCMessage({
+      return await sendTRPCMessage<Record<string, unknown>[]>({
         subdomain,
         pluginName,
         method: 'mutation',

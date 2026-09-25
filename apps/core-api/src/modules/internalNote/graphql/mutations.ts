@@ -6,6 +6,20 @@ import {
 import { IContext } from '~/connectionResolvers';
 import { IInternalNote } from '~/modules/internalNote/types';
 
+/**
+ * What a plugin's `<module>.generateInternalNoteNotif` hands back: the
+ * notification doc it wants sent, plus the resolved content item used to look
+ * up further receivers. Plugins may attach their own members.
+ */
+interface IInternalNoteNotifDoc {
+  notifOfItems?: boolean;
+  item?: unknown;
+  action?: string;
+  receivers?: string[];
+  contentType?: string;
+  [key: string]: unknown;
+}
+
 export const internalNoteMutations = {
   /**
    * Adds internalNote object and also adds an activity log
@@ -38,7 +52,7 @@ export const internalNoteMutations = {
       contentTypeId: '',
     };
 
-    const updatedNotifDoc = await sendTRPCMessage({
+    const updatedNotifDoc = await sendTRPCMessage<IInternalNoteNotifDoc>({
       subdomain,
 
       pluginName,
@@ -56,7 +70,7 @@ export const internalNoteMutations = {
     if (updatedNotifDoc.notifOfItems) {
       const { item } = updatedNotifDoc;
 
-      const relatedReceivers = await sendTRPCMessage({
+      const relatedReceivers = await sendTRPCMessage<string[]>({
         subdomain,
 
         pluginName,

@@ -10,6 +10,7 @@ const getErrorMessage = (error: unknown) =>
 
 export const resumeWaitingExecutionsProcedure = t.procedure
   .input(z.object({ automationId: z.string() }))
+  .output(z.object({ resumed: z.number() }))
   .mutation(async ({ ctx, input }) => {
     try {
       const models = await generateModels(ctx.subdomain);

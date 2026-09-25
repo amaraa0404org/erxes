@@ -3,7 +3,7 @@ import { debugError } from '../debugger';
 
 export const createSuppressionPort = (subdomain: string): ISuppressionPort => ({
   async blocked(emails, source) {
-    const result: { emails: string[] } | undefined = await sendTRPCMessage({
+    const result = await sendTRPCMessage<{ emails: string[] } | undefined>({
       subdomain,
       method: 'query',
       pluginName: 'core',

@@ -222,8 +222,14 @@ export const createOrUpdate = async ({
   return collection.bulkWrite(operations);
 };
 
+/** The slice of a frontline integration document that contacts reads. */
+export interface IContactIntegration {
+  _id: string;
+  brandId?: string;
+}
+
 export const findIntegrations = (subdomain: string, query, options?) =>
-  sendTRPCMessage({
+  sendTRPCMessage<IContactIntegration[]>({
     subdomain,
 
     pluginName: 'frontline',

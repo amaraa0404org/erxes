@@ -4,6 +4,7 @@ import {
   IAutomationExecutionDocument,
   replaceOutputPlaceholders,
 } from 'erxes-api-shared/core-modules';
+import { ICustomer } from 'erxes-api-shared/core-types';
 import { sendTRPCMessage } from 'erxes-api-shared/utils';
 import { sendSms } from '../../utils/sms';
 
@@ -50,7 +51,7 @@ export const executeMessageProAction = async (
     });
   }
 
-  const customerIds: string[] = await sendTRPCMessage({
+  const customerIds: string[] = await sendTRPCMessage<string[]>({
     subdomain,
     pluginName: 'core',
     method: 'query',
@@ -67,7 +68,7 @@ export const executeMessageProAction = async (
   let customerPhone = '';
 
   if (customerIds?.length) {
-    const customers = await sendTRPCMessage({
+    const customers = await sendTRPCMessage<ICustomer[]>({
       subdomain,
       pluginName: 'core',
       method: 'query',
@@ -88,13 +89,13 @@ export const executeMessageProAction = async (
     });
 
     const codedCustomer = (customers || []).find(
-      (customer: any) => customer?.code && /^\d{8}$/.test(customer.code),
+      (customer) => customer?.code && /^\d{8}$/.test(customer.code),
     );
     const customer = codedCustomer || (customers || [])[0];
     customerPhone = customer?.primaryPhone || '';
   }
 
-  const document = await sendTRPCMessage({
+  const document = await sendTRPCMessage<string>({
     subdomain,
     pluginName: 'core',
     method: 'query',

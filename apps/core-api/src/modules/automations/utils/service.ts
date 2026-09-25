@@ -13,7 +13,7 @@ export const resumeHeldExecutions = async (
   automationId: string,
 ) => {
   try {
-    await sendTRPCMessage({
+    await sendTRPCMessage<{ resumed: number }>({
       subdomain,
       pluginName: 'automations',
       method: 'mutation',

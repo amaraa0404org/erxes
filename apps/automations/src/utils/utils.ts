@@ -100,7 +100,7 @@ export const getConfig = async (
   defaultValue?: any,
 ) => {
   const ENV_CONFIG = getEnv({ name: code });
-  const config = await sendTRPCMessage({
+  const config = await sendTRPCMessage<string>({
     subdomain,
     method: 'query',
     pluginName: 'core',

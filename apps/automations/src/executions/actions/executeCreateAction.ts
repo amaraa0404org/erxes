@@ -2,6 +2,8 @@ import { setWaitActionResponse } from '../setWaitActionResponse';
 import {
   AUTOMATION_DEFERRED_TIMEOUT,
   AUTOMATION_ERROR_CODES,
+  AutomationExecutionSetWaitCondition,
+  EXECUTE_WAIT_TYPES,
   IAutomationAction,
   IAutomationDeferredMarker,
   IAutomationExecutionDocument,
@@ -16,6 +18,21 @@ type TCreateActionResponse = Promise<{
   actionResponse: any;
   deferred?: IAutomationDeferredMarker;
 }>;
+
+/**
+ * What the owning plugin's `automations.receiveActions` hands back. `result`
+ * is the plugin's own action output; `error`, `waitCondition` and `deferred`
+ * steer what this service does with it.
+ */
+type TReceiveActionsResponse = {
+  error?: string;
+  result?: unknown;
+  waitCondition?: Extract<
+    AutomationExecutionSetWaitCondition,
+    { type: EXECUTE_WAIT_TYPES.CHECK_OBJECT }
+  >;
+  deferred?: unknown;
+};
 
 /**
  * Only a well-formed marker defers an action, and the plugin never gets to
@@ -53,7 +70,11 @@ export const executeCreateAction = async (
     action.type,
   );
 
-  let actionResponse = await sendCoreModuleProducer({
+  const pluginResponse = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.RECEIVE_ACTIONS,
+    TReceiveActionsResponse | null
+  >({
     subdomain,
     moduleName: 'automations',
     pluginName,
@@ -68,31 +89,40 @@ export const executeCreateAction = async (
     defaultValue: null,
   });
 
-  if (actionResponse.error) {
-    // The failure happened inside the owning plugin; only its message crosses
-    // the producer boundary.
+  if (!pluginResponse) {
     throw new AutomationActionError(
-      actionResponse.error,
+      `Plugin "${pluginName}" did not answer the action`,
       AUTOMATION_ERROR_CODES.PLUGIN_ACTION_FAILED,
     );
   }
 
-  const waitCondition = actionResponse?.waitCondition;
+  if (pluginResponse.error) {
+    // The failure happened inside the owning plugin; only its message crosses
+    // the producer boundary.
+    throw new AutomationActionError(
+      pluginResponse.error,
+      AUTOMATION_ERROR_CODES.PLUGIN_ACTION_FAILED,
+    );
+  }
+
+  let actionResponse: unknown = pluginResponse;
+
+  const waitCondition = pluginResponse.waitCondition;
   let shouldBreak = false;
 
   if (waitCondition) {
     await setWaitActionResponse(subdomain, execution, action, waitCondition);
-    actionResponse = actionResponse.result;
+    actionResponse = pluginResponse.result;
     shouldBreak = true;
   }
 
   // The owning plugin queued the work itself and told us how to carry on.
   const deferred = shouldBreak
     ? undefined
-    : resolveDeferredMarker(actionResponse?.deferred);
+    : resolveDeferredMarker(pluginResponse.deferred);
 
   if (deferred) {
-    actionResponse = actionResponse.result ?? null;
+    actionResponse = pluginResponse.result ?? null;
   }
 
   return { shouldBreak, actionResponse, deferred };

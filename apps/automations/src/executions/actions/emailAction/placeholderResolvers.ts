@@ -14,7 +14,7 @@ export const documentResolver = (
 ): TPlaceholderResolver =>
   documentPlaceholderResolver({
     print: (documentId) =>
-      sendTRPCMessage({
+      sendTRPCMessage<string>({
         subdomain,
         pluginName: 'core',
         method: 'query',
@@ -29,7 +29,7 @@ export const documentResolver = (
       }),
     findContent: async (documentId) =>
       (
-        await sendTRPCMessage({
+        await sendTRPCMessage<{ content?: string | null } | null>({
           subdomain,
           pluginName: 'core',
           method: 'query',

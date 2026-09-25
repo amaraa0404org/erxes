@@ -47,7 +47,11 @@ export const applyApprovedChange = async (
   try {
     // A disabled or unreachable plugin makes the producer return quietly, so
     // only the applier's own acknowledgement counts as the work being done.
-    const result = await sendCoreModuleProducer({
+    const result = await sendCoreModuleProducer<
+      'approval',
+      TApprovalChangeProducers.APPLY,
+      { applied: boolean }
+    >({
       subdomain,
       moduleName: 'approval',
       pluginName,

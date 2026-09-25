@@ -187,7 +187,11 @@ const loadKnowledgeDocuments = async ({
   subdomain: string;
   source: TKnowledgeSourceGroup;
 }) => {
-  const response: unknown = await sendCoreModuleProducer({
+  const response: unknown = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.LOAD_AI_KNOWLEDGE_DOCUMENT_BATCH,
+    unknown
+  >({
     subdomain,
     pluginName: source.pluginName,
     moduleName: 'automations',
@@ -237,7 +241,11 @@ const loadKnowledgeDocumentBatch = async ({
   candidateSourceIds?: string[];
   skipTotalCount?: boolean;
 }) => {
-  const response: unknown = await sendCoreModuleProducer({
+  const response: unknown = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.LOAD_AI_KNOWLEDGE_DOCUMENT_BATCH,
+    unknown
+  >({
     subdomain,
     pluginName: source.pluginName,
     moduleName: 'automations',

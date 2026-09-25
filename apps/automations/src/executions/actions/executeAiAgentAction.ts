@@ -278,7 +278,11 @@ const getAiContext = async (
   }
 
   try {
-    return await sendCoreModuleProducer({
+    return await sendCoreModuleProducer<
+      'automations',
+      TAutomationProducers.GENERATE_AI_CONTEXT,
+      TAiContext | null
+    >({
       moduleName: 'automations',
       subdomain,
       pluginName,

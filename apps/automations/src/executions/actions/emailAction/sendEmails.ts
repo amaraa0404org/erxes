@@ -54,7 +54,7 @@ export const sendEmails = async (
     throw new Error(`"From" email address is missing: ${requested}`);
   }
 
-  const alignedFrom = await sendTRPCMessage({
+  const alignedFrom = await sendTRPCMessage<string | null>({
     subdomain,
     method: 'query',
     pluginName: 'core',

@@ -697,7 +697,7 @@ export const loadEngageMessageClass = (
         ? { customerId, 'engageData.messageId': engageData.messageId }
         : { visitorId, 'engageData.messageId': engageData.messageId };
 
-      prevMessage = await sendTRPCMessage({
+      prevMessage = await sendTRPCMessage<IMessageDocument | null>({
         subdomain,
         pluginName: 'frontline',
         method: 'query',
@@ -717,7 +717,7 @@ export const loadEngageMessageClass = (
 
         const conversationId = prevMessage.conversationId;
 
-        messages = await sendTRPCMessage({
+        messages = await sendTRPCMessage<IMessageDocument[]>({
           subdomain,
           pluginName: 'frontline',
           method: 'query',
@@ -732,7 +732,7 @@ export const loadEngageMessageClass = (
           return null;
         }
 
-        await sendTRPCMessage({
+        await sendTRPCMessage<unknown>({
           subdomain,
 
           pluginName: 'frontline',
@@ -748,7 +748,7 @@ export const loadEngageMessageClass = (
         return null;
       }
 
-      return await sendTRPCMessage({
+      return await sendTRPCMessage<IMessageDocument | null>({
         subdomain,
 
         pluginName: 'frontline',

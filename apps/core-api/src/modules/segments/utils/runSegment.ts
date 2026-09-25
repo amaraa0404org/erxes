@@ -36,7 +36,11 @@ export const listSegmentMembers = async (
   const candidates =
     pluginOf(segment.contentType) === 'core'
       ? await listCoreSegmentMembers(models, input)
-      : await sendCoreModuleProducer({
+      : await sendCoreModuleProducer<
+          'segments',
+          TSegmentProducers.LIST_MEMBERS,
+          SegmentMemberPage
+        >({
           subdomain,
           moduleName: 'segments',
           pluginName: pluginOf(segment.contentType),
@@ -63,7 +67,11 @@ export const estimateSegmentMembers = async (
   const counted =
     pluginOf(segment.contentType) === 'core'
       ? await countCoreSegmentMembers(models, input)
-      : await sendCoreModuleProducer({
+      : await sendCoreModuleProducer<
+          'segments',
+          TSegmentProducers.COUNT_MEMBERS,
+          SegmentMemberCount
+        >({
           subdomain,
           moduleName: 'segments',
           pluginName: pluginOf(segment.contentType),
@@ -193,7 +201,11 @@ export const countSegmentMembers = async (
   const counted =
     pluginOf(segment.contentType) === 'core'
       ? await countCoreSegmentMembers(models, { ...input, budgetMs })
-      : await sendCoreModuleProducer({
+      : await sendCoreModuleProducer<
+          'segments',
+          TSegmentProducers.COUNT_MEMBERS,
+          SegmentMemberCount
+        >({
           subdomain,
           moduleName: 'segments',
           pluginName: pluginOf(segment.contentType),

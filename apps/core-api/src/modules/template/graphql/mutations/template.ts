@@ -58,7 +58,7 @@ const templateMutations = {
     }
 
     try {
-      return await sendTRPCMessage({
+      return await sendTRPCMessage<string>({
         subdomain,
         pluginName,
         method: 'mutation',

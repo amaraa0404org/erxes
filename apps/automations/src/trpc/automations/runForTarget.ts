@@ -12,7 +12,9 @@ export const runForTargetProcedure = t.procedure
   .input(
     z.object({
       automationId: z.string(),
-      target: z.record(z.string(), z.any()),
+      // The caller chose the target; its shape belongs to the caller's
+      // module, not to this service.
+      target: z.record(z.string(), z.unknown()),
       triggerId: z.string().optional(),
       createdVia: z
         .object({

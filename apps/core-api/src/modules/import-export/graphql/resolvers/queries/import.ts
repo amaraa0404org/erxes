@@ -1,4 +1,5 @@
 import {
+  ImportHeaderDefinition,
   matchImportHeaders,
   processCSVStream,
   splitType,
@@ -87,7 +88,11 @@ const loadImportFields = async ({
     await checkPermission(permission);
   }
 
-  return await sendCoreModuleProducer({
+  return await sendCoreModuleProducer<
+    'importExport',
+    TImportExportProducers.GET_IMPORT_HEADERS,
+    ImportHeaderDefinition[]
+  >({
     subdomain,
     pluginName,
     moduleName: 'importExport',

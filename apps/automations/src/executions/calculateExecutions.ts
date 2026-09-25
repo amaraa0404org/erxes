@@ -25,7 +25,11 @@ const checkIsValidCustomTigger = async (
 ) => {
   const [pluginName, moduleName, collectionType, relationType] =
     splitType(type);
-  const response = await sendCoreModuleProducer({
+  const response = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.CHECK_CUSTOM_TRIGGER,
+    boolean
+  >({
     moduleName: 'automations',
     subdomain,
     pluginName,

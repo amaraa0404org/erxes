@@ -16,7 +16,7 @@ type TriggerHandlerInput = {
 export const handleTrigger = async (
   subdomain: string,
   input: TriggerHandlerInput,
-) => {
+): Promise<'success'> => {
   const models = await generateModels(subdomain);
 
   const { type, targets, repeatOptions, recordType, eventUpdateDescription } =

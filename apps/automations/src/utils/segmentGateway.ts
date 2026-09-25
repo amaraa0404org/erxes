@@ -18,8 +18,12 @@ export const automationSegmentGateway = (
   timeZone: () => segmentTimeZone(subdomain),
 
   resolveFields: async (pluginName, input) => {
-    const answer: SegmentEvaluateFieldsResult | undefined =
-      await sendCoreModuleProducer({
+    const answer =
+      await sendCoreModuleProducer<
+        'segments',
+        TSegmentProducers.EVALUATE_FIELDS,
+        SegmentEvaluateFieldsResult | undefined
+      >({
         subdomain,
         moduleName: 'segments',
         pluginName,
@@ -40,7 +44,7 @@ export const automationSegmentGateway = (
     relatedRecordType,
     subjectIds,
   }) => {
-    const edges: Record<string, string[]> | undefined = await sendTRPCMessage({
+    const edges = await sendTRPCMessage<Record<string, string[]> | undefined>({
       subdomain,
       pluginName: 'core',
       module: 'segment',

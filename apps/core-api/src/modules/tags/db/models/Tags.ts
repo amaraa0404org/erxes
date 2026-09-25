@@ -325,7 +325,7 @@ export const loadTagClass = (
 
       const { processId, userId } = getContext();
 
-      return await sendTRPCMessage({
+      return await sendTRPCMessage<Record<string, unknown>[]>({
         subdomain,
 
         pluginName,

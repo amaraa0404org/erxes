@@ -63,7 +63,10 @@ export const loadTemplateClass = (models: IModels, subdomain: string) => {
           return models.Template.create(template);
         }
 
-        const content = await sendTRPCMessage({
+        const content = await sendTRPCMessage<Record<
+          string,
+          unknown
+        > | null>({
           subdomain,
           pluginName,
           method: 'query',
@@ -77,7 +80,8 @@ export const loadTemplateClass = (models: IModels, subdomain: string) => {
           throw new Error(`This ${moduleName} doesn't have content`);
         }
 
-        template.content = content.content || content || {};
+        template.content = (content.content || content ||
+          {}) as ITemplate['content'];
       } catch (error) {
         throw new Error(error);
       }

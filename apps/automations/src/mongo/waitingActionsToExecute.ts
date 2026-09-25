@@ -33,7 +33,7 @@ const automationWaitingActionCheckObject = z.object({
     contentType: z.string().optional(),
     shouldCheckOptionalConnect: z.boolean().optional(),
     targetId: z.string(),
-    expectedState: z.record(z.any()),
+    expectedState: z.record(z.string(), z.unknown()),
     propertyName: z.string(),
     expectedStateConjunction: z.enum(['every', 'some']),
     timeout: z.date(),

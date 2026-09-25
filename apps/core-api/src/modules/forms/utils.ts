@@ -68,6 +68,19 @@ export const fetchServiceForms = async (
   );
 };
 
+/**
+ * One entry of a plugin's `fields.getFieldList` result. Core merges these with
+ * generated custom-field descriptors, so only the members it reads are typed;
+ * plugins may add their own.
+ */
+export interface IFieldListItem {
+  name: string;
+  label?: string;
+  type?: string;
+  groupDetail?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export const fieldsCombinedByContentType = async (
   models: IModels,
   subdomain: string,
@@ -81,7 +94,7 @@ export const fieldsCombinedByContentType = async (
   }: ICombinedParams,
 ) => {
   const [pluginName, moduleType, collectionType] = splitType(contentType);
-  let fields = await sendTRPCMessage({
+  let fields = await sendTRPCMessage<IFieldListItem[]>({
     subdomain,
     pluginName,
     method: 'query',

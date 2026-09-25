@@ -6,6 +6,7 @@ import {
   IAutomationExecutionDocument,
   replaceOutputPlaceholders,
   splitType,
+  TAutomationFindObjectResult,
   TAutomationProducers,
 } from 'erxes-api-shared/core-modules';
 import { sendCoreModuleProducer } from 'erxes-api-shared/utils';
@@ -30,7 +31,11 @@ export const executeFindObjectAction = async (
 
   const resolvedValue = String(replacedValue?.value || '');
 
-  const result = await sendCoreModuleProducer({
+  const result = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.FIND_OBJECT,
+    TAutomationFindObjectResult | null
+  >({
     subdomain,
     moduleName: 'automations',
     pluginName,

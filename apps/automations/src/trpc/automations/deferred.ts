@@ -15,9 +15,12 @@ export const completeDeferredActionProcedure = t.procedure
       actionId: z.string(),
       jobId: z.string(),
       status: z.enum(['success', 'error', 'dropped']),
-      result: z.any().optional(),
+      // The deferred action's own output; its shape belongs to the plugin
+      // that queued the work.
+      result: z.unknown().optional(),
     }),
   )
+  .output(z.object({ applied: z.boolean(), reason: z.string().optional() }))
   .mutation(async ({ ctx, input }) => {
     try {
       const models = await generateModels(ctx.subdomain);

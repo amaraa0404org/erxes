@@ -26,7 +26,7 @@ const loadSegment = async (
   subdomain: string,
   segmentId: string,
 ): Promise<Required<SegmentDefinition> | null> => {
-  const segment: SegmentDefinition | undefined = await sendTRPCMessage({
+  const segment = await sendTRPCMessage<SegmentDefinition | undefined>({
     subdomain,
     pluginName: 'core',
     method: 'query',

@@ -137,7 +137,7 @@ export const loadDocumentClass = (models: IModels, subdomain: string) => {
         });
       }
 
-      const replacedContents = await sendTRPCMessage({
+      const replacedContents = await sendTRPCMessage<string[]>({
         subdomain,
 
         pluginName,

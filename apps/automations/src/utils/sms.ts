@@ -72,7 +72,7 @@ export const sendSms = async (
     throw new Error('messaging service not enabled');
   }
 
-  await sendTRPCMessage({
+  await sendTRPCMessage<unknown>({
     subdomain,
     pluginName: type,
     method: 'mutation',

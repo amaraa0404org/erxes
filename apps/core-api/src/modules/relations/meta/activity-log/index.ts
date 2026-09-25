@@ -67,7 +67,7 @@ const notifyOwner = async ({
     return;
   }
 
-  await sendTRPCMessage({
+  await sendTRPCMessage<null>({
     subdomain,
     pluginName,
     method: 'mutation',

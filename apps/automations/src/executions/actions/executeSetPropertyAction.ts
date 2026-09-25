@@ -7,6 +7,7 @@ import {
   splitType,
   TAutomationProducers,
   TAutomationSetPropertyChange,
+  TAutomationSetPropertyResult,
 } from 'erxes-api-shared/core-modules';
 import { sendCoreModuleProducer } from 'erxes-api-shared/utils';
 
@@ -24,7 +25,11 @@ export const executeSetPropertyAction = async (
 ) => {
   const { module } = action.config;
   const [pluginName, moduleName, collectionType] = splitType(module);
-  const response = await sendCoreModuleProducer({
+  const response = await sendCoreModuleProducer<
+    'automations',
+    TAutomationProducers.SET_PROPERTIES,
+    TAutomationSetPropertyResult
+  >({
     subdomain,
     moduleName: 'automations',
     pluginName,

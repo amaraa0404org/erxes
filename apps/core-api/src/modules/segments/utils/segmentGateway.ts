@@ -21,7 +21,11 @@ export const coreSegmentGateway = (
   resolveFields: async (pluginName, input) =>
     pluginName === 'core'
       ? evaluateCoreFields(models, input)
-      : sendCoreModuleProducer({
+      : sendCoreModuleProducer<
+          'segments',
+          TSegmentProducers.EVALUATE_FIELDS,
+          SegmentEvaluateFieldsResult
+        >({
           subdomain,
           moduleName: 'segments',
           pluginName,

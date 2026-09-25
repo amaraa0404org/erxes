@@ -11,7 +11,9 @@ export const triggerProcedure = t.procedure
   .input(
     z.object({
       type: z.string(),
-      targets: z.array(z.any()),
+      // Trigger targets are arbitrary module documents; the service does not
+      // know their schema, only that they are records.
+      targets: z.array(z.record(z.string(), z.unknown())),
       recordType: z.string().optional(),
       repeatOptions: z
         .object({
@@ -20,9 +22,10 @@ export const triggerProcedure = t.procedure
           optionalConnectId: z.string().optional(),
         })
         .optional(),
-      eventUpdateDescription: z.record(z.string(), z.any()).optional(),
+      eventUpdateDescription: z.record(z.string(), z.unknown()).optional(),
     }),
   )
+  .output(z.literal('success'))
   .mutation(async ({ ctx, input }) => {
     try {
       return await handleTrigger(ctx.subdomain, input);
