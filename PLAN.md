@@ -522,7 +522,7 @@ over.
 - [x] 6.1 Shared contract types in `erxes-api-shared`: tRPC context and setup
   types, the `start-plugin` types, `IMainContext`, the `Resolver` defaults,
   and the generic `sendTRPCMessage` / `sendCoreModuleProducer`.
-- [ ] 6.2 core-api tRPC: real zod inputs for every procedure, worst files
+- [x] 6.2 core-api tRPC: real zod inputs for every procedure, worst files
   first: `contacts/trpc/customer.ts`, `conformities/trpc/conformity.ts`,
   `forms/trpc/fields.ts`, `products/trpc/*`, `contacts/trpc/company.ts`,
   `relations/trpc/relation.ts`, `organization/**/trpc/*`, `tags`, `brand`,
@@ -530,7 +530,7 @@ over.
   core call site of `sendTRPCMessage`.
 - [x] 6.3 Set up codegen for core-api (the `codegen` target and generated
   types). Check that the generated schema matches the running subgraph SDL.
-- [ ] 6.4 GraphQL nullability and resolver typing, module by module, one commit
+- [x] 6.4 GraphQL nullability and resolver typing, module by module, one commit
   per module. Apply the D4 rules and switch the resolver maps to the
   generated types. Update the mirrored frontend interfaces in the same commit.
 - [x] 6.5 Gateway and `logs-service`: remove the `any` in GraphQL, tRPC and
