@@ -2,23 +2,23 @@ import { commonParams } from './commonTypeDefs';
 
 export const BranchTypes = ` 
     type Branch @key(fields: "_id") @cacheControl(maxAge: 3){
-        _id: String
+        _id: String!
         title: String
         parentId: String
         supervisorId: String
         supervisor: User
         code: String
-        order:String
-        users: [User]
-        userIds: [String]
-        userCount: Int
+        order:String!
+        users: [User!]!
+        userIds: [String!]!
+        userCount: Int!
         parent: Branch
-        children: [Branch]
-        status:String
+        children: [Branch!]!
+        status:String!
 
         address: String
         radius: Int
-        hasChildren:Boolean
+        hasChildren:Boolean!
         workhours:JSON
         holidays:JSON
         phoneNumber: String
@@ -29,9 +29,9 @@ export const BranchTypes = `
     }
 
     type BranchesListResponse {
-        list:[Branch]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[Branch!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
   `;
 
@@ -58,17 +58,17 @@ const commonBranchParams = `
 `;
 
 export const mutations = `
-    branchesAdd(${commonBranchParams}): Branch
+    branchesAdd(${commonBranchParams}): Branch!
     branchesEdit(_id: String!, ${commonBranchParams}): Branch
-    branchesRemove(ids:[String!]): JSON
+    branchesRemove(ids:[String!]!): JSON!
 `;
 
 export const queries = `
-    branches(${commonParams},withoutUserFilter:Boolean): [Branch]
-    branchesMain(${commonParams},withoutUserFilter:Boolean): BranchesListResponse
-    branchDetail(_id: String!): Branch
+    branches(${commonParams},withoutUserFilter:Boolean): [Branch!]!
+    branchesMain(${commonParams},withoutUserFilter:Boolean): BranchesListResponse!
+    branchDetail(_id: String!): Branch!
 
-    cpBranches(${commonParams},withoutUserFilter:Boolean): [Branch]
-    cpBranchesMain(${commonParams},withoutUserFilter:Boolean): BranchesListResponse
-    cpBranchDetail(_id: String!): Branch
+    cpBranches(${commonParams},withoutUserFilter:Boolean): [Branch!]!
+    cpBranchesMain(${commonParams},withoutUserFilter:Boolean): BranchesListResponse!
+    cpBranchDetail(_id: String!): Branch!
 `;

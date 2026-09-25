@@ -12,8 +12,8 @@ export interface IPosition {
     title: string;
     userCount: number;
   };
-  status?: string;
-  userCount?: number;
+  status: string;
+  userCount: number;
 }
 
 export interface ISelectPositionsContext {

@@ -1,13 +1,47 @@
 import { STRUCTURE_STATUSES } from 'erxes-api-shared/core-modules';
 import { IUserDocument } from 'erxes-api-shared/core-types';
 import { escapeRegExp } from 'erxes-api-shared/utils';
+import { FilterQuery, SortOrder } from 'mongoose';
+import { Cursor_Direction } from '~/__generated__/graphql';
 import { IModels } from '~/connectionResolvers';
+import {
+  IBranchDocument,
+  IDepartmentDocument,
+} from '@/organization/structure/@types/structure';
+
+export interface IStructureFilterParams {
+  ids?: Array<string | null> | null;
+  excludeIds?: boolean | null;
+  status?: string | null;
+  onlyFirstLevel?: boolean | null;
+  parentId?: string | null;
+  searchValue?: string | null;
+  withoutUserFilter?: boolean | null;
+}
+
+export const toCursorPaginateParams = (params: {
+  limit?: number | null;
+  cursor?: string | null;
+  direction?: Cursor_Direction | null;
+  orderBy?: Record<string, unknown> | null;
+}): {
+  limit?: number;
+  cursor?: string;
+  direction?: 'forward' | 'backward';
+  orderBy?: Record<string, SortOrder>;
+} => ({
+  limit: params.limit ?? undefined,
+  cursor: params.cursor ?? undefined,
+  direction:
+    params.direction === Cursor_Direction.Backward ? 'backward' : 'forward',
+  orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+});
 
 const getFilterOrder = async (
   models: IModels,
   type: string,
   user: IUserDocument,
-  params: any,
+  params: IStructureFilterParams,
 ) => {
   if (type !== 'branch' && type !== 'department') {
     return;
@@ -51,7 +85,7 @@ const getFilterOrder = async (
   }
 
   const userDetail = await models.Users.findOne({ _id: user._id });
-  const items = await collection.find({
+  const items = await collection!.find({
     _id: { $in: userDetail?.[userField] },
   });
 
@@ -63,8 +97,10 @@ const getFilterOrder = async (
 const getFilterOrderSearch = async (
   models: IModels,
   type: string,
-  structureFilter: any,
-  filterOrder?: any,
+  structureFilter:
+    | FilterQuery<IBranchDocument>
+    | FilterQuery<IDepartmentDocument>,
+  filterOrder?: { $in: RegExp[] },
 ) => {
   let collection;
 
@@ -77,10 +113,10 @@ const getFilterOrderSearch = async (
   }
 
   if (filterOrder) {
-    structureFilter.order = filterOrder;
+    (structureFilter as Record<string, unknown>).order = filterOrder;
   }
 
-  const structureCodes = (await collection.find(structureFilter))
+  const structureCodes = (await collection!.find(structureFilter))
     .map((structure) => structure.code)
     .filter(Boolean)
     .map(escapeRegExp);
@@ -103,9 +139,11 @@ export const generateFilters = async ({
   models: IModels;
   user: IUserDocument;
   type: string;
-  params: any;
+  params: IStructureFilterParams;
 }) => {
-  const filter: any = { status: { $ne: STRUCTURE_STATUSES.DELETED } };
+  const filter: Record<string, unknown> = {
+    status: { $ne: STRUCTURE_STATUSES.DELETED },
+  };
 
   if (params?.ids?.length) {
     filter._id = { [params.excludeIds ? '$nin' : '$in']: params.ids };
@@ -135,7 +173,7 @@ export const generateFilters = async ({
       $options: 'i',
     };
 
-    const structureFilter: any = {
+    const structureFilter: Record<string, unknown> = {
       $or: [
         { title: regexOption },
         { description: regexOption },
@@ -151,8 +189,10 @@ export const generateFilters = async ({
       filter.order = await getFilterOrderSearch(
         models,
         type,
-        structureFilter,
-        filter.order,
+        structureFilter as
+          | FilterQuery<IBranchDocument>
+          | FilterQuery<IDepartmentDocument>,
+        filter.order as { $in: RegExp[] } | undefined,
       );
     }
   }

@@ -6,7 +6,7 @@ export interface IBranch {
   code: string;
   parentId?: string;
   order: string;
-  userCount?: number;
+  userCount: number;
 }
 
 export interface ISelectBranchesContext {

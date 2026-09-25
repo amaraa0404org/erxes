@@ -1,10 +1,9 @@
 import {
-  IDetail,
+  AnyResolver,
   IEmailSignature,
-  ILink,
   IUser,
-  Resolver,
 } from 'erxes-api-shared/core-types';
+import { CookieOptions } from 'express';
 import {
   authCookieOptions,
   getEnv,
@@ -17,6 +16,24 @@ import { IContext, IModels } from '~/connectionResolvers';
 import { saveValidatedToken } from '~/modules/auth/utils';
 import { sendInvitationEmail } from '../utils';
 import { sendOnboardNotification } from '~/modules/notifications/utils';
+import {
+  MutationResolvers,
+  MutationUsersConfigEmailSignaturesArgs,
+  MutationUsersConfirmInvitationArgs,
+  MutationUsersCreateOwnerArgs,
+  MutationUsersEditArgs,
+  MutationUsersEditProfileArgs,
+  MutationUsersInviteArgs,
+  MutationUsersSetChatStatusArgs,
+  MutationUsersSetActiveStatusArgs,
+  MutationUsersSetActiveStatusBatchArgs,
+  MutationUsersConfigGetNotificationByEmailArgs,
+  MutationUsersResendInvitationArgs,
+  MutationUsersResetMemberPasswordArgs,
+  MutationUsersChangePasswordArgs,
+  MutationEditOrganizationInfoArgs,
+  MutationEditOrganizationDomainArgs,
+} from '~/__generated__/graphql';
 
 export interface IUsersEdit extends IUser {
   channelIds?: string[];
@@ -83,9 +100,9 @@ const validatePermissionGroupIds = async (
   }
 };
 
-export const userMutations: Record<string, Resolver<any, any, IContext>> = {
+export const userMutations: MutationResolvers<IContext> = {
   async usersCreateOwner(
-    _parent: undefined,
+    _parent,
     {
       email,
       password,
@@ -93,15 +110,8 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
       lastName,
       purpose,
       subscribeEmail,
-    }: {
-      email: string;
-      password: string;
-      firstName: string;
-      purpose: string;
-      lastName?: string;
-      subscribeEmail?: boolean;
-    },
-    { models }: IContext,
+    }: MutationUsersCreateOwnerArgs,
+    { models },
   ) {
     const userCount = await models.Users.countDocuments();
 
@@ -116,7 +126,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
       details: {
         fullName: `${firstName} ${lastName || ''}`,
         firstName,
-        lastName,
+        lastName: lastName ?? undefined,
       },
     };
 
@@ -142,9 +152,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Reset member's password
    */
   async usersResetMemberPassword(
-    _parent: undefined,
-    args: { _id: string; newPassword: string },
-    { models, checkPermission }: IContext,
+    _parent,
+    args: MutationUsersResetMemberPasswordArgs,
+    { models, checkPermission },
   ) {
     await checkPermission('teamMembersResetPassword');
 
@@ -155,9 +165,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Change user password
    */
   async usersChangePassword(
-    _parent: undefined,
-    args: { currentPassword: string; newPassword: string },
-    { user, models }: IContext,
+    _parent,
+    args: MutationUsersChangePasswordArgs,
+    { user, models },
   ) {
     return models.Users.changePassword({ _id: user._id, ...args });
   },
@@ -166,11 +176,11 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Update user
    */
   async usersEdit(
-    _parent: undefined,
-    args: IUsersEdit & { unitId?: string },
-    { user, models, checkPermission }: IContext,
+    _parent,
+    args: MutationUsersEditArgs,
+    { user, models, checkPermission },
   ) {
-    const { _id, unitId, ...doc } = args as any;
+    const { _id, unitId, ...doc } = args;
 
     if (user._id !== _id) {
       await checkPermission('teamMembersUpdate', _id);
@@ -190,7 +200,10 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
       };
     }
 
-    const updatedUser = await models.Users.updateUser(_id, updatedDoc);
+    const updatedUser = await models.Users.updateUser(
+      _id,
+      updatedDoc as Parameters<IModels['Users']['updateUser']>[1],
+    );
 
     if (args.departmentIds || args.branchIds) {
       await models.UserMovements.manageUserMovement({
@@ -218,7 +231,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Edit user profile
    */
   async usersEditProfile(
-    _parent: undefined,
+    _parent,
     {
       username,
       email,
@@ -226,29 +239,25 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
       links,
       employeeId,
       positionIds,
-    }: {
-      username: string;
-      email: string;
-      details: IDetail;
-      links: ILink;
-      employeeId: string;
-      positionIds: string[];
-    },
-    { user, models }: IContext,
+    }: MutationUsersEditProfileArgs,
+    { user, models },
   ) {
     const doc = {
       username,
       email,
       details: {
         ...details,
-        fullName: `${details.firstName || ''} ${details.lastName || ''}`,
+        fullName: `${details?.firstName || ''} ${details?.lastName || ''}`,
       },
       links,
       employeeId,
       positionIds,
     };
 
-    const updatedUser = await models.Users.editProfile(user._id, doc);
+    const updatedUser = await models.Users.editProfile(
+      user._id,
+      doc as Parameters<IModels['Users']['editProfile']>[1],
+    );
 
     return updatedUser;
   },
@@ -257,9 +266,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Set Active or inactive user
    */
   async usersSetActiveStatus(
-    _parent: undefined,
-    { _id }: { _id: string },
-    { user, models, subdomain, checkPermission }: IContext,
+    _parent,
+    { _id }: MutationUsersSetActiveStatusArgs,
+    { user, models, subdomain, checkPermission },
   ) {
     await checkPermission('teamMembersRemove');
 
@@ -275,9 +284,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async usersSetActiveStatusBatch(
-    _parent: undefined,
-    { _ids }: { _ids: string[] },
-    { user, models, subdomain, checkPermission }: IContext,
+    _parent,
+    { _ids }: MutationUsersSetActiveStatusBatchArgs,
+    { user, models, subdomain, checkPermission },
   ) {
     await checkPermission('teamMembersRemove');
 
@@ -304,17 +313,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Invites users to team members
    */
   async usersInvite(
-    _parent: undefined,
-    {
-      entries,
-    }: {
-      entries: Array<{
-        email: string;
-        password: string;
-        permissionGroupIds?: string[];
-      }>;
-    },
-    { models, subdomain, user, checkPermission }: IContext,
+    _parent,
+    { entries }: MutationUsersInviteArgs,
+    { models, subdomain, user, checkPermission },
   ) {
     await checkPermission('teamMembersInvite');
 
@@ -335,15 +336,11 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
     for (const entry of entries) {
       await models.Users.checkDuplication({ email: entry.email });
 
-      const doc: any = entry;
-
-      const docModified = doc;
-
-      if (docModified?.scopeBrandIds?.length) {
-        doc.brandIds = docModified.scopeBrandIds;
-      }
-
-      const token = await models.Users.invite(doc);
+      const token = await models.Users.invite({
+        email: entry.email,
+        password: entry.password ?? undefined,
+        permissionGroupIds: entry.permissionGroupIds ?? undefined,
+      });
 
       sendInvitationEmail(models, subdomain, {
         email: entry.email,
@@ -351,15 +348,17 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
         userId: user._id,
       });
     }
+
+    return null;
   },
 
   /*
    * Resend invitation
    */
   async usersResendInvitation(
-    _parent: undefined,
-    { email }: { email: string },
-    { models }: IContext,
+    _parent,
+    { email }: MutationUsersResendInvitationArgs,
+    { models },
   ) {
     const token = await models.Users.resendInvitation({ email });
 
@@ -367,13 +366,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async usersConfirmInvitation(
-    _parent: undefined,
-    {
-      token: registrationToken,
-    }: {
-      token: string;
-    },
-    { res, models, requestInfo, subdomain }: IContext,
+    _parent,
+    { token: registrationToken }: MutationUsersConfirmInvitationArgs,
+    { res, models, requestInfo, subdomain },
   ) {
     const user = await models.Users.findOne({
       registrationToken,
@@ -412,7 +407,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
     if (VERSION === 'saas') {
       const organization = await getSaasOrganizationDetail({ subdomain });
 
-      const cookieOptions: any = authCookieOptions();
+      const cookieOptions = authCookieOptions();
 
       if (organization.domain && organization.dnsStatus === 'active') {
         cookieOptions.secure = true;
@@ -421,7 +416,9 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
 
       res.cookie('auth-token', token, cookieOptions);
     } else {
-      const cookieOptions: any = { secure: requestInfo.secure };
+      const cookieOptions: Omit<CookieOptions, 'expires'> & {
+        expires?: number;
+      } = { secure: requestInfo.secure };
 
       if (
         sameSite &&
@@ -439,25 +436,35 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
     return 'accepted';
   },
   async usersConfigEmailSignatures(
-    _parent: undefined,
-    { signatures }: { signatures: IEmailSignature[] },
-    { user, models }: IContext,
+    _parent,
+    { signatures }: MutationUsersConfigEmailSignaturesArgs,
+    { user, models },
   ) {
-    return models.Users.configEmailSignatures(user._id, signatures);
+    const normalizedSignatures: IEmailSignature[] = (signatures ?? []).map(
+      (signature) => ({
+        brandId: signature.brandId ?? undefined,
+        signature: signature.signature ?? undefined,
+      }),
+    );
+
+    return models.Users.configEmailSignatures(
+      user._id,
+      normalizedSignatures,
+    );
   },
 
   async usersConfigGetNotificationByEmail(
-    _parent: undefined,
-    { isAllowed }: { isAllowed: boolean },
-    { user, models }: IContext,
+    _parent,
+    { isAllowed }: MutationUsersConfigGetNotificationByEmailArgs,
+    { user, models },
   ) {
     return models.Users.configGetNotificationByEmail(user._id, isAllowed);
   },
 
   async usersSetChatStatus(
-    _parent: undefined,
-    { _id, status }: { _id: string; status: string },
-    { models }: IContext,
+    _parent,
+    { _id, status }: MutationUsersSetChatStatusArgs,
+    { models },
   ) {
     return await models.Users.setChatStatus(_id, status);
   },
@@ -466,53 +473,25 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
    * Upgrade organization plan status
    */
   async editOrganizationInfo(
-    _parent: undefined,
-    {
-      icon,
-      link,
-      name,
-      iconColor,
-      textColor,
-      domain,
-      favicon,
-      description,
-      backgroundColor,
-      logo,
-    }: {
-      logo: string;
-      icon: string;
-      link: string;
-      name: string;
-      favicon: string;
-      domain: string;
-      iconColor: string;
-      textColor: string;
-      description: string;
-      backgroundColor: string;
-    },
-    { subdomain, res, requestInfo }: IContext,
+    _parent,
+    _args: MutationEditOrganizationInfoArgs,
+    { subdomain, res, requestInfo },
   ) {
-    return;
+    return null;
   },
 
   async editOrganizationDomain(
-    _parent: undefined,
-    {
-      domain,
-      type,
-    }: {
-      domain: string;
-      type: string;
-    },
-    { subdomain }: IContext,
+    _parent,
+    _args: MutationEditOrganizationDomainArgs,
+    { subdomain },
   ) {
-    return;
+    return null;
   },
 };
 
-userMutations.usersCreateOwner.wrapperConfig = {
+(userMutations.usersCreateOwner as AnyResolver).wrapperConfig = {
   skipPermission: true,
 };
-userMutations.usersConfirmInvitation.wrapperConfig = {
+(userMutations.usersConfirmInvitation as AnyResolver).wrapperConfig = {
   skipPermission: true,
 };

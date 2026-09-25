@@ -1,5 +1,5 @@
+import { CpUnitResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { IUnitDocument } from '@/organization/structure/@types/structure';
 
 const USER_FIELDS = {
   _id: 1,
@@ -19,8 +19,8 @@ const DEPARTMENT_FIELDS = {
   description: 1,
 };
 
-export default {
-  async users(unit: IUnitDocument, _args: undefined, { models }: IContext) {
+const CPUnit: CpUnitResolvers<IContext> = {
+  async users(unit, _args, { models }) {
     return models.Users.findUsers(
       {
         _id: { $in: unit.userIds || [] },
@@ -30,11 +30,7 @@ export default {
     );
   },
 
-  async department(
-    unit: IUnitDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async department(unit, _args, { models }) {
     if (!unit.departmentId) {
       return null;
     }
@@ -45,3 +41,5 @@ export default {
     );
   },
 };
+
+export default CPUnit;

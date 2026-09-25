@@ -1,27 +1,30 @@
-import {
-  ICursorPaginateParams,
-  IListParams,
-} from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
+import { PipelineStage } from 'mongoose';
 import { IContext } from '~/connectionResolvers';
-import { generateFilters } from './utils';
 import {
-  Resolver
-} from 'erxes-api-shared/core-types';
+  QueryBranchesArgs,
+  QueryBranchesMainArgs,
+  QueryBranchDetailArgs,
+  QueryCpBranchesArgs,
+  QueryCpBranchesMainArgs,
+  QueryCpBranchDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { generateFilters, toCursorPaginateParams } from './utils';
 
-export const branchsQueries : Record<string, Resolver> = {
-  async branches(
-    _parent: undefined,
-    params: any & { searchValue?: string },
-    { models, user }: IContext,
-  ) {
+export const branchsQueries: QueryResolvers<IContext> = {
+  async branches(_parent, params: QueryBranchesArgs, { models, user }) {
     const filter = await generateFilters({
       models,
       user,
       type: 'branch',
       params,
     });
-    const pipeline: any[] = [{ $match: filter }, { $sort: { order: 1 } }];
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+      { $sort: { order: 1 } },
+    ];
 
     if (params?.ids?.length) {
       pipeline.push({
@@ -36,9 +39,9 @@ export const branchsQueries : Record<string, Resolver> = {
   },
 
   async branchesMain(
-    _parent: undefined,
-    params: IListParams & ICursorPaginateParams,
-    { models, user }: IContext,
+    _parent,
+    params: QueryBranchesMainArgs,
+    { models, user },
   ) {
     const filter = await generateFilters({
       models,
@@ -49,29 +52,28 @@ export const branchsQueries : Record<string, Resolver> = {
 
     const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.Branches,
-      params,
+      params: toCursorPaginateParams(params),
       query: filter,
     });
 
     return { list, totalCount, pageInfo };
   },
 
-  async branchDetail(_parent: undefined, { _id }, { models }: IContext) {
+  async branchDetail(_parent, { _id }: QueryBranchDetailArgs, { models }) {
     return models.Branches.getBranch({ _id });
   },
 
-  async cpBranches(
-    _parent: undefined,
-    params: any & { searchValue?: string },
-    { models, user }: IContext,
-  ) {
+  async cpBranches(_parent, params: QueryCpBranchesArgs, { models, user }) {
     const filter = await generateFilters({
       models,
       user,
       type: 'branch',
       params: { ...params, withoutUserFilter: true },
     });
-    const pipeline: any[] = [{ $match: filter }, { $sort: { order: 1 } }];
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+      { $sort: { order: 1 } },
+    ];
 
     if (params?.ids?.length) {
       pipeline.push({
@@ -86,9 +88,9 @@ export const branchsQueries : Record<string, Resolver> = {
   },
 
   async cpBranchesMain(
-    _parent: undefined,
-    params: IListParams & ICursorPaginateParams,
-    { models, user }: IContext,
+    _parent,
+    params: QueryCpBranchesMainArgs,
+    { models, user },
   ) {
     const filter = await generateFilters({
       models,
@@ -99,24 +101,24 @@ export const branchsQueries : Record<string, Resolver> = {
 
     const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.Branches,
-      params,
+      params: toCursorPaginateParams(params),
       query: filter,
     });
 
     return { list, totalCount, pageInfo };
   },
 
-  async cpBranchDetail(_parent: undefined, { _id }, { models }: IContext) {
+  async cpBranchDetail(_parent, { _id }: QueryCpBranchDetailArgs, { models }) {
     return models.Branches.getBranch({ _id });
   },
 };
 
-branchsQueries.cpBranches.wrapperConfig = {
+(branchsQueries.cpBranches as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };
-branchsQueries.cpBranchesMain.wrapperConfig = {
+(branchsQueries.cpBranchesMain as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };
-branchsQueries.cpBranchDetail.wrapperConfig = {
+(branchsQueries.cpBranchDetail as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

@@ -5,20 +5,20 @@ export const PositionTypes = `
         _id: String!
         title: String
         code: String
-        order: String
+        order: String!
         parentId: String
         parent: Position
-        status: String
-        children: [Position]
-        users: [User]
-        userIds: [String]
-        userCount: Int
+        status: String!
+        children: [Position!]!
+        users: [User!]!
+        userIds: [String!]!
+        userCount: Int!
     }
 
     type PositionListQueryResponse {
-        list:[Position]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[Position!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
 `;
 const commonPositionParams = `
@@ -30,13 +30,13 @@ const commonPositionParams = `
 `;
 
 export const mutations = `
-    positionsAdd(${commonPositionParams}):Position
+    positionsAdd(${commonPositionParams}):Position!
     positionsEdit(_id: String!, ${commonPositionParams}):Position
-    positionsRemove(ids:[String!]): JSON
+    positionsRemove(ids:[String!]!): JSON!
 `;
 
 export const queries = `
-    positions(${commonParams},withoutUserFilter:Boolean): [Position]
-    positionsMain(${commonParams}): PositionListQueryResponse
-    positionDetail(_id: String): Position
+    positions(${commonParams},withoutUserFilter:Boolean): [Position!]!
+    positionsMain(${commonParams}): PositionListQueryResponse!
+    positionDetail(_id: String!): Position!
 `;

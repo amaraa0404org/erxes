@@ -1,18 +1,19 @@
 import { IContext } from '~/connectionResolvers';
-import { IFavorites } from '@/organization/settings/db/definitions/favorites';
 import {
   normalizeFavoriteBreadcrumb,
   normalizeFavoriteIcon,
   normalizeFavoritePath,
 } from '@/organization/settings/graphql/favorites/utils';
+import {
+  MutationResolvers,
+  MutationToggleFavoriteArgs,
+} from '~/__generated__/graphql';
 
-type ToggleFavoriteArgs = Pick<IFavorites, 'path' | 'breadcrumb' | 'icon'>;
-
-export const favoriteMutations = {
+export const favoriteMutations: MutationResolvers<IContext> = {
   toggleFavorite: async (
-    _parent: undefined,
-    { path, breadcrumb, icon }: ToggleFavoriteArgs,
-    { models, user }: IContext,
+    _parent,
+    { path, breadcrumb, icon }: MutationToggleFavoriteArgs,
+    { models, user },
   ) => {
     const normalizedPath = normalizeFavoritePath(path);
 

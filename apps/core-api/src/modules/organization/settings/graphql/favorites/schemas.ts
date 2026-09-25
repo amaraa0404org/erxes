@@ -2,14 +2,14 @@ export const types = `
   type Favorite {
     _id: String!
     path: String!
-    breadcrumb: [String]
+    breadcrumb: [String!]
     icon: String
   }
 `;
 
 export const queries = `
-  getFavoritesByCurrentUser: [Favorite]
-  isFavorite(path: String!): Boolean
+  getFavoritesByCurrentUser: [Favorite!]!
+  isFavorite(path: String!): Boolean!
 `;
 
 export const mutations = `

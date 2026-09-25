@@ -28,7 +28,7 @@ export const types = `
   }
 
   input InvitationEntry {
-    email: String
+    email: String!
     password: String
     permissionGroupIds: [String!]
   }
@@ -70,26 +70,26 @@ export const types = `
   }
 
   type User @key(fields: "_id") @cacheControl(maxAge: 3) {
-    _id: String
-    createdAt: Date
+    _id: String!
+    createdAt: Date!
     username: String
     email: String
-    isActive: Boolean
-    details: UserDetailsType
-    links: JSON
-    status: String
+    isActive: Boolean!
+    details: UserDetailsType!
+    links: JSON!
+    status: String!
     chatStatus: UserChatStatus
     emailSignatures: JSON
     getNotificationByEmail: Boolean
 
     currentOrganization: Organization
     organizations: [CookieOrganization]
-    onboardedPlugins: [String]
-    groupIds: [String]
-    permissionGroupIds: [String]
+    onboardedPlugins: [String!]!
+    groupIds: [String!]
+    permissionGroupIds: [String!]!
     customPermissions: [CustomPermission]
-    isSubscribed: String
-    isShowNotification: Boolean
+    isSubscribed: String!
+    isShowNotification: Boolean!
     propertiesData: JSON
 
     isOwner: Boolean
@@ -98,25 +98,25 @@ export const types = `
   
     department: Department
 
-    departmentIds: [String]
-    brandIds: [String]
-    brands: [Brand]
-    departments: [Department]
-    branchIds: [String]
-    branches: [Branch]
-    positionIds: [String]
-    positions: [Position]
+    departmentIds: [String!]
+    brandIds: [String!]
+    brands: [Brand!]!
+    departments: [Department!]!
+    branchIds: [String!]
+    branches: [Branch!]!
+    positionIds: [String!]
+    positions: [Position!]!
     unitId: String
-    score: Float
-    leaderBoardPosition: Int
+    score: Float!
+    leaderBoardPosition: Int!
     employeeId: String
-    isOnboarded: Boolean
+    isOnboarded: Boolean!
     cursor: String
   }
 
   type UserMovement {
-    _id: String
-    createdAt: Date
+    _id: String!
+    createdAt: Date!
     createdBy: String
     createdByDetail:JSON
     userId:String
@@ -124,13 +124,13 @@ export const types = `
     contentType:String
     contentTypeId:String
     contentTypeDetail:JSON
-    status:String
+    status:String!
   }
 
   type UsersListResponse {
-    list: [User]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [User!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 `;
 
@@ -169,11 +169,11 @@ const commonSelector = `
 `;
 
 export const queries = `
-  users(sortField: String, status: String, excludeIds: Boolean, ${commonSelector} ${GQL_CURSOR_PARAM_DEFS}): UsersListResponse
-  allUsers(isActive: Boolean,ids:[String],assignedToMe:String,searchValue:String): [User]
+  users(sortField: String, status: String, excludeIds: Boolean, ${commonSelector} ${GQL_CURSOR_PARAM_DEFS}): UsersListResponse!
+  allUsers(isActive: Boolean,ids:[String],assignedToMe:String,searchValue:String): [User!]!
   userDetail(_id: String): User
-  usersTotalCount(${commonSelector}): Int
-  userMovements(userId: String!,contentType: String):[UserMovement]
+  usersTotalCount(${commonSelector}): Int!
+  userMovements(userId: String!,contentType: String):[UserMovement!]!
 `;
 
 export const mutations = `
@@ -189,14 +189,14 @@ export const mutations = `
   usersEdit(_id: String!, ${commonParams}): User
   usersChangePassword(currentPassword: String!, newPassword: String!): User
   usersSetActiveStatus(_id: String!): User
-  usersInvite(entries: [InvitationEntry]): Boolean
-  usersResendInvitation(email: String!): String
-  usersConfirmInvitation(token: String): String
-  usersConfigEmailSignatures(signatures: [EmailSignature]): User
-  usersConfigGetNotificationByEmail(isAllowed: Boolean): User
-  usersSetChatStatus(_id: String!, status: UserChatStatus): User
+  usersInvite(entries: [InvitationEntry!]!): Boolean
+  usersResendInvitation(email: String!): String!
+  usersConfirmInvitation(token: String!): String!
+  usersConfigEmailSignatures(signatures: [EmailSignature!]): User
+  usersConfigGetNotificationByEmail(isAllowed: Boolean!): User
+  usersSetChatStatus(_id: String!, status: UserChatStatus!): User
   editOrganizationInfo(icon: String, logo: String, link: String, name: String, iconColor: String, backgroundColor: String, description: String, domain: String, favicon: String, textColor: String): Organization
   editOrganizationDomain(type: String, domain: String): Organization
-  usersCreateOwner(email: String!, password: String!, firstName: String!, lastName: String, purpose: String, subscribeEmail: Boolean): String
-  usersSetActiveStatusBatch(_ids: [String!]!): Boolean
+  usersCreateOwner(email: String!, password: String!, firstName: String!, lastName: String, purpose: String, subscribeEmail: Boolean): String!
+  usersSetActiveStatusBatch(_ids: [String!]!): Boolean!
 `;

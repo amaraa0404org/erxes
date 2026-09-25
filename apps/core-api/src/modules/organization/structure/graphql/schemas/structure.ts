@@ -36,9 +36,9 @@ const commonStructureParams = `
 `;
 
 export const mutations = `
-    structuresAdd(${commonStructureParams}): Structure
+    structuresAdd(${commonStructureParams}): Structure!
     structuresEdit(_id: String!,${commonStructureParams}): Structure
-    structuresRemove(_id: String!): JSON
+    structuresRemove(_id: String!): JSON!
 `;
 
 export const queries = `

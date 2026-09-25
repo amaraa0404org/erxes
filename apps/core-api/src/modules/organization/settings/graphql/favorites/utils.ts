@@ -15,14 +15,17 @@ export function normalizeFavoritePath(path: string) {
   }
 }
 
-export function normalizeFavoriteBreadcrumb(breadcrumb?: string[]) {
+export function normalizeFavoriteBreadcrumb(
+  breadcrumb?: Array<string | null> | null,
+) {
   return (breadcrumb || [])
+    .filter((segment): segment is string => Boolean(segment))
     .map((segment) => segment.trim())
     .filter(Boolean)
     .slice(0, 3);
 }
 
-export function normalizeFavoriteIcon(icon?: string) {
+export function normalizeFavoriteIcon(icon?: string | null) {
   const normalizedIcon = icon?.trim();
 
   return normalizedIcon || undefined;

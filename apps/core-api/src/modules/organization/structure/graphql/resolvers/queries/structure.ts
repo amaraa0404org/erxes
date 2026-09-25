@@ -1,11 +1,8 @@
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const structuresQueries = {
-  async structureDetail(
-    _parent: undefined,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+export const structuresQueries: QueryResolvers<IContext> = {
+  async structureDetail(_parent, _args, { models }) {
     return models.Structures.findOne();
   },
 };

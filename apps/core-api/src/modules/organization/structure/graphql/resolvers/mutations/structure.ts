@@ -1,10 +1,8 @@
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-export const structuresMutations = {
-  async structuresAdd(
-    _parent: undefined,
-    doc,
-    { user, models, checkPermission }: IContext,
-  ) {
+
+export const structuresMutations: MutationResolvers<IContext> = {
+  async structuresAdd(_parent, doc, { user, models, checkPermission }) {
     await checkPermission('structuresManage');
 
     const structure = await models.Structures.createStructure(doc, user);
@@ -13,9 +11,9 @@ export const structuresMutations = {
   },
 
   async structuresEdit(
-    _parent: undefined,
+    _parent,
     { _id, ...doc },
-    { user, models, checkPermission }: IContext,
+    { user, models, checkPermission },
   ) {
     await checkPermission('structuresManage');
 
@@ -24,15 +22,11 @@ export const structuresMutations = {
     return structure;
   },
 
-  async structuresRemove(
-    _parent: undefined,
-    { _id },
-    { models, checkPermission }: IContext,
-  ) {
+  async structuresRemove(_parent, { _id }, { models, checkPermission }) {
     await checkPermission('structuresManage');
 
     const deleteResponse = await models.Structures.removeStructure(_id);
 
-    return deleteResponse;
+    return deleteResponse.toObject();
   },
 };

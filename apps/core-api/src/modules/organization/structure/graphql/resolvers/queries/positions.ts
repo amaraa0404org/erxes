@@ -1,24 +1,26 @@
-import {
-  ICursorPaginateParams,
-  IListParams,
-} from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { IContext } from '~/connectionResolvers';
-import { generateFilters } from './utils';
+import { PipelineStage } from 'mongoose';
+import {
+  QueryPositionsArgs,
+  QueryPositionsMainArgs,
+  QueryPositionDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { generateFilters, toCursorPaginateParams } from './utils';
 
-export const positionQueries = {
-  async positions(
-    _parent: undefined,
-    params: any & { searchValue?: string },
-    { models, user }: IContext,
-  ) {
+export const positionQueries: QueryResolvers<IContext> = {
+  async positions(_parent, params: QueryPositionsArgs, { models, user }) {
     const filter = await generateFilters({
       models,
       user,
       type: 'position',
       params,
     });
-    const pipeline: any[] = [{ $match: filter }, { $sort: { order: 1 } }];
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+      { $sort: { order: 1 } },
+    ];
 
     if (params?.ids?.length) {
       pipeline.push({
@@ -33,9 +35,9 @@ export const positionQueries = {
   },
 
   async positionsMain(
-    _parent: undefined,
-    params: IListParams & ICursorPaginateParams,
-    { models, user }: IContext,
+    _parent,
+    params: QueryPositionsMainArgs,
+    { models, user },
   ) {
     const filter = await generateFilters({
       models,
@@ -46,14 +48,18 @@ export const positionQueries = {
 
     const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.Positions,
-      params,
+      params: toCursorPaginateParams(params),
       query: filter,
     });
 
     return { list, totalCount, pageInfo };
   },
 
-  async positionDetail(_parent: undefined, { _id }, { models }: IContext) {
+  async positionDetail(
+    _parent,
+    { _id }: QueryPositionDetailArgs,
+    { models },
+  ) {
     return models.Positions.getPosition({ _id });
   },
 };

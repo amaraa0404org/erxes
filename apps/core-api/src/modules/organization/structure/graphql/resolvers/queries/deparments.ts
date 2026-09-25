@@ -1,25 +1,29 @@
-import {
-  ICursorPaginateParams,
-  IListParams,
-  Resolver,
-} from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { IContext } from '~/connectionResolvers';
-import { generateFilters } from './utils';
+import { FilterQuery, PipelineStage } from 'mongoose';
+import { IDepartmentDocument } from '@/organization/structure/@types/structure';
+import {
+  QueryCpDepartmentsArgs,
+  QueryDepartmentsArgs,
+  QueryDepartmentsMainArgs,
+  QueryDepartmentDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { generateFilters, toCursorPaginateParams } from './utils';
 import { STRUCTURE_STATUSES } from 'erxes-api-shared/core-modules';
-export const deparmentQueries: Record<string, Resolver> = {
-  async departments(
-    _parent: undefined,
-    params: any,
-    { models, user }: IContext,
-  ) {
+
+export const deparmentQueries: QueryResolvers<IContext> = {
+  async departments(_parent, params: QueryDepartmentsArgs, { models, user }) {
     const filter = await generateFilters({
       models,
       user,
       type: 'department',
       params,
     });
-    const pipeline: any[] = [{ $match: filter }, { $sort: { order: 1 } }];
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+      { $sort: { order: 1 } },
+    ];
 
     if (params?.ids?.length) {
       pipeline.push({
@@ -33,9 +37,9 @@ export const deparmentQueries: Record<string, Resolver> = {
   },
 
   async departmentsMain(
-    _parent: undefined,
-    params: IListParams & ICursorPaginateParams,
-    { models, user }: IContext,
+    _parent,
+    params: QueryDepartmentsMainArgs,
+    { models, user },
   ) {
     const filter = await generateFilters({
       models,
@@ -46,23 +50,23 @@ export const deparmentQueries: Record<string, Resolver> = {
 
     const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.Departments,
-      params,
+      params: toCursorPaginateParams(params),
       query: filter,
     });
 
     return { list, totalCount, pageInfo };
   },
 
-  async departmentDetail(_parent: undefined, { _id }, { models }: IContext) {
+  async departmentDetail(
+    _parent,
+    { _id }: QueryDepartmentDetailArgs,
+    { models },
+  ) {
     return models.Departments.getDepartment({ _id });
   },
 
-  async cpDepartments(
-    _root,
-    params,
-    { models }: IContext,
-  ) {
-    const filter: any = {
+  async cpDepartments(_parent, params: QueryCpDepartmentsArgs, { models }) {
+    const filter: FilterQuery<IDepartmentDocument> = {
       status: { $ne: STRUCTURE_STATUSES.DELETED },
     };
 

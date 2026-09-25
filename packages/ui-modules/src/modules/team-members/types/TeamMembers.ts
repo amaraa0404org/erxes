@@ -5,10 +5,10 @@ export interface IUser {
   email?: string;
   username?: string;
   isOwner?: boolean;
-  isActive?: boolean;
+  isActive: boolean;
   configs?: any;
   isOnboarded: boolean;
-  details?: {
+  details: {
     firstName?: string;
     lastName?: string;
     fullName?: string;

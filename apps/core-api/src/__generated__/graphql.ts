@@ -1,10 +1,11 @@
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import type { IActivityLogDocument, IAutomationDocument, IAutomationExecutionDocument, IEmailAddressDocument, IEmailDeliveryDocument, IEmailSenderDocument, INotificationDocument, NotificationSettings } from 'erxes-api-shared/core-modules';
-import type { IAppDocument, IBrandDocument, ICompanyDocument, ICustomerDocument, IEmailTemplateDocument, ILogDocument, IPermissionGroupDocument, IProductDocument, IProductCategoryDocument, IProductsConfigDocument, IRelationDocument, ITagDocument, IUomDocument, IUserDocument, IUserMovementDocument } from 'erxes-api-shared/core-types';
+import type { IActivityLogDocument, IAutomationDocument, IAutomationExecutionDocument, IEmailAddressDocument, IEmailDeliveryDocument, IEmailSenderDocument, INotificationDocument } from 'erxes-api-shared/core-modules';
+import type { IAppDocument, ICompanyDocument, ICustomerDocument, IEmailTemplateDocument, ILogDocument, IPermissionGroupDocument, IProductDocument, IProductCategoryDocument, IProductsConfigDocument, IRelationDocument, ITagDocument, IUomDocument, IUserDocument, IUserMovementDocument } from 'erxes-api-shared/core-types';
 import type { IApprovalLockDocument } from '../modules/approval/db/definitions/approvalLocks';
 import type { IApprovalRequestDocument } from '../modules/approval/db/definitions/approvalRequests';
 import type { IAutomationWorkflowTemplateDocument } from '../modules/automations/db/models/AutomationWorkflowTemplates';
-import type { IBranchDocument, IDepartmentDocument, IPositionDocument, IStructureDocument, IUnitDocument } from '../modules/organization/structure/@types/structure';
+import type { IBranchDocument, IUnitDocument, IDepartmentDocument, IPositionDocument, IStructureDocument } from '../modules/organization/structure/@types/structure';
+import type { IBrandDocument } from '../modules/organization/brand/types';
 import type { IBroadcastRecipientDocument } from '../modules/broadcast/db/models/BroadcastRecipients';
 import type { IBroadcastRunDocument } from '../modules/broadcast/db/models/BroadcastRuns';
 import type { IBroadcastTraceDocument } from '../modules/broadcast/db/models/BroadcastTraces';
@@ -56,13 +57,13 @@ export type Action = {
   config?: Maybe<Scalars['JSON']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   icon?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
   label?: Maybe<Scalars['String']['output']>;
   nextActionId?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['JSON']['output']>;
   style?: Maybe<Scalars['JSON']['output']>;
   targetActionId?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
   workflowId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -86,38 +87,38 @@ export type ActionInput = {
   config?: InputMaybe<Scalars['JSON']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   icon?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
   label?: InputMaybe<Scalars['String']['input']>;
   nextActionId?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['JSON']['input']>;
   style?: InputMaybe<Scalars['JSON']['input']>;
   targetActionId?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
   workflowId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ActivityLog = {
   __typename?: 'ActivityLog';
-  _id?: Maybe<Scalars['String']['output']>;
-  action?: Maybe<Scalars['JSON']['output']>;
-  activityType?: Maybe<Scalars['String']['output']>;
-  actor?: Maybe<Scalars['JSON']['output']>;
-  actorType?: Maybe<Scalars['String']['output']>;
-  changes?: Maybe<Scalars['JSON']['output']>;
+  _id: Scalars['String']['output'];
+  action: Scalars['JSON']['output'];
+  activityType: Scalars['String']['output'];
+  actor: Scalars['JSON']['output'];
+  actorType: Scalars['String']['output'];
+  changes: Scalars['JSON']['output'];
   context?: Maybe<Scalars['JSON']['output']>;
   contextType?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   metadata?: Maybe<Scalars['JSON']['output']>;
   sourcePlugin?: Maybe<Scalars['String']['output']>;
-  target?: Maybe<Scalars['JSON']['output']>;
-  targetType?: Maybe<Scalars['String']['output']>;
+  target: Scalars['JSON']['output'];
+  targetType: Scalars['String']['output'];
 };
 
 export type ActivityLogsList = {
   __typename?: 'ActivityLogsList';
-  list?: Maybe<Array<Maybe<ActivityLog>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ActivityLog>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type AiAgentHealth = {
@@ -131,19 +132,19 @@ export type AiAgentHealth = {
 
 export type App = {
   __typename?: 'App';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  _id: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   lastUsedAt?: Maybe<Scalars['Date']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  token?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  token: Scalars['String']['output'];
 };
 
 export type ApprovalChange = {
   __typename?: 'ApprovalChange';
-  changeType?: Maybe<Scalars['String']['output']>;
+  changeType: Scalars['String']['output'];
   payload?: Maybe<Scalars['JSON']['output']>;
-  summary?: Maybe<Scalars['String']['output']>;
+  summary: Scalars['String']['output'];
 };
 
 export type ApprovalChangeInput = {
@@ -154,35 +155,35 @@ export type ApprovalChangeInput = {
 
 export type ApprovalContentMeta = {
   __typename?: 'ApprovalContentMeta';
-  contentId?: Maybe<Scalars['String']['output']>;
-  contentType?: Maybe<Scalars['String']['output']>;
+  contentId: Scalars['String']['output'];
+  contentType: Scalars['String']['output'];
   label?: Maybe<Scalars['String']['output']>;
   ownerId?: Maybe<Scalars['String']['output']>;
 };
 
 export type ApprovalDecision = {
   __typename?: 'ApprovalDecision';
-  at?: Maybe<Scalars['Date']['output']>;
-  decision?: Maybe<Scalars['String']['output']>;
+  at: Scalars['Date']['output'];
+  decision: Scalars['String']['output'];
   reason?: Maybe<Scalars['String']['output']>;
-  userId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
 };
 
 export type ApprovalLock = {
   __typename?: 'ApprovalLock';
   _id: Scalars['String']['output'];
-  allowedUserIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  approvalMode?: Maybe<Scalars['String']['output']>;
-  approverScope?: Maybe<Scalars['String']['output']>;
-  contentId?: Maybe<Scalars['String']['output']>;
-  contentType?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  lockedBy?: Maybe<Scalars['String']['output']>;
+  allowedUserIds: Array<Scalars['String']['output']>;
+  approvalMode: Scalars['String']['output'];
+  approverScope: Scalars['String']['output'];
+  contentId: Scalars['String']['output'];
+  contentType: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  lockedBy: Scalars['String']['output'];
   ownerIdSnapshot?: Maybe<Scalars['String']['output']>;
   releaseReason?: Maybe<Scalars['String']['output']>;
   releasedAt?: Maybe<Scalars['Date']['output']>;
   releasedBy?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
 };
 
 export type ApprovalLockCreateInput = {
@@ -197,12 +198,12 @@ export type ApprovalLockCreateInput = {
 export type ApprovalLockState = {
   __typename?: 'ApprovalLockState';
   action?: Maybe<Scalars['String']['output']>;
-  content?: Maybe<ApprovalContentMeta>;
-  contentId?: Maybe<Scalars['String']['output']>;
-  contentType?: Maybe<Scalars['String']['output']>;
-  hasAccess?: Maybe<Scalars['Boolean']['output']>;
+  content: ApprovalContentMeta;
+  contentId: Scalars['String']['output'];
+  contentType: Scalars['String']['output'];
+  hasAccess: Scalars['Boolean']['output'];
   lock?: Maybe<ApprovalLock>;
-  locked?: Maybe<Scalars['Boolean']['output']>;
+  locked: Scalars['Boolean']['output'];
   pendingRequest?: Maybe<ApprovalRequest>;
   reason?: Maybe<Scalars['String']['output']>;
 };
@@ -213,21 +214,21 @@ export type ApprovalRequest = {
   appliedAt?: Maybe<Scalars['Date']['output']>;
   applyError?: Maybe<Scalars['String']['output']>;
   change?: Maybe<ApprovalChange>;
-  content?: Maybe<ApprovalContentMeta>;
-  contentId?: Maybe<Scalars['String']['output']>;
-  contentType?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  decisions?: Maybe<Array<Maybe<ApprovalDecision>>>;
-  kind?: Maybe<Scalars['String']['output']>;
+  content: ApprovalContentMeta;
+  contentId: Scalars['String']['output'];
+  contentType: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  decisions: Array<ApprovalDecision>;
+  kind: Scalars['String']['output'];
   lockId?: Maybe<Scalars['String']['output']>;
-  notificationIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  notificationIds: Array<Scalars['String']['output']>;
   reason?: Maybe<Scalars['String']['output']>;
   requester?: Maybe<User>;
-  requesterId?: Maybe<Scalars['String']['output']>;
-  requiredApproverIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  requiredApprovers?: Maybe<Array<Maybe<User>>>;
+  requesterId: Scalars['String']['output'];
+  requiredApproverIds: Array<Scalars['String']['output']>;
+  requiredApprovers: Array<User>;
   resolvedAt?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
 };
 
 export type ApprovalRequestCreateInput = {
@@ -240,9 +241,9 @@ export type ApprovalRequestCreateInput = {
 
 export type ApprovalRequestsList = {
   __typename?: 'ApprovalRequestsList';
-  list?: Maybe<Array<Maybe<ApprovalRequest>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ApprovalRequest>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Attachment = {
@@ -310,30 +311,30 @@ export type AuthTokenResponse = {
 export type Automation = {
   __typename?: 'Automation';
   _id: Scalars['String']['output'];
-  actions?: Maybe<Array<Maybe<Action>>>;
+  actions: Array<Action>;
   activatedAt?: Maybe<Scalars['Date']['output']>;
   activatedBy?: Maybe<Scalars['String']['output']>;
-  approvalLockState?: Maybe<ApprovalLockState>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  approvalLockState: ApprovalLockState;
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
   createdUser?: Maybe<User>;
   duplicatedFrom?: Maybe<Scalars['String']['output']>;
   duplicatedFromName?: Maybe<Scalars['String']['output']>;
   edgeType?: Maybe<Scalars['String']['output']>;
   flowDirection?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  notes?: Maybe<Array<Maybe<AutomationNote>>>;
+  name: Scalars['String']['output'];
+  notes: Array<AutomationNote>;
   ownedBy?: Maybe<Scalars['String']['output']>;
   ownerContentId?: Maybe<Scalars['String']['output']>;
   ownerId?: Maybe<Scalars['String']['output']>;
   ownerUser?: Maybe<User>;
-  status?: Maybe<Scalars['String']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  triggers?: Maybe<Array<Maybe<Trigger>>>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  status: Scalars['String']['output'];
+  tagIds: Array<Scalars['String']['output']>;
+  triggers: Array<Trigger>;
+  updatedAt: Scalars['Date']['output'];
   updatedBy?: Maybe<Scalars['String']['output']>;
   updatedUser?: Maybe<User>;
-  workflows?: Maybe<Array<Maybe<Workflow>>>;
+  workflows: Array<Workflow>;
 };
 
 
@@ -343,33 +344,33 @@ export type AutomationApprovalLockStateArgs = {
 
 export type AutomationHistories = {
   __typename?: 'AutomationHistories';
-  list?: Maybe<Array<Maybe<AutomationHistory>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<AutomationHistory>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type AutomationHistory = {
   __typename?: 'AutomationHistory';
-  _id?: Maybe<Scalars['String']['output']>;
-  actions?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
-  automationId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  depth?: Maybe<Scalars['Int']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
+  actions: Array<Scalars['JSON']['output']>;
+  automationId: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  depth: Scalars['Int']['output'];
+  description: Scalars['String']['output'];
   errorCode?: Maybe<Scalars['String']['output']>;
   failedActionId?: Maybe<Scalars['String']['output']>;
   failedActionType?: Maybe<Scalars['String']['output']>;
-  handledFailureActionIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  handledFailureActionIds: Array<Scalars['String']['output']>;
   inputs?: Maybe<Scalars['JSON']['output']>;
-  modifiedAt?: Maybe<Scalars['Date']['output']>;
+  modifiedAt: Scalars['Date']['output'];
   nextActionId?: Maybe<Scalars['String']['output']>;
   parentExecutionId?: Maybe<Scalars['String']['output']>;
   startWaitingDate?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   target?: Maybe<Scalars['JSON']['output']>;
-  targetId?: Maybe<Scalars['String']['output']>;
+  targetId: Scalars['String']['output'];
   triggerConfig?: Maybe<Scalars['JSON']['output']>;
-  triggerId?: Maybe<Scalars['String']['output']>;
+  triggerId: Scalars['String']['output'];
   triggerType?: Maybe<Scalars['String']['output']>;
   waitingActionId?: Maybe<Scalars['String']['output']>;
   workflowId?: Maybe<Scalars['String']['output']>;
@@ -378,78 +379,78 @@ export type AutomationHistory = {
 export type AutomationNote = {
   __typename?: 'AutomationNote';
   color?: Maybe<Scalars['String']['output']>;
-  content?: Maybe<Scalars['String']['output']>;
+  content: Scalars['String']['output'];
   height?: Maybe<Scalars['Float']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
   position?: Maybe<Scalars['JSON']['output']>;
   width?: Maybe<Scalars['Float']['output']>;
 };
 
 export type AutomationStats = {
   __typename?: 'AutomationStats';
-  byErrorCode?: Maybe<Array<Maybe<AutomationStatsCount>>>;
-  byStatus?: Maybe<Array<Maybe<AutomationStatsCount>>>;
-  errorMessages?: Maybe<Array<Maybe<AutomationStatsErrorMessage>>>;
-  nodes?: Maybe<Array<Maybe<AutomationStatsNode>>>;
-  timeSeries?: Maybe<Array<Maybe<AutomationStatsBucket>>>;
-  total?: Maybe<Scalars['Int']['output']>;
+  byErrorCode: Array<AutomationStatsCount>;
+  byStatus: Array<AutomationStatsCount>;
+  errorMessages: Array<AutomationStatsErrorMessage>;
+  nodes: Array<AutomationStatsNode>;
+  timeSeries: Array<AutomationStatsBucket>;
+  total: Scalars['Int']['output'];
 };
 
 export type AutomationStatsBucket = {
   __typename?: 'AutomationStatsBucket';
-  complete?: Maybe<Scalars['Int']['output']>;
-  date?: Maybe<Scalars['String']['output']>;
-  error?: Maybe<Scalars['Int']['output']>;
-  total?: Maybe<Scalars['Int']['output']>;
-  waiting?: Maybe<Scalars['Int']['output']>;
+  complete: Scalars['Int']['output'];
+  date: Scalars['String']['output'];
+  error: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+  waiting: Scalars['Int']['output'];
 };
 
 export type AutomationStatsCount = {
   __typename?: 'AutomationStatsCount';
-  count?: Maybe<Scalars['Int']['output']>;
-  key?: Maybe<Scalars['String']['output']>;
+  count: Scalars['Int']['output'];
+  key: Scalars['String']['output'];
 };
 
 export type AutomationStatsErrorMessage = {
   __typename?: 'AutomationStatsErrorMessage';
-  actionTypes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  count?: Maybe<Scalars['Int']['output']>;
-  errorCode?: Maybe<Scalars['String']['output']>;
+  actionTypes: Array<Scalars['String']['output']>;
+  count: Scalars['Int']['output'];
+  errorCode: Scalars['String']['output'];
   lastAt?: Maybe<Scalars['Date']['output']>;
   message?: Maybe<Scalars['String']['output']>;
 };
 
 export type AutomationStatsNode = {
   __typename?: 'AutomationStatsNode';
-  actionId?: Maybe<Scalars['String']['output']>;
+  actionId: Scalars['String']['output'];
   actionType?: Maybe<Scalars['String']['output']>;
   avgDurationMs?: Maybe<Scalars['Float']['output']>;
-  error?: Maybe<Scalars['Int']['output']>;
-  errorCodes?: Maybe<Array<Maybe<AutomationStatsCount>>>;
+  error: Scalars['Int']['output'];
+  errorCodes: Array<AutomationStatsCount>;
   maxDurationMs?: Maybe<Scalars['Float']['output']>;
-  success?: Maybe<Scalars['Int']['output']>;
-  total?: Maybe<Scalars['Int']['output']>;
-  waiting?: Maybe<Scalars['Int']['output']>;
+  success: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+  waiting: Scalars['Int']['output'];
 };
 
 export type AutomationWorkflowTemplate = {
   __typename?: 'AutomationWorkflowTemplate';
   _id: Scalars['String']['output'];
   actions?: Maybe<Scalars['JSON']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   entryActionId?: Maybe<Scalars['String']['output']>;
   inputs?: Maybe<Scalars['JSON']['output']>;
   name: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type AutomationsListResponse = {
   __typename?: 'AutomationsListResponse';
-  list?: Maybe<Array<Maybe<Automation>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Float']['output']>;
+  list: Array<Automation>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
 };
 
 export type AvgEmailStats = {
@@ -467,65 +468,65 @@ export type AvgEmailStats = {
 
 export type Branch = {
   __typename?: 'Branch';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   address?: Maybe<Scalars['String']['output']>;
-  children?: Maybe<Array<Maybe<Branch>>>;
+  children: Array<Branch>;
   code?: Maybe<Scalars['String']['output']>;
   coordinate?: Maybe<Coordinate>;
   email?: Maybe<Scalars['String']['output']>;
-  hasChildren?: Maybe<Scalars['Boolean']['output']>;
+  hasChildren: Scalars['Boolean']['output'];
   holidays?: Maybe<Scalars['JSON']['output']>;
   image?: Maybe<Attachment>;
   links?: Maybe<Scalars['JSON']['output']>;
-  order?: Maybe<Scalars['String']['output']>;
+  order: Scalars['String']['output'];
   parent?: Maybe<Branch>;
   parentId?: Maybe<Scalars['String']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   radius?: Maybe<Scalars['Int']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   supervisor?: Maybe<User>;
   supervisorId?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  userCount?: Maybe<Scalars['Int']['output']>;
-  userIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  users?: Maybe<Array<Maybe<User>>>;
+  userCount: Scalars['Int']['output'];
+  userIds: Array<Scalars['String']['output']>;
+  users: Array<User>;
   workhours?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type BranchesListResponse = {
   __typename?: 'BranchesListResponse';
-  list?: Maybe<Array<Maybe<Branch>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Branch>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Brand = {
   __typename?: 'Brand';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   emailConfig?: Maybe<Scalars['JSON']['output']>;
-  memberIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  memberIds?: Maybe<Array<Scalars['String']['output']>>;
   name?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type BrandListResponse = {
   __typename?: 'BrandListResponse';
-  list?: Maybe<Array<Maybe<Brand>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Brand>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type BroadcastEmailDryRun = {
   __typename?: 'BroadcastEmailDryRun';
-  fields?: Maybe<Array<Maybe<BroadcastEmailFieldCoverage>>>;
+  fields?: Maybe<Array<BroadcastEmailFieldCoverage>>;
   sampleHtml?: Maybe<Scalars['String']['output']>;
   sampleTo?: Maybe<Scalars['String']['output']>;
   sampled?: Maybe<Scalars['Int']['output']>;
-  unresolved?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  unresolved?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type BroadcastEmailFieldCoverage = {
@@ -554,7 +555,7 @@ export type BroadcastRecipient = {
 
 export type BroadcastRecipientEmail = {
   __typename?: 'BroadcastRecipientEmail';
-  events?: Maybe<Array<Maybe<BroadcastRecipientEmailEvent>>>;
+  events?: Maybe<Array<BroadcastRecipientEmailEvent>>;
   from?: Maybe<Scalars['String']['output']>;
   html?: Maybe<Scalars['String']['output']>;
   reason?: Maybe<Scalars['String']['output']>;
@@ -573,9 +574,9 @@ export type BroadcastRecipientEmailEvent = {
 
 export type BroadcastRecipientListResponse = {
   __typename?: 'BroadcastRecipientListResponse';
-  list?: Maybe<Array<Maybe<BroadcastRecipient>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<BroadcastRecipient>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type BroadcastRun = {
@@ -604,7 +605,7 @@ export type BundleCondition = {
   __typename?: 'BundleCondition';
   _id: Scalars['String']['output'];
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   isDefault?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -615,36 +616,36 @@ export type BundleRule = {
   __typename?: 'BundleRule';
   _id: Scalars['String']['output'];
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  rules?: Maybe<Array<Maybe<BundleRuleItem>>>;
+  rules: Array<BundleRuleItem>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type BundleRuleItem = {
   __typename?: 'BundleRuleItem';
-  allowSkip?: Maybe<Scalars['Boolean']['output']>;
+  allowSkip: Scalars['Boolean']['output'];
   code: Scalars['String']['output'];
   percent?: Maybe<Scalars['Float']['output']>;
   priceAdjustFactor?: Maybe<Scalars['String']['output']>;
   priceAdjustType?: Maybe<Scalars['String']['output']>;
   priceType?: Maybe<PriceType>;
   priceValue?: Maybe<Scalars['Float']['output']>;
-  productIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  products?: Maybe<Array<Maybe<Product>>>;
+  productIds?: Maybe<Array<Scalars['String']['output']>>;
+  products?: Maybe<Array<Product>>;
   quantity?: Maybe<Scalars['Int']['output']>;
 };
 
 export type BundleRuleItemInput = {
-  allowSkip?: InputMaybe<Scalars['Boolean']['input']>;
+  allowSkip: Scalars['Boolean']['input'];
   code: Scalars['String']['input'];
   percent?: InputMaybe<Scalars['Float']['input']>;
   priceAdjustFactor?: InputMaybe<Scalars['String']['input']>;
   priceAdjustType?: InputMaybe<Scalars['String']['input']>;
   priceType?: InputMaybe<PriceType>;
   priceValue?: InputMaybe<Scalars['Float']['input']>;
-  productIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  productIds?: InputMaybe<Array<Scalars['String']['input']>>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -798,12 +799,12 @@ export type CpUnit = {
   department?: Maybe<CpUnitDepartment>;
   description?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  users?: Maybe<Array<Maybe<CpUnitUser>>>;
+  users: Array<CpUnitUser>;
 };
 
 export type CpUnitDepartment = {
   __typename?: 'CPUnitDepartment';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   code?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
@@ -811,7 +812,7 @@ export type CpUnitDepartment = {
 
 export type CpUnitUser = {
   __typename?: 'CPUnitUser';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   details?: Maybe<CpUnitUserDetails>;
   email?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
@@ -946,35 +947,35 @@ export type ClientPortalListResponse = {
 
 export type CompaniesListResponse = {
   __typename?: 'CompaniesListResponse';
-  list?: Maybe<Array<Maybe<Company>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Company>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Company = {
   __typename?: 'Company';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   addresses?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
   avatar?: Maybe<Scalars['String']['output']>;
   businessType?: Maybe<Scalars['String']['output']>;
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
-  customers?: Maybe<Array<Maybe<Customer>>>;
+  customers: Array<Customer>;
   description?: Maybe<Scalars['String']['output']>;
-  emails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  getTags?: Maybe<Array<Maybe<Tag>>>;
-  industry?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  isSubscribed?: Maybe<Scalars['String']['output']>;
-  links?: Maybe<Scalars['JSON']['output']>;
+  emails?: Maybe<Array<Scalars['String']['output']>>;
+  getTags?: Maybe<Array<Tag>>;
+  industry: Array<Scalars['String']['output']>;
+  isSubscribed: Scalars['String']['output'];
+  links: Scalars['JSON']['output'];
   location?: Maybe<Scalars['String']['output']>;
-  mergedIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  names?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  mergedIds?: Maybe<Array<Scalars['String']['output']>>;
+  names?: Maybe<Array<Scalars['String']['output']>>;
   owner?: Maybe<User>;
   ownerId?: Maybe<Scalars['String']['output']>;
   parentCompany?: Maybe<Company>;
   parentCompanyId?: Maybe<Scalars['String']['output']>;
-  phones?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  phones?: Maybe<Array<Scalars['String']['output']>>;
   primaryAddress?: Maybe<Scalars['JSON']['output']>;
   primaryEmail?: Maybe<Scalars['String']['output']>;
   primaryName?: Maybe<Scalars['String']['output']>;
@@ -982,10 +983,10 @@ export type Company = {
   propertiesData?: Maybe<Scalars['JSON']['output']>;
   score?: Maybe<Scalars['Float']['output']>;
   size?: Maybe<Scalars['Int']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  status: Scalars['String']['output'];
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
   trackedData?: Maybe<Scalars['JSON']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
   website?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1024,9 +1025,9 @@ export type CoordinateInput = {
 
 export type CoreModulesGlobalSearchResult = {
   __typename?: 'CoreModulesGlobalSearchResult';
-  list?: Maybe<Array<Maybe<GlobalSearchResultItem>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<GlobalSearchResultItem>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type CpFieldGroupParams = {
@@ -1053,13 +1054,13 @@ export type CpFieldsParams = {
 
 export type CurrentUserPermissionsResult = {
   __typename?: 'CurrentUserPermissionsResult';
-  permissions: Array<Maybe<UserPermission>>;
-  pluginsWithPermissions: Array<Maybe<Scalars['String']['output']>>;
+  permissions: Array<UserPermission>;
+  pluginsWithPermissions: Array<Scalars['String']['output']>;
 };
 
 export type CustomPermission = {
   __typename?: 'CustomPermission';
-  actions: Array<Maybe<Scalars['String']['output']>>;
+  actions: Array<Scalars['String']['output']>;
   module: Scalars['String']['output'];
   plugin: Scalars['String']['output'];
   scope: Scalars['String']['output'];
@@ -1067,37 +1068,37 @@ export type CustomPermission = {
 
 export type Customer = {
   __typename?: 'Customer';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   addresses?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
   avatar?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['Date']['output']>;
   clientPortalId?: Maybe<Scalars['String']['output']>;
   code?: Maybe<Scalars['String']['output']>;
-  companies?: Maybe<Array<Maybe<Company>>>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  companies: Array<Company>;
+  createdAt: Scalars['Date']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
   department?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
-  emailValidationStatus?: Maybe<Scalars['String']['output']>;
-  emails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  emailValidationStatus: Scalars['String']['output'];
+  emails?: Maybe<Array<Scalars['String']['output']>>;
   firstName?: Maybe<Scalars['String']['output']>;
-  getTags?: Maybe<Array<Maybe<Tag>>>;
-  hasAuthority?: Maybe<Scalars['String']['output']>;
+  getTags?: Maybe<Array<Tag>>;
+  hasAuthority: Scalars['String']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
   isOnline?: Maybe<Scalars['Boolean']['output']>;
-  isSubscribed?: Maybe<Scalars['String']['output']>;
+  isSubscribed: Scalars['String']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   lastSeenAt?: Maybe<Scalars['Date']['output']>;
   leadStatus?: Maybe<Scalars['String']['output']>;
-  links?: Maybe<Scalars['JSON']['output']>;
+  links: Scalars['JSON']['output'];
   location?: Maybe<Scalars['JSON']['output']>;
   middleName?: Maybe<Scalars['String']['output']>;
   owner?: Maybe<User>;
   ownerId?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
-  phoneValidationStatus?: Maybe<Scalars['String']['output']>;
-  phones?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  phoneValidationStatus: Scalars['String']['output'];
+  phones?: Maybe<Array<Scalars['String']['output']>>;
   position?: Maybe<Scalars['String']['output']>;
   primaryAddress?: Maybe<Scalars['JSON']['output']>;
   primaryEmail?: Maybe<Scalars['String']['output']>;
@@ -1106,37 +1107,37 @@ export type Customer = {
   remoteAddress?: Maybe<Scalars['String']['output']>;
   score?: Maybe<Scalars['Float']['output']>;
   sessionCount?: Maybe<Scalars['Int']['output']>;
-  sex?: Maybe<Scalars['Int']['output']>;
-  state?: Maybe<Scalars['String']['output']>;
+  sex: Scalars['Int']['output'];
+  state: Scalars['String']['output'];
   status?: Maybe<Scalars['String']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
   trackedData?: Maybe<Scalars['JSON']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
   urlVisits?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
   visitorContactInfo?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type CustomersListResponse = {
   __typename?: 'CustomersListResponse';
-  list?: Maybe<Array<Maybe<Customer>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Customer>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type DefaultPermissionGroup = {
   __typename?: 'DefaultPermissionGroup';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  members?: Maybe<Array<Maybe<User>>>;
+  members: Array<User>;
   name: Scalars['String']['output'];
-  permissions: Array<Maybe<PermissionGroupPermission>>;
+  permissions: Array<PermissionGroupPermission>;
   plugin: Scalars['String']['output'];
 };
 
 export type DeliveryList = {
   __typename?: 'DeliveryList';
-  list?: Maybe<Array<Maybe<SmsDelivery>>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<SmsDelivery>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type DeliveryReport = {
@@ -1153,29 +1154,29 @@ export type DeliveryReport = {
 
 export type Department = {
   __typename?: 'Department';
-  _id?: Maybe<Scalars['String']['output']>;
-  childCount?: Maybe<Scalars['Int']['output']>;
-  children?: Maybe<Array<Maybe<Department>>>;
+  _id: Scalars['String']['output'];
+  childCount: Scalars['Int']['output'];
+  children: Array<Department>;
   code?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  order?: Maybe<Scalars['String']['output']>;
+  order: Scalars['String']['output'];
   parent?: Maybe<Department>;
   parentId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   supervisor?: Maybe<User>;
   supervisorId?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  userCount?: Maybe<Scalars['Int']['output']>;
-  userIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  users?: Maybe<Array<Maybe<User>>>;
+  userCount: Scalars['Int']['output'];
+  userIds: Array<Scalars['String']['output']>;
+  users: Array<User>;
   workhours?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type DepartmentsListResponse = {
   __typename?: 'DepartmentsListResponse';
-  list?: Maybe<Array<Maybe<Department>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Department>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Document = {
@@ -1185,13 +1186,13 @@ export type Document = {
   code?: Maybe<Scalars['String']['output']>;
   content?: Maybe<Scalars['String']['output']>;
   contentType: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdUser?: Maybe<User>;
   cursor?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   replacer?: Maybe<Scalars['String']['output']>;
   subType?: Maybe<Scalars['String']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type DocumentEditorAttribute = {
@@ -1203,9 +1204,9 @@ export type DocumentEditorAttribute = {
 
 export type DocumentListResponse = {
   __typename?: 'DocumentListResponse';
-  list?: Maybe<Array<Maybe<Document>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Document>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type DocumentsTypes = {
@@ -1223,36 +1224,36 @@ export type Env = {
 
 export type EmailAddress = {
   __typename?: 'EmailAddress';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  deliveredCount?: Maybe<Scalars['Int']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  lane?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  deliveredCount: Scalars['Int']['output'];
+  email: Scalars['String']['output'];
+  lane: Scalars['String']['output'];
   lastDeliveredAt?: Maybe<Scalars['Date']['output']>;
   lastSentAt?: Maybe<Scalars['Date']['output']>;
   lastSoftBounceAt?: Maybe<Scalars['Date']['output']>;
   releaseNote?: Maybe<Scalars['String']['output']>;
   releasedAt?: Maybe<Scalars['Date']['output']>;
   releasedBy?: Maybe<Scalars['String']['output']>;
-  softBounceCount?: Maybe<Scalars['Int']['output']>;
+  softBounceCount: Scalars['Int']['output'];
   suppressedAt?: Maybe<Scalars['Date']['output']>;
   suppressedBy?: Maybe<Scalars['String']['output']>;
   suppressionReason?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type EmailAddressesList = {
   __typename?: 'EmailAddressesList';
-  list?: Maybe<Array<Maybe<EmailAddress>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<EmailAddress>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type EmailDeliveriesList = {
   __typename?: 'EmailDeliveriesList';
-  list?: Maybe<Array<Maybe<EmailDelivery>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<EmailDelivery>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 /**
@@ -1262,47 +1263,47 @@ export type EmailDeliveriesList = {
  */
 export type EmailDelivery = {
   __typename?: 'EmailDelivery';
-  _id?: Maybe<Scalars['String']['output']>;
-  bounced?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  ccEmails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  clicked?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  complained?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  _id: Scalars['String']['output'];
+  bounced: Array<Scalars['String']['output']>;
+  ccEmails: Array<Scalars['String']['output']>;
+  clicked: Array<Scalars['String']['output']>;
+  complained: Array<Scalars['String']['output']>;
   content?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   deliveryStatus?: Maybe<Scalars['String']['output']>;
   deliveryStatusAt?: Maybe<Scalars['Date']['output']>;
   error?: Maybe<Scalars['String']['output']>;
   from?: Maybe<Scalars['String']['output']>;
   messageId?: Maybe<Scalars['String']['output']>;
   notificationId?: Maybe<Scalars['String']['output']>;
-  opened?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  provider?: Maybe<Scalars['String']['output']>;
+  opened: Array<Scalars['String']['output']>;
+  provider: Scalars['String']['output'];
   providerResponse?: Maybe<Scalars['String']['output']>;
-  rejected?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  rejected: Array<Scalars['String']['output']>;
   sentAt?: Maybe<Scalars['Date']['output']>;
   source?: Maybe<Scalars['String']['output']>;
   sourceId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  subject?: Maybe<Scalars['String']['output']>;
-  toEmails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  status: Scalars['String']['output'];
+  subject: Scalars['String']['output'];
+  toEmails: Array<Scalars['String']['output']>;
+  updatedAt: Scalars['Date']['output'];
   userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type EmailRampStatus = {
   __typename?: 'EmailRampStatus';
-  advanceRate?: Maybe<Scalars['Float']['output']>;
-  dailyBudget?: Maybe<Scalars['Int']['output']>;
-  dropRate?: Maybe<Scalars['Float']['output']>;
-  haltRate?: Maybe<Scalars['Float']['output']>;
+  advanceRate: Scalars['Float']['output'];
+  dailyBudget: Scalars['Int']['output'];
+  dropRate: Scalars['Float']['output'];
+  haltRate: Scalars['Float']['output'];
   haltReason?: Maybe<Scalars['String']['output']>;
   haltedAt?: Maybe<Scalars['Date']['output']>;
   lastEvaluatedAt?: Maybe<Scalars['Date']['output']>;
   lastRate?: Maybe<Scalars['Float']['output']>;
-  tier?: Maybe<Scalars['Int']['output']>;
-  tiers?: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
-  usedToday?: Maybe<Scalars['Int']['output']>;
-  windowDays?: Maybe<Scalars['Int']['output']>;
+  tier: Scalars['Int']['output'];
+  tiers: Array<Scalars['Int']['output']>;
+  usedToday: Scalars['Int']['output'];
+  windowDays: Scalars['Int']['output'];
 };
 
 /**
@@ -1330,7 +1331,7 @@ export type EmailSenderOptions = {
   defaultSenderEmail?: Maybe<Scalars['String']['output']>;
   provider?: Maybe<Scalars['String']['output']>;
   sameAsMailConfig?: Maybe<Scalars['Boolean']['output']>;
-  senders?: Maybe<Array<Maybe<EmailSender>>>;
+  senders?: Maybe<Array<EmailSender>>;
   supportsDynamicSender?: Maybe<Scalars['Boolean']['output']>;
   supportsSenderVerification?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -1346,19 +1347,19 @@ export type EmailTemplate = {
   content?: Maybe<Scalars['String']['output']>;
   contentFormat?: Maybe<Scalars['String']['output']>;
   contentJson?: Maybe<Scalars['JSON']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdBy: Scalars['String']['output'];
   createdUser?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type EmailTemplatesListResponse = {
   __typename?: 'EmailTemplatesListResponse';
-  list?: Maybe<Array<Maybe<EmailTemplate>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Float']['output']>;
+  list: Array<EmailTemplate>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
 };
 
 /**
@@ -1381,15 +1382,15 @@ export type EngageCalendarEntry = {
 
 export type EngageDeliveryReport = {
   __typename?: 'EngageDeliveryReport';
-  list?: Maybe<Array<Maybe<DeliveryReport>>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<DeliveryReport>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type EngageMemberListResponse = {
   __typename?: 'EngageMemberListResponse';
-  list?: Maybe<Array<Maybe<User>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<User>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type EngageMessage = {
@@ -1398,25 +1399,25 @@ export type EngageMessage = {
   /** Whether somebody has locked this campaign for approval, and who may act */
   approvalLockState?: Maybe<ApprovalLockState>;
   brandId?: Maybe<Scalars['String']['output']>;
-  brandIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  brands?: Maybe<Array<Maybe<Brand>>>;
+  brandIds?: Maybe<Array<Scalars['String']['output']>>;
+  brands: Array<Brand>;
   cpId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
-  customerIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  customerTagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  customerTags?: Maybe<Array<Maybe<Tag>>>;
+  customerIds?: Maybe<Array<Scalars['String']['output']>>;
+  customerTagIds?: Maybe<Array<Scalars['String']['output']>>;
+  customerTags: Array<Tag>;
   email?: Maybe<Scalars['JSON']['output']>;
   fromEmail?: Maybe<Scalars['String']['output']>;
   fromIntegration?: Maybe<Scalars['JSON']['output']>;
   fromUserId?: Maybe<Scalars['String']['output']>;
-  getTags?: Maybe<Array<Maybe<Tag>>>;
+  getTags: Array<Tag>;
   isDraft?: Maybe<Scalars['Boolean']['output']>;
   isLive?: Maybe<Scalars['Boolean']['output']>;
   kind?: Maybe<Scalars['String']['output']>;
   lastRunAt?: Maybe<Scalars['Date']['output']>;
   messenger?: Maybe<Scalars['JSON']['output']>;
-  messengerReceivedCustomerIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  messengerReceivedCustomerIds?: Maybe<Array<Scalars['String']['output']>>;
   method?: Maybe<Scalars['String']['output']>;
   /** When the schedule next comes due, absent when nothing is scheduled */
   nextRunAt?: Maybe<Scalars['Date']['output']>;
@@ -1424,15 +1425,15 @@ export type EngageMessage = {
   progress?: Maybe<Scalars['JSON']['output']>;
   runCount?: Maybe<Scalars['Int']['output']>;
   scheduleDate?: Maybe<EngageScheduleDate>;
-  segmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  segments?: Maybe<Array<Maybe<Segment>>>;
+  segmentIds?: Maybe<Array<Scalars['String']['output']>>;
+  segments: Array<Segment>;
   shortMessage?: Maybe<EngageMessageSms>;
   stats?: Maybe<Scalars['JSON']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   stopDate?: Maybe<Scalars['Date']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
   targetCount?: Maybe<Scalars['Int']['output']>;
-  targetIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  targetIds?: Maybe<Array<Scalars['String']['output']>>;
   targetType?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
   totalCustomersCount?: Maybe<Scalars['Int']['output']>;
@@ -1459,9 +1460,9 @@ export type EngageMessageEmail = {
 
 export type EngageMessageListResponse = {
   __typename?: 'EngageMessageListResponse';
-  list?: Maybe<Array<Maybe<EngageMessage>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<EngageMessage>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type EngageMessageMessenger = {
@@ -1541,47 +1542,47 @@ export type EntityInput = {
 
 export type Export = {
   __typename?: 'Export';
-  _id?: Maybe<Scalars['String']['output']>;
-  collectionName?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
+  collectionName: Scalars['String']['output'];
   completedAt?: Maybe<Scalars['Date']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   elapsedSeconds?: Maybe<Scalars['Int']['output']>;
-  entityType?: Maybe<Scalars['String']['output']>;
+  entityType: Scalars['String']['output'];
   errorMessage?: Maybe<Scalars['String']['output']>;
   estimatedSecondsRemaining?: Maybe<Scalars['Int']['output']>;
   fileKey?: Maybe<Scalars['String']['output']>;
-  fileName?: Maybe<Scalars['String']['output']>;
+  fileName: Scalars['String']['output'];
   filters?: Maybe<Scalars['JSON']['output']>;
-  ids?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  ids: Array<Scalars['String']['output']>;
   jobId?: Maybe<Scalars['String']['output']>;
   lastCursor?: Maybe<Scalars['String']['output']>;
-  moduleName?: Maybe<Scalars['String']['output']>;
-  pluginName?: Maybe<Scalars['String']['output']>;
-  processedRows?: Maybe<Scalars['Int']['output']>;
+  moduleName: Scalars['String']['output'];
+  pluginName: Scalars['String']['output'];
+  processedRows: Scalars['Int']['output'];
   progress?: Maybe<Scalars['Int']['output']>;
   rowsPerSecond?: Maybe<Scalars['Int']['output']>;
-  selectedFields?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  selectedFields: Array<Scalars['String']['output']>;
   startedAt?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  subdomain?: Maybe<Scalars['String']['output']>;
-  totalRows?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
-  userId?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  subdomain: Scalars['String']['output'];
+  totalRows: Scalars['Int']['output'];
+  updatedAt: Scalars['Date']['output'];
+  userId: Scalars['String']['output'];
 };
 
 export type ExportHeader = {
   __typename?: 'ExportHeader';
   isDefault?: Maybe<Scalars['Boolean']['output']>;
-  key?: Maybe<Scalars['String']['output']>;
-  label?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
   type?: Maybe<Scalars['String']['output']>;
 };
 
 export type ExportHistoryList = {
   __typename?: 'ExportHistoryList';
-  list?: Maybe<Array<Maybe<Export>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Export>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type FacebookOAuthConfig = {
@@ -1600,7 +1601,7 @@ export type FacebookOAuthConfigInput = {
 export type Favorite = {
   __typename?: 'Favorite';
   _id: Scalars['String']['output'];
-  breadcrumb?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  breadcrumb?: Maybe<Array<Scalars['String']['output']>>;
   icon?: Maybe<Scalars['String']['output']>;
   path: Scalars['String']['output'];
 };
@@ -1620,44 +1621,44 @@ export enum FcmPlatform {
 
 export type Field = {
   __typename?: 'Field';
-  _id?: Maybe<Scalars['String']['output']>;
-  code?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
+  code: Scalars['String']['output'];
   configs?: Maybe<Scalars['JSON']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  groupId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['Date']['output'];
+  groupId: Scalars['String']['output'];
   icon?: Maybe<Scalars['String']['output']>;
-  isRequired?: Maybe<Scalars['Boolean']['output']>;
-  isVisible?: Maybe<Scalars['Boolean']['output']>;
-  isVisibleInCard?: Maybe<Scalars['Boolean']['output']>;
-  isVisibleToCreate?: Maybe<Scalars['Boolean']['output']>;
+  isRequired: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  isVisibleInCard: Scalars['Boolean']['output'];
+  isVisibleToCreate: Scalars['Boolean']['output'];
   logics?: Maybe<Scalars['JSON']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  options?: Maybe<Array<Maybe<FieldOption>>>;
+  name: Scalars['String']['output'];
+  options?: Maybe<Array<FieldOption>>;
   order?: Maybe<Scalars['Float']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
   validations?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type FieldGroup = {
   __typename?: 'FieldGroup';
-  _id?: Maybe<Scalars['String']['output']>;
-  code?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
+  code: Scalars['String']['output'];
   configs?: Maybe<Scalars['JSON']['output']>;
   contentType?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   logics?: Maybe<Scalars['JSON']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   order?: Maybe<Scalars['Float']['output']>;
   updatedAt: Scalars['Date']['output'];
 };
 
 export type FieldGroupListResponse = {
   __typename?: 'FieldGroupListResponse';
-  list?: Maybe<Array<Maybe<FieldGroup>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<FieldGroup>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type FieldGroupOrderItem = {
@@ -1679,16 +1680,16 @@ export type FieldGroupParams = {
 
 export type FieldListResponse = {
   __typename?: 'FieldListResponse';
-  list?: Maybe<Array<Maybe<Field>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Field>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type FieldOption = {
   __typename?: 'FieldOption';
   coordinates?: Maybe<Scalars['JSON']['output']>;
-  label?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['String']['output']>;
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type FieldOptionInput = {
@@ -1712,7 +1713,7 @@ export type FieldsParams = {
 
 export type FileUploadServiceInfo = {
   __typename?: 'FileUploadServiceInfo';
-  videoUploadEnabled?: Maybe<Scalars['Boolean']['output']>;
+  videoUploadEnabled: Scalars['Boolean']['output'];
 };
 
 export type FirebaseConfig = {
@@ -1782,39 +1783,39 @@ export type IClientPortalUserFilter = {
 
 export type Import = {
   __typename?: 'Import';
-  _id?: Maybe<Scalars['String']['output']>;
-  collectionName?: Maybe<Scalars['String']['output']>;
-  columnMapping?: Maybe<Array<Maybe<ImportColumnMapping>>>;
+  _id: Scalars['String']['output'];
+  collectionName: Scalars['String']['output'];
+  columnMapping: Array<ImportColumnMapping>;
   completedAt?: Maybe<Scalars['Date']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   elapsedSeconds?: Maybe<Scalars['Int']['output']>;
-  entityType?: Maybe<Scalars['String']['output']>;
+  entityType: Scalars['String']['output'];
   errorFileUrl?: Maybe<Scalars['String']['output']>;
-  errorRows?: Maybe<Scalars['Int']['output']>;
+  errorRows: Scalars['Int']['output'];
   estimatedSecondsRemaining?: Maybe<Scalars['Int']['output']>;
-  fileKey?: Maybe<Scalars['String']['output']>;
-  fileName?: Maybe<Scalars['String']['output']>;
-  importedIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  fileKey: Scalars['String']['output'];
+  fileName: Scalars['String']['output'];
+  importedIds: Array<Scalars['String']['output']>;
   jobId?: Maybe<Scalars['String']['output']>;
-  moduleName?: Maybe<Scalars['String']['output']>;
-  pluginName?: Maybe<Scalars['String']['output']>;
-  processedRows?: Maybe<Scalars['Int']['output']>;
+  moduleName: Scalars['String']['output'];
+  pluginName: Scalars['String']['output'];
+  processedRows: Scalars['Int']['output'];
   progress?: Maybe<Scalars['Int']['output']>;
   rowsPerSecond?: Maybe<Scalars['Int']['output']>;
   startedAt?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  subdomain?: Maybe<Scalars['String']['output']>;
-  successRows?: Maybe<Scalars['Int']['output']>;
-  totalRows?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
-  userId?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  subdomain: Scalars['String']['output'];
+  successRows: Scalars['Int']['output'];
+  totalRows: Scalars['Int']['output'];
+  updatedAt: Scalars['Date']['output'];
+  userId: Scalars['String']['output'];
 };
 
 export type ImportColumnMapping = {
   __typename?: 'ImportColumnMapping';
-  header?: Maybe<Scalars['String']['output']>;
-  index?: Maybe<Scalars['Int']['output']>;
-  key?: Maybe<Scalars['String']['output']>;
+  header: Scalars['String']['output'];
+  index: Scalars['Int']['output'];
+  key: Scalars['String']['output'];
 };
 
 export type ImportColumnMappingInput = {
@@ -1825,9 +1826,9 @@ export type ImportColumnMappingInput = {
 
 export type ImportColumnPreview = {
   __typename?: 'ImportColumnPreview';
-  columns?: Maybe<Array<Maybe<ImportPreviewColumn>>>;
-  fields?: Maybe<Array<Maybe<ImportPreviewField>>>;
-  totalRows?: Maybe<Scalars['Int']['output']>;
+  columns: Array<ImportPreviewColumn>;
+  fields: Array<ImportPreviewField>;
+  totalRows: Scalars['Int']['output'];
 };
 
 export enum ImportExportOperation {
@@ -1844,30 +1845,30 @@ export type ImportExportType = {
 
 export type ImportHistoryList = {
   __typename?: 'ImportHistoryList';
-  list?: Maybe<Array<Maybe<Import>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Import>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ImportPreviewColumn = {
   __typename?: 'ImportPreviewColumn';
-  confidence?: Maybe<Scalars['Float']['output']>;
-  header?: Maybe<Scalars['String']['output']>;
-  index?: Maybe<Scalars['Int']['output']>;
+  confidence: Scalars['Float']['output'];
+  header: Scalars['String']['output'];
+  index: Scalars['Int']['output'];
   key?: Maybe<Scalars['String']['output']>;
-  sampleValues?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  status?: Maybe<Scalars['String']['output']>;
+  sampleValues: Array<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
 };
 
 export type ImportPreviewField = {
   __typename?: 'ImportPreviewField';
-  dataType?: Maybe<Scalars['String']['output']>;
-  example?: Maybe<Scalars['String']['output']>;
-  key?: Maybe<Scalars['String']['output']>;
-  label?: Maybe<Scalars['String']['output']>;
-  options?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  required?: Maybe<Scalars['Boolean']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
+  dataType: Scalars['String']['output'];
+  example: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  options: Array<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  type: Scalars['String']['output'];
 };
 
 export type InputRule = {
@@ -1884,36 +1885,36 @@ export type InternalNote = {
   content?: Maybe<Scalars['String']['output']>;
   contentType: Scalars['String']['output'];
   contentTypeId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdUser?: Maybe<User>;
   createdUserId?: Maybe<Scalars['String']['output']>;
 };
 
 export type InternalNotesByAction = {
   __typename?: 'InternalNotesByAction';
-  list?: Maybe<Array<Maybe<ModifiedNote>>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ModifiedNote>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type InvitationEntry = {
-  email?: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   permissionGroupIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type Log = {
   __typename?: 'Log';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   action?: Maybe<Scalars['String']['output']>;
   contentType?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   payload?: Maybe<Scalars['JSON']['output']>;
   prevObject?: Maybe<Scalars['JSON']['output']>;
   processId?: Maybe<Scalars['String']['output']>;
   source?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
 };
@@ -1941,9 +1942,9 @@ export type MailConfigInput = {
 
 export type MainLogsList = {
   __typename?: 'MainLogsList';
-  list?: Maybe<Array<Maybe<Log>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Log>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ManualVerificationConfig = {
@@ -1967,7 +1968,7 @@ export type ModifiedNote = {
   contentId?: Maybe<Scalars['String']['output']>;
   contentType: Scalars['String']['output'];
   contentTypeDetail?: Maybe<Scalars['JSON']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1986,48 +1987,48 @@ export type MultiFactorConfigInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  approvalLockCreate?: Maybe<ApprovalLock>;
-  approvalLockForceRelease?: Maybe<ApprovalLock>;
-  approvalLockRelease?: Maybe<ApprovalLock>;
-  approvalRequestApprove?: Maybe<ApprovalRequest>;
-  approvalRequestCancel?: Maybe<ApprovalRequest>;
-  approvalRequestCreate?: Maybe<ApprovalRequest>;
-  approvalRequestReject?: Maybe<ApprovalRequest>;
-  appsAdd?: Maybe<App>;
+  approvalLockCreate: ApprovalLock;
+  approvalLockForceRelease: ApprovalLock;
+  approvalLockRelease: ApprovalLock;
+  approvalRequestApprove: ApprovalRequest;
+  approvalRequestCancel: ApprovalRequest;
+  approvalRequestCreate: ApprovalRequest;
+  approvalRequestReject: ApprovalRequest;
+  appsAdd: App;
   appsEdit?: Maybe<App>;
-  appsRemove?: Maybe<Scalars['JSON']['output']>;
+  appsRemove: Scalars['JSON']['output'];
   appsRevoke?: Maybe<App>;
-  archiveAutomations?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  archiveNotification?: Maybe<Scalars['String']['output']>;
-  archiveNotifications?: Maybe<Scalars['String']['output']>;
-  automationWorkflowTemplatesAdd?: Maybe<AutomationWorkflowTemplate>;
-  automationWorkflowTemplatesEdit?: Maybe<AutomationWorkflowTemplate>;
-  automationWorkflowTemplatesRemove?: Maybe<Scalars['JSON']['output']>;
-  automationsAdd?: Maybe<Automation>;
-  automationsAiAgentAdd?: Maybe<Scalars['JSON']['output']>;
-  automationsAiAgentEdit?: Maybe<Scalars['JSON']['output']>;
-  automationsAiAgentReindex?: Maybe<Scalars['JSON']['output']>;
-  automationsAiAgentRemove?: Maybe<Scalars['JSON']['output']>;
+  archiveAutomations: Array<Scalars['String']['output']>;
+  archiveNotification: Scalars['String']['output'];
+  archiveNotifications: Scalars['String']['output'];
+  automationWorkflowTemplatesAdd: AutomationWorkflowTemplate;
+  automationWorkflowTemplatesEdit: AutomationWorkflowTemplate;
+  automationWorkflowTemplatesRemove: Scalars['JSON']['output'];
+  automationsAdd: Automation;
+  automationsAiAgentAdd: Scalars['JSON']['output'];
+  automationsAiAgentEdit: Scalars['JSON']['output'];
+  automationsAiAgentReindex: Scalars['JSON']['output'];
+  automationsAiAgentRemove: Scalars['JSON']['output'];
   automationsCreateFromTemplate?: Maybe<Automation>;
-  automationsDuplicate?: Maybe<Automation>;
-  automationsEdit?: Maybe<Automation>;
-  automationsRemove?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  automationsDuplicate: Automation;
+  automationsEdit: Automation;
+  automationsRemove: Array<Scalars['String']['output']>;
   automationsSaveAsTemplate?: Maybe<Automation>;
-  branchesAdd?: Maybe<Branch>;
+  branchesAdd: Branch;
   branchesEdit?: Maybe<Branch>;
-  branchesRemove?: Maybe<Scalars['JSON']['output']>;
-  brandsAdd?: Maybe<Brand>;
+  branchesRemove: Scalars['JSON']['output'];
+  brandsAdd: Brand;
   brandsEdit?: Maybe<Brand>;
-  brandsRemove?: Maybe<Scalars['JSON']['output']>;
-  broadcastUpdateConfigs?: Maybe<Scalars['JSON']['output']>;
-  bundleConditionAdd?: Maybe<BundleCondition>;
-  bundleConditionDefault?: Maybe<Scalars['JSON']['output']>;
+  brandsRemove: Scalars['JSON']['output'];
+  broadcastUpdateConfigs: Scalars['JSON']['output'];
+  bundleConditionAdd: BundleCondition;
+  bundleConditionDefault: Scalars['JSON']['output'];
   bundleConditionEdit?: Maybe<BundleCondition>;
-  bundleConditionRemove?: Maybe<Scalars['JSON']['output']>;
-  bundleConditionSetBulk?: Maybe<Scalars['JSON']['output']>;
-  bundleRulesAdd?: Maybe<BundleRule>;
+  bundleConditionRemove: Scalars['JSON']['output'];
+  bundleConditionSetBulk: Scalars['JSON']['output'];
+  bundleRulesAdd: BundleRule;
   bundleRulesEdit?: Maybe<BundleRule>;
-  bundleRulesRemove?: Maybe<Scalars['JSON']['output']>;
+  bundleRulesRemove: Scalars['JSON']['output'];
   checkTokiUserLegalAge?: Maybe<Scalars['Boolean']['output']>;
   clientPortalAdd?: Maybe<ClientPortal>;
   clientPortalChangeToken?: Maybe<Scalars['String']['output']>;
@@ -2064,144 +2065,144 @@ export type Mutation = {
   clientPortalUserResetPassword?: Maybe<Scalars['JSON']['output']>;
   clientPortalUserUnlinkSocialAccount?: Maybe<CpUser>;
   clientPortalUserVerify?: Maybe<CpUser>;
-  companiesAdd?: Maybe<Company>;
+  companiesAdd: Company;
   companiesEdit?: Maybe<Company>;
   companiesMerge?: Maybe<Company>;
-  companiesRemove?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  companiesRemove: Array<Scalars['String']['output']>;
   configsActivateInstallation?: Maybe<Scalars['JSON']['output']>;
   configsManagePluginInstall?: Maybe<Scalars['JSON']['output']>;
-  configsUpdate?: Maybe<Scalars['JSON']['output']>;
-  conformityAdd?: Maybe<Conformity>;
+  configsUpdate: Scalars['JSON']['output'];
+  conformityAdd: Conformity;
   conformityEdit?: Maybe<SuccessResult>;
-  cpCustomersAdd?: Maybe<Customer>;
-  cpManageRelations?: Maybe<Array<Relation>>;
-  cpTagsAdd?: Maybe<Tag>;
+  cpCustomersAdd: Customer;
+  cpManageRelations: Array<Relation>;
+  cpTagsAdd: Tag;
   cpTagsTag?: Maybe<Scalars['JSON']['output']>;
   cpUsersAdd?: Maybe<CpUser>;
   cpUsersEdit?: Maybe<CpUser>;
   cpUsersRemove?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   cpUsersSetPassword?: Maybe<CpUser>;
-  createMultipleRelations?: Maybe<Scalars['JSON']['output']>;
+  createMultipleRelations: Scalars['JSON']['output'];
   createRelation: Relation;
-  customersAdd?: Maybe<Customer>;
+  customersAdd: Customer;
   customersChangeState?: Maybe<Customer>;
-  customersChangeStateBulk?: Maybe<Scalars['JSON']['output']>;
-  customersChangeVerificationStatus?: Maybe<Array<Maybe<Customer>>>;
+  customersChangeStateBulk: Scalars['JSON']['output'];
+  customersChangeVerificationStatus: Array<Customer>;
   customersEdit?: Maybe<Customer>;
   customersMerge?: Maybe<Customer>;
-  customersRemove?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  customersVerify?: Maybe<Scalars['String']['output']>;
+  customersRemove: Array<Scalars['String']['output']>;
+  customersVerify: Scalars['String']['output'];
   deleteRelation: Scalars['String']['output'];
-  departmentsAdd?: Maybe<Department>;
+  departmentsAdd: Department;
   departmentsEdit?: Maybe<Department>;
-  departmentsRemove?: Maybe<Scalars['JSON']['output']>;
+  departmentsRemove: Scalars['JSON']['output'];
   documentsRemove?: Maybe<Scalars['JSON']['output']>;
   documentsSave?: Maybe<Document>;
   editOrganizationDomain?: Maybe<Organization>;
   editOrganizationInfo?: Maybe<Organization>;
-  emailAddressRelease?: Maybe<Scalars['String']['output']>;
-  emailRampRelease?: Maybe<EmailRampStatus>;
-  emailTemplateAdd?: Maybe<EmailTemplate>;
+  emailAddressRelease: Scalars['String']['output'];
+  emailRampRelease: EmailRampStatus;
+  emailTemplateAdd: EmailTemplate;
   emailTemplateEdit?: Maybe<EmailTemplate>;
-  emailTemplateRemove?: Maybe<Scalars['JSON']['output']>;
-  engageMessageAdd?: Maybe<EngageMessage>;
-  engageMessageCancelSchedule?: Maybe<EngageMessage>;
-  engageMessageCopy?: Maybe<EngageMessage>;
+  emailTemplateRemove: Scalars['JSON']['output'];
+  engageMessageAdd: EngageMessage;
+  engageMessageCancelSchedule: EngageMessage;
+  engageMessageCopy: EngageMessage;
   engageMessageEdit?: Maybe<EngageMessage>;
-  engageMessageRemove?: Maybe<Scalars['JSON']['output']>;
-  engageMessageRemoveVerifiedEmail?: Maybe<Scalars['String']['output']>;
-  engageMessageSendTestEmail?: Maybe<Scalars['String']['output']>;
-  engageMessageSetLive?: Maybe<EngageMessage>;
-  engageMessageSetLiveManual?: Maybe<EngageMessage>;
-  engageMessageSetPause?: Maybe<EngageMessage>;
-  engageMessageSetSchedule?: Maybe<EngageMessage>;
-  engageMessageVerifyEmail?: Maybe<Scalars['String']['output']>;
+  engageMessageRemove: Scalars['JSON']['output'];
+  engageMessageRemoveVerifiedEmail: Scalars['String']['output'];
+  engageMessageSendTestEmail: Scalars['String']['output'];
+  engageMessageSetLive: EngageMessage;
+  engageMessageSetLiveManual: EngageMessage;
+  engageMessageSetPause: EngageMessage;
+  engageMessageSetSchedule: EngageMessage;
+  engageMessageVerifyEmail: Scalars['String']['output'];
   engageSendMail?: Maybe<Scalars['JSON']['output']>;
-  engagesUpdateConfigs?: Maybe<Scalars['JSON']['output']>;
-  exportCancel?: Maybe<Export>;
-  exportRetry?: Maybe<Export>;
-  exportStart?: Maybe<Export>;
-  fieldAdd?: Maybe<Field>;
+  engagesUpdateConfigs: Scalars['JSON']['output'];
+  exportCancel: Export;
+  exportRetry: Export;
+  exportStart: Export;
+  fieldAdd: Field;
   fieldEdit?: Maybe<Field>;
-  fieldGroupAdd?: Maybe<FieldGroup>;
+  fieldGroupAdd: FieldGroup;
   fieldGroupEdit?: Maybe<FieldGroup>;
   fieldGroupRemove?: Maybe<FieldGroup>;
-  fieldGroupsUpdateOrder?: Maybe<Array<Maybe<FieldGroup>>>;
+  fieldGroupsUpdateOrder: Array<FieldGroup>;
   fieldRemove?: Maybe<Field>;
   forgotPassword: Scalars['String']['output'];
-  importCancel?: Maybe<Import>;
-  importResume?: Maybe<Import>;
-  importRetry?: Maybe<Import>;
-  importStart?: Maybe<Import>;
+  importCancel: Import;
+  importResume: Import;
+  importRetry: Import;
+  importStart: Import;
   internalNotesAdd?: Maybe<InternalNote>;
   internalNotesEdit?: Maybe<InternalNote>;
   internalNotesRemove?: Maybe<InternalNote>;
-  login?: Maybe<Scalars['String']['output']>;
-  loginWithGoogle?: Maybe<Scalars['String']['output']>;
-  loginWithMagicLink?: Maybe<Scalars['String']['output']>;
+  login: Scalars['String']['output'];
+  loginWithGoogle: Scalars['String']['output'];
+  loginWithMagicLink: Scalars['String']['output'];
   logout?: Maybe<Scalars['String']['output']>;
-  manageRelations?: Maybe<Array<Relation>>;
-  markAsReadNotifications?: Maybe<Scalars['JSON']['output']>;
-  markNotificationAsRead?: Maybe<Scalars['JSON']['output']>;
-  oauthClientAppsAdd?: Maybe<OAuthClientApp>;
+  manageRelations: Array<Relation>;
+  markAsReadNotifications: Scalars['JSON']['output'];
+  markNotificationAsRead: Scalars['JSON']['output'];
+  oauthClientAppsAdd: OAuthClientApp;
   oauthClientAppsEdit?: Maybe<OAuthClientApp>;
-  oauthClientAppsRemove?: Maybe<Scalars['JSON']['output']>;
+  oauthClientAppsRemove: Scalars['JSON']['output'];
   oauthClientAppsRevoke?: Maybe<OAuthClientApp>;
-  permissionGroupAdd?: Maybe<PermissionGroup>;
+  permissionGroupAdd: PermissionGroup;
   permissionGroupEdit?: Maybe<PermissionGroup>;
-  permissionGroupRemove?: Maybe<Scalars['JSON']['output']>;
-  positionsAdd?: Maybe<Position>;
+  permissionGroupRemove: Scalars['JSON']['output'];
+  positionsAdd: Position;
   positionsEdit?: Maybe<Position>;
-  positionsRemove?: Maybe<Scalars['JSON']['output']>;
-  productBulkSimilarityAdd?: Maybe<ProductBulkSimilarity>;
-  productBulkSimilarityEdit?: Maybe<ProductBulkSimilarity>;
-  productBulkSimilarityRemove?: Maybe<Scalars['String']['output']>;
-  productCategoriesAdd?: Maybe<ProductCategory>;
+  positionsRemove: Scalars['JSON']['output'];
+  productBulkSimilarityAdd: ProductBulkSimilarity;
+  productBulkSimilarityEdit: ProductBulkSimilarity;
+  productBulkSimilarityRemove: Scalars['String']['output'];
+  productCategoriesAdd: ProductCategory;
   productCategoriesEdit?: Maybe<ProductCategory>;
-  productCategoriesRemove?: Maybe<Scalars['JSON']['output']>;
-  productPackagesAdd?: Maybe<ProductPackage>;
-  productPackagesChangeStatus?: Maybe<Array<Maybe<ProductPackage>>>;
+  productCategoriesRemove: Scalars['JSON']['output'];
+  productPackagesAdd: ProductPackage;
+  productPackagesChangeStatus: Array<ProductPackage>;
   productPackagesEdit?: Maybe<ProductPackage>;
-  productPackagesRemove?: Maybe<Scalars['JSON']['output']>;
-  productRulesAdd?: Maybe<ProductRule>;
+  productPackagesRemove: Scalars['JSON']['output'];
+  productRulesAdd: ProductRule;
   productRulesEdit?: Maybe<ProductRule>;
-  productRulesRemove?: Maybe<Scalars['JSON']['output']>;
-  productsAdd?: Maybe<Product>;
-  productsConfigsUpdate?: Maybe<Scalars['JSON']['output']>;
-  productsDuplicate?: Maybe<Product>;
-  productsEdit?: Maybe<Product>;
-  productsMerge?: Maybe<Product>;
-  productsRemove?: Maybe<Scalars['String']['output']>;
+  productRulesRemove: Scalars['JSON']['output'];
+  productsAdd: Product;
+  productsConfigsUpdate: Scalars['JSON']['output'];
+  productsDuplicate: Product;
+  productsEdit: Product;
+  productsMerge: Product;
+  productsRemove: Scalars['String']['output'];
   propertySystemFieldEdit: PropertySystemField;
-  resetPassword?: Maybe<Scalars['JSON']['output']>;
-  segmentsAdd?: Maybe<Segment>;
+  resetPassword: Scalars['JSON']['output'];
+  segmentsAdd: Segment;
   segmentsEdit?: Maybe<Segment>;
-  segmentsRebuild?: Maybe<Scalars['JSON']['output']>;
-  segmentsRemove?: Maybe<Scalars['JSON']['output']>;
-  segmentsStopRebuild?: Maybe<Scalars['JSON']['output']>;
-  structuresAdd?: Maybe<Structure>;
+  segmentsRebuild: Scalars['JSON']['output'];
+  segmentsRemove: Scalars['JSON']['output'];
+  segmentsStopRebuild: Scalars['JSON']['output'];
+  structuresAdd: Structure;
   structuresEdit?: Maybe<Structure>;
-  structuresRemove?: Maybe<Scalars['JSON']['output']>;
-  tagsAdd?: Maybe<Tag>;
+  structuresRemove: Scalars['JSON']['output'];
+  tagsAdd: Tag;
   tagsEdit?: Maybe<Tag>;
-  tagsRemove?: Maybe<Scalars['JSON']['output']>;
+  tagsRemove: Scalars['JSON']['output'];
   tagsTag?: Maybe<Scalars['JSON']['output']>;
-  templateAdd?: Maybe<Template>;
-  templateCategoryAdd?: Maybe<TemplateCategory>;
+  templateAdd: Template;
+  templateCategoryAdd: TemplateCategory;
   templateCategoryEdit?: Maybe<TemplateCategory>;
-  templateCategoryRemove?: Maybe<Scalars['JSON']['output']>;
+  templateCategoryRemove: Scalars['JSON']['output'];
   templateEdit?: Maybe<Template>;
-  templateRemove?: Maybe<Scalars['JSON']['output']>;
+  templateRemove: Scalars['JSON']['output'];
   templateUse?: Maybe<Scalars['JSON']['output']>;
   toggleFavorite?: Maybe<Favorite>;
-  unitsAdd?: Maybe<Unit>;
+  unitsAdd: Unit;
   unitsEdit?: Maybe<Unit>;
-  unitsRemove?: Maybe<Scalars['JSON']['output']>;
-  uomsAdd?: Maybe<Uom>;
+  unitsRemove: Scalars['JSON']['output'];
+  uomsAdd: Uom;
   uomsEdit?: Maybe<Uom>;
   uomsRemove?: Maybe<Scalars['String']['output']>;
-  updateNotificationSettingsChannel?: Maybe<Scalars['JSON']['output']>;
-  updateNotificationSettingsEvent?: Maybe<Scalars['JSON']['output']>;
+  updateNotificationSettingsChannel: Scalars['JSON']['output'];
+  updateNotificationSettingsEvent: Scalars['JSON']['output'];
   updateRelation: Relation;
   userAddCustomPermission?: Maybe<User>;
   userRemoveCustomPermission?: Maybe<User>;
@@ -2209,17 +2210,17 @@ export type Mutation = {
   usersChangePassword?: Maybe<User>;
   usersConfigEmailSignatures?: Maybe<User>;
   usersConfigGetNotificationByEmail?: Maybe<User>;
-  usersConfirmInvitation?: Maybe<Scalars['String']['output']>;
-  usersCreateOwner?: Maybe<Scalars['String']['output']>;
+  usersConfirmInvitation: Scalars['String']['output'];
+  usersCreateOwner: Scalars['String']['output'];
   usersEdit?: Maybe<User>;
   usersEditProfile?: Maybe<User>;
   usersInvite?: Maybe<Scalars['Boolean']['output']>;
-  usersResendInvitation?: Maybe<Scalars['String']['output']>;
+  usersResendInvitation: Scalars['String']['output'];
   usersResetMemberPassword?: Maybe<User>;
   usersSetActiveStatus?: Maybe<User>;
-  usersSetActiveStatusBatch?: Maybe<Scalars['Boolean']['output']>;
+  usersSetActiveStatusBatch: Scalars['Boolean']['output'];
   usersSetChatStatus?: Maybe<User>;
-  usersUpdatePermissionGroups?: Maybe<Scalars['JSON']['output']>;
+  usersUpdatePermissionGroups: Scalars['JSON']['output'];
 };
 
 
@@ -2282,7 +2283,7 @@ export type MutationAppsRevokeArgs = {
 
 
 export type MutationArchiveAutomationsArgs = {
-  automationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  automationIds: Array<Scalars['String']['input']>;
   isRestore?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -2377,7 +2378,7 @@ export type MutationAutomationsDuplicateArgs = {
 
 
 export type MutationAutomationsEditArgs = {
-  _id?: InputMaybe<Scalars['String']['input']>;
+  _id: Scalars['String']['input'];
   acknowledgeDuplicate?: InputMaybe<Scalars['Boolean']['input']>;
   actions?: InputMaybe<Array<InputMaybe<ActionInput>>>;
   edgeType?: InputMaybe<Scalars['String']['input']>;
@@ -2391,7 +2392,7 @@ export type MutationAutomationsEditArgs = {
 
 
 export type MutationAutomationsRemoveArgs = {
-  automationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  automationIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -2442,7 +2443,7 @@ export type MutationBranchesEditArgs = {
 
 
 export type MutationBranchesRemoveArgs = {
-  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -2462,7 +2463,7 @@ export type MutationBrandsEditArgs = {
 
 
 export type MutationBrandsRemoveArgs = {
-  _ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  _ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -2492,13 +2493,13 @@ export type MutationBundleConditionEditArgs = {
 
 
 export type MutationBundleConditionRemoveArgs = {
-  _ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _ids?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
 export type MutationBundleConditionSetBulkArgs = {
   bundleId: Scalars['String']['input'];
-  productIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  productIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -2520,7 +2521,7 @@ export type MutationBundleRulesEditArgs = {
 
 
 export type MutationBundleRulesRemoveArgs = {
-  _ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _ids?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -2763,22 +2764,22 @@ export type MutationCompaniesAddArgs = {
   code?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  industry?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  emails?: InputMaybe<Array<Scalars['String']['input']>>;
+  industry?: InputMaybe<Array<Scalars['String']['input']>>;
   isSubscribed?: InputMaybe<Scalars['String']['input']>;
   links?: InputMaybe<Scalars['JSON']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
-  names?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   parentCompanyId?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  phones?: InputMaybe<Array<Scalars['String']['input']>>;
   primaryAddress?: InputMaybe<Scalars['JSON']['input']>;
   primaryEmail?: InputMaybe<Scalars['String']['input']>;
   primaryName?: InputMaybe<Scalars['String']['input']>;
   primaryPhone?: InputMaybe<Scalars['String']['input']>;
   propertiesData?: InputMaybe<Scalars['JSON']['input']>;
   size?: InputMaybe<Scalars['Int']['input']>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   website?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2791,34 +2792,34 @@ export type MutationCompaniesEditArgs = {
   code?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  industry?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  emails?: InputMaybe<Array<Scalars['String']['input']>>;
+  industry?: InputMaybe<Array<Scalars['String']['input']>>;
   isSubscribed?: InputMaybe<Scalars['String']['input']>;
   links?: InputMaybe<Scalars['JSON']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
-  names?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   parentCompanyId?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  phones?: InputMaybe<Array<Scalars['String']['input']>>;
   primaryAddress?: InputMaybe<Scalars['JSON']['input']>;
   primaryEmail?: InputMaybe<Scalars['String']['input']>;
   primaryName?: InputMaybe<Scalars['String']['input']>;
   primaryPhone?: InputMaybe<Scalars['String']['input']>;
   propertiesData?: InputMaybe<Scalars['JSON']['input']>;
   size?: InputMaybe<Scalars['Int']['input']>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   website?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type MutationCompaniesMergeArgs = {
   companyFields?: InputMaybe<Scalars['JSON']['input']>;
-  companyIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  companyIds: Array<Scalars['String']['input']>;
 };
 
 
 export type MutationCompaniesRemoveArgs = {
-  companyIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  companyIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -2840,18 +2841,18 @@ export type MutationConfigsUpdateArgs = {
 
 
 export type MutationConformityAddArgs = {
-  mainType?: InputMaybe<Scalars['String']['input']>;
-  mainTypeId?: InputMaybe<Scalars['String']['input']>;
-  relType?: InputMaybe<Scalars['String']['input']>;
-  relTypeId?: InputMaybe<Scalars['String']['input']>;
+  mainType: Scalars['String']['input'];
+  mainTypeId: Scalars['String']['input'];
+  relType: Scalars['String']['input'];
+  relTypeId: Scalars['String']['input'];
 };
 
 
 export type MutationConformityEditArgs = {
-  mainType?: InputMaybe<Scalars['String']['input']>;
-  mainTypeId?: InputMaybe<Scalars['String']['input']>;
-  relType?: InputMaybe<Scalars['String']['input']>;
-  relTypeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  mainType: Scalars['String']['input'];
+  mainTypeId: Scalars['String']['input'];
+  relType: Scalars['String']['input'];
+  relTypeIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -2863,7 +2864,7 @@ export type MutationCpCustomersAddArgs = {
   department?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   emailValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  emails?: InputMaybe<Array<Scalars['String']['input']>>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   hasAuthority?: InputMaybe<Scalars['String']['input']>;
   isSubscribed?: InputMaybe<Scalars['String']['input']>;
@@ -2873,7 +2874,7 @@ export type MutationCpCustomersAddArgs = {
   middleName?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   phoneValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  phones?: InputMaybe<Array<Scalars['String']['input']>>;
   position?: InputMaybe<Scalars['String']['input']>;
   primaryAddress?: InputMaybe<Scalars['JSON']['input']>;
   primaryEmail?: InputMaybe<Scalars['String']['input']>;
@@ -2887,7 +2888,7 @@ export type MutationCpCustomersAddArgs = {
 export type MutationCpManageRelationsArgs = {
   contentId: Scalars['String']['input'];
   contentType: Scalars['String']['input'];
-  relatedContentIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  relatedContentIds?: InputMaybe<Array<Scalars['String']['input']>>;
   relatedContentType: Scalars['String']['input'];
 };
 
@@ -2965,7 +2966,7 @@ export type MutationCustomersAddArgs = {
   department?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   emailValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  emails?: InputMaybe<Array<Scalars['String']['input']>>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   hasAuthority?: InputMaybe<Scalars['String']['input']>;
   isSubscribed?: InputMaybe<Scalars['String']['input']>;
@@ -2975,7 +2976,7 @@ export type MutationCustomersAddArgs = {
   middleName?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   phoneValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  phones?: InputMaybe<Array<Scalars['String']['input']>>;
   position?: InputMaybe<Scalars['String']['input']>;
   primaryAddress?: InputMaybe<Scalars['JSON']['input']>;
   primaryEmail?: InputMaybe<Scalars['String']['input']>;
@@ -2993,13 +2994,13 @@ export type MutationCustomersChangeStateArgs = {
 
 
 export type MutationCustomersChangeStateBulkArgs = {
-  _ids: Array<InputMaybe<Scalars['String']['input']>>;
+  _ids: Array<Scalars['String']['input']>;
   value: Scalars['String']['input'];
 };
 
 
 export type MutationCustomersChangeVerificationStatusArgs = {
-  customerIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  customerIds: Array<Scalars['String']['input']>;
   status: Scalars['String']['input'];
   type: Scalars['String']['input'];
 };
@@ -3014,7 +3015,7 @@ export type MutationCustomersEditArgs = {
   department?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   emailValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  emails?: InputMaybe<Array<Scalars['String']['input']>>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   hasAuthority?: InputMaybe<Scalars['String']['input']>;
   isSubscribed?: InputMaybe<Scalars['String']['input']>;
@@ -3024,7 +3025,7 @@ export type MutationCustomersEditArgs = {
   middleName?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   phoneValidationStatus?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  phones?: InputMaybe<Array<Scalars['String']['input']>>;
   position?: InputMaybe<Scalars['String']['input']>;
   primaryAddress?: InputMaybe<Scalars['JSON']['input']>;
   primaryEmail?: InputMaybe<Scalars['String']['input']>;
@@ -3036,12 +3037,12 @@ export type MutationCustomersEditArgs = {
 
 export type MutationCustomersMergeArgs = {
   customerFields?: InputMaybe<Scalars['JSON']['input']>;
-  customerIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  customerIds: Array<Scalars['String']['input']>;
 };
 
 
 export type MutationCustomersRemoveArgs = {
-  customerIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  customerIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -3081,7 +3082,7 @@ export type MutationDepartmentsEditArgs = {
 
 
 export type MutationDepartmentsRemoveArgs = {
-  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3206,7 +3207,7 @@ export type MutationEngageMessageEditArgs = {
 
 
 export type MutationEngageMessageRemoveArgs = {
-  _ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3257,9 +3258,9 @@ export type MutationEngageMessageVerifyEmailArgs = {
 
 export type MutationEngageSendMailArgs = {
   attachments?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
-  bcc?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  bcc?: InputMaybe<Array<Scalars['String']['input']>>;
   body?: InputMaybe<Scalars['String']['input']>;
-  cc?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  cc?: InputMaybe<Array<Scalars['String']['input']>>;
   conversationId?: InputMaybe<Scalars['String']['input']>;
   customerId?: InputMaybe<Scalars['String']['input']>;
   from: Scalars['String']['input'];
@@ -3267,14 +3268,14 @@ export type MutationEngageSendMailArgs = {
   inReplyTo?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   messageId?: InputMaybe<Scalars['String']['input']>;
-  references?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  replyTo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  references?: InputMaybe<Array<Scalars['String']['input']>>;
+  replyTo?: InputMaybe<Array<Scalars['String']['input']>>;
   replyToMessageId?: InputMaybe<Scalars['String']['input']>;
   shouldOpen?: InputMaybe<Scalars['Boolean']['input']>;
   shouldResolve?: InputMaybe<Scalars['Boolean']['input']>;
   subject: Scalars['String']['input'];
   threadId?: InputMaybe<Scalars['String']['input']>;
-  to: Array<InputMaybe<Scalars['String']['input']>>;
+  to: Array<Scalars['String']['input']>;
 };
 
 
@@ -3441,7 +3442,7 @@ export type MutationLoginWithMagicLinkArgs = {
 export type MutationManageRelationsArgs = {
   contentId: Scalars['String']['input'];
   contentType: Scalars['String']['input'];
-  relatedContentIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  relatedContentIds?: InputMaybe<Array<Scalars['String']['input']>>;
   relatedContentType: Scalars['String']['input'];
 };
 
@@ -3497,7 +3498,7 @@ export type MutationOauthClientAppsRevokeArgs = {
 export type MutationPermissionGroupAddArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  permissions: Array<InputMaybe<PermissionInput>>;
+  permissions: Array<PermissionInput>;
 };
 
 
@@ -3505,7 +3506,7 @@ export type MutationPermissionGroupEditArgs = {
   _id: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  permissions?: InputMaybe<Array<InputMaybe<PermissionInput>>>;
+  permissions?: InputMaybe<Array<PermissionInput>>;
 };
 
 
@@ -3534,7 +3535,7 @@ export type MutationPositionsEditArgs = {
 
 
 export type MutationPositionsRemoveArgs = {
-  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3656,7 +3657,7 @@ export type MutationProductRulesEditArgs = {
 
 
 export type MutationProductRulesRemoveArgs = {
-  _ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _ids: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 
@@ -3883,7 +3884,7 @@ export type MutationTemplateCategoryEditArgs = {
 
 
 export type MutationTemplateCategoryRemoveArgs = {
-  _ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  _ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3899,7 +3900,7 @@ export type MutationTemplateEditArgs = {
 
 
 export type MutationTemplateRemoveArgs = {
-  _ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  _ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3937,7 +3938,7 @@ export type MutationUnitsEditArgs = {
 
 
 export type MutationUnitsRemoveArgs = {
-  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -3994,7 +3995,7 @@ export type MutationUserRemoveCustomPermissionArgs = {
 
 
 export type MutationUserUpdatePermissionGroupsArgs = {
-  groupIds: Array<InputMaybe<Scalars['String']['input']>>;
+  groupIds: Array<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
 };
 
@@ -4006,17 +4007,17 @@ export type MutationUsersChangePasswordArgs = {
 
 
 export type MutationUsersConfigEmailSignaturesArgs = {
-  signatures?: InputMaybe<Array<InputMaybe<EmailSignature>>>;
+  signatures?: InputMaybe<Array<EmailSignature>>;
 };
 
 
 export type MutationUsersConfigGetNotificationByEmailArgs = {
-  isAllowed?: InputMaybe<Scalars['Boolean']['input']>;
+  isAllowed: Scalars['Boolean']['input'];
 };
 
 
 export type MutationUsersConfirmInvitationArgs = {
-  token?: InputMaybe<Scalars['String']['input']>;
+  token: Scalars['String']['input'];
 };
 
 
@@ -4062,7 +4063,7 @@ export type MutationUsersEditProfileArgs = {
 
 
 export type MutationUsersInviteArgs = {
-  entries?: InputMaybe<Array<InputMaybe<InvitationEntry>>>;
+  entries: Array<InvitationEntry>;
 };
 
 
@@ -4089,42 +4090,42 @@ export type MutationUsersSetActiveStatusBatchArgs = {
 
 export type MutationUsersSetChatStatusArgs = {
   _id: Scalars['String']['input'];
-  status?: InputMaybe<UserChatStatus>;
+  status: UserChatStatus;
 };
 
 
 export type MutationUsersUpdatePermissionGroupsArgs = {
-  groupIds: Array<InputMaybe<Scalars['String']['input']>>;
-  userIds: Array<InputMaybe<Scalars['String']['input']>>;
+  groupIds: Array<Scalars['String']['input']>;
+  userIds: Array<Scalars['String']['input']>;
 };
 
 export type NoteInput = {
   color?: InputMaybe<Scalars['String']['input']>;
-  content?: InputMaybe<Scalars['String']['input']>;
+  content: Scalars['String']['input'];
   height?: InputMaybe<Scalars['Float']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
   position?: InputMaybe<Scalars['JSON']['input']>;
   width?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type Notification = {
   __typename?: 'Notification';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   action?: Maybe<Scalars['String']['output']>;
   contentType?: Maybe<Scalars['String']['output']>;
   contentTypeId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   emailDelivery?: Maybe<EmailDelivery>;
   fromUser?: Maybe<User>;
   fromUserId?: Maybe<Scalars['String']['output']>;
-  isRead?: Maybe<Scalars['Boolean']['output']>;
-  kind?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
+  isRead: Scalars['Boolean']['output'];
+  kind: Scalars['String']['output'];
+  message: Scalars['String']['output'];
   metadata?: Maybe<Scalars['JSON']['output']>;
-  priority?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  priority: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type NotificationConfig = {
@@ -4145,8 +4146,8 @@ export type NotificationConfig = {
 
 export type NotificationConfigListResponse = {
   __typename?: 'NotificationConfigListResponse';
-  list?: Maybe<Array<Maybe<NotificationConfig>>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<NotificationConfig>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type NotificationFilters = {
@@ -4161,7 +4162,7 @@ export type NotificationFilters = {
 export type NotificationModule = {
   __typename?: 'NotificationModule';
   description?: Maybe<Scalars['String']['output']>;
-  events?: Maybe<Array<Maybe<NotificationModuleEvent>>>;
+  events?: Maybe<Array<NotificationModuleEvent>>;
   icon?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
 };
@@ -4175,8 +4176,8 @@ export type NotificationModuleEvent = {
 
 export type NotificationPluginType = {
   __typename?: 'NotificationPluginType';
-  modules?: Maybe<Array<Maybe<NotificationModule>>>;
-  pluginName?: Maybe<Scalars['String']['output']>;
+  modules: Array<NotificationModule>;
+  pluginName: Scalars['String']['output'];
 };
 
 export enum NotificationPriority {
@@ -4188,11 +4189,11 @@ export enum NotificationPriority {
 
 export type NotificationSettings = {
   __typename?: 'NotificationSettings';
-  channels?: Maybe<Scalars['JSON']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  events?: Maybe<Scalars['JSON']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  userId?: Maybe<Scalars['String']['output']>;
+  channels: Scalars['JSON']['output'];
+  createdAt: Scalars['String']['output'];
+  events: Scalars['JSON']['output'];
+  updatedAt: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
 };
 
 export type NotificationSettingsChannelInput = {
@@ -4222,9 +4223,9 @@ export enum NotificationType {
 
 export type NotificationsList = {
   __typename?: 'NotificationsList';
-  list?: Maybe<Array<Maybe<Notification>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Notification>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export enum OAuthClientAccessTokenLifetime {
@@ -4235,19 +4236,19 @@ export enum OAuthClientAccessTokenLifetime {
 
 export type OAuthClientApp = {
   __typename?: 'OAuthClientApp';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   accessTokenLifetime?: Maybe<OAuthClientAccessTokenLifetime>;
-  clientId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  clientId: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   generatedSecret?: Maybe<Scalars['String']['output']>;
   lastUsedAt?: Maybe<Scalars['Date']['output']>;
   logo?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  redirectUrls?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  status?: Maybe<OAuthClientAppStatus>;
-  type?: Maybe<OAuthClientAppType>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  name: Scalars['String']['output'];
+  redirectUrls: Array<Scalars['String']['output']>;
+  status: OAuthClientAppStatus;
+  type: OAuthClientAppType;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export enum OAuthClientAppStatus {
@@ -4395,24 +4396,24 @@ export type PermissionAction = {
 export type PermissionGroup = {
   __typename?: 'PermissionGroup';
   _id: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  members?: Maybe<Array<Maybe<User>>>;
+  members: Array<User>;
   name: Scalars['String']['output'];
-  permissions: Array<Maybe<PermissionGroupPermission>>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  permissions: Array<PermissionGroupPermission>;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type PermissionGroupPermission = {
   __typename?: 'PermissionGroupPermission';
-  actions: Array<Maybe<Scalars['String']['output']>>;
+  actions: Array<Scalars['String']['output']>;
   module: Scalars['String']['output'];
   plugin: Scalars['String']['output'];
   scope: Scalars['String']['output'];
 };
 
 export type PermissionInput = {
-  actions: Array<InputMaybe<Scalars['String']['input']>>;
+  actions: Array<Scalars['String']['input']>;
   module: Scalars['String']['input'];
   plugin: Scalars['String']['input'];
   scope: Scalars['String']['input'];
@@ -4420,19 +4421,19 @@ export type PermissionInput = {
 
 export type PermissionModule = {
   __typename?: 'PermissionModule';
-  actions: Array<Maybe<PermissionAction>>;
+  actions: Array<PermissionAction>;
   always?: Maybe<Scalars['Boolean']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  ownerFields?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  ownerFields?: Maybe<Array<Scalars['String']['output']>>;
   plugin: Scalars['String']['output'];
   scopeField?: Maybe<Scalars['String']['output']>;
-  scopes?: Maybe<Array<Maybe<PermissionScopeDescription>>>;
+  scopes?: Maybe<Array<PermissionScopeDescription>>;
 };
 
 export type PermissionModulesByPlugin = {
   __typename?: 'PermissionModulesByPlugin';
-  modules: Array<Maybe<PermissionModule>>;
+  modules: Array<PermissionModule>;
   plugin: Scalars['String']['output'];
 };
 
@@ -4445,23 +4446,23 @@ export type PermissionScopeDescription = {
 export type Position = {
   __typename?: 'Position';
   _id: Scalars['String']['output'];
-  children?: Maybe<Array<Maybe<Position>>>;
+  children: Array<Position>;
   code?: Maybe<Scalars['String']['output']>;
-  order?: Maybe<Scalars['String']['output']>;
+  order: Scalars['String']['output'];
   parent?: Maybe<Position>;
   parentId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   title?: Maybe<Scalars['String']['output']>;
-  userCount?: Maybe<Scalars['Int']['output']>;
-  userIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  users?: Maybe<Array<Maybe<User>>>;
+  userCount: Scalars['Int']['output'];
+  userIds: Array<Scalars['String']['output']>;
+  users: Array<User>;
 };
 
 export type PositionListQueryResponse = {
   __typename?: 'PositionListQueryResponse';
-  list?: Maybe<Array<Maybe<Position>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Position>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export enum PriceType {
@@ -4474,13 +4475,13 @@ export type Product = {
   __typename?: 'Product';
   _id: Scalars['String']['output'];
   attachment?: Maybe<Attachment>;
-  attachmentMore?: Maybe<Array<Maybe<Attachment>>>;
+  attachmentMore?: Maybe<Array<Attachment>>;
   barcodeDescription?: Maybe<Scalars['String']['output']>;
-  barcodes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  barcodes?: Maybe<Array<Scalars['String']['output']>>;
   category?: Maybe<ProductCategory>;
   categoryId?: Maybe<Scalars['String']['output']>;
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   currency?: Maybe<Scalars['String']['output']>;
   cursor?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
@@ -4493,21 +4494,21 @@ export type Product = {
   name?: Maybe<Scalars['String']['output']>;
   pdfAttachment?: Maybe<PdfAttachment>;
   propertiesData?: Maybe<Scalars['JSON']['output']>;
-  remainder?: Maybe<Scalars['JSON']['output']>;
-  scopeBrandIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  remainder: Scalars['JSON']['output'];
+  scopeBrandIds?: Maybe<Array<Scalars['String']['output']>>;
   shortName?: Maybe<Scalars['String']['output']>;
   similarity?: Maybe<ProductBulkSimilarity>;
   similarityId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   subUoms?: Maybe<Scalars['JSON']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  type?: Maybe<Scalars['String']['output']>;
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
+  type: Scalars['String']['output'];
   unitPrice?: Maybe<Scalars['Float']['output']>;
   uom?: Maybe<Scalars['String']['output']>;
   variants?: Maybe<Scalars['JSON']['output']>;
   vendor?: Maybe<Company>;
   vendorId?: Maybe<Scalars['String']['output']>;
-  videos?: Maybe<Array<Maybe<Attachment>>>;
+  videos?: Maybe<Array<Attachment>>;
   weight?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -4521,15 +4522,15 @@ export type ProductDiscountArgs = {
 export type ProductBulkSimilarity = {
   __typename?: 'ProductBulkSimilarity';
   _id: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  fields?: Maybe<Array<Maybe<ProductSimilarityField>>>;
+  createdAt: Scalars['Date']['output'];
+  fields: Array<ProductSimilarityField>;
   info?: Maybe<Scalars['JSON']['output']>;
-  productIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  products?: Maybe<Array<Maybe<Product>>>;
+  productIds: Array<Scalars['String']['output']>;
+  products: Array<Product>;
   propertiesData?: Maybe<Scalars['JSON']['output']>;
   starProductId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type ProductCategory = {
@@ -4538,7 +4539,7 @@ export type ProductCategory = {
   attachment?: Maybe<Attachment>;
   code: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  isRoot?: Maybe<Scalars['Boolean']['output']>;
+  isRoot: Scalars['Boolean']['output'];
   isSimilarity?: Maybe<Scalars['Boolean']['output']>;
   mask?: Maybe<Scalars['JSON']['output']>;
   maskType?: Maybe<Scalars['String']['output']>;
@@ -4546,10 +4547,10 @@ export type ProductCategory = {
   name?: Maybe<Scalars['String']['output']>;
   order: Scalars['String']['output'];
   parentId?: Maybe<Scalars['String']['output']>;
-  productCount?: Maybe<Scalars['Int']['output']>;
-  scopeBrandIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  productCount: Scalars['Int']['output'];
+  scopeBrandIds?: Maybe<Array<Scalars['String']['output']>>;
   similarities?: Maybe<Scalars['JSON']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
 };
 
 export enum ProductDurationType {
@@ -4566,17 +4567,17 @@ export type ProductPackage = {
   __typename?: 'ProductPackage';
   _id: Scalars['String']['output'];
   coverImage?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   percent?: Maybe<Scalars['Float']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
-  products?: Maybe<Array<Maybe<PackageProduct>>>;
-  status?: Maybe<Scalars['String']['output']>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  tags?: Maybe<Array<Maybe<Tag>>>;
-  totalPrice?: Maybe<Scalars['Float']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  products: Array<PackageProduct>;
+  status: Scalars['String']['output'];
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
+  tags: Array<Tag>;
+  totalPrice: Scalars['Float']['output'];
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type ProductPackageInput = {
@@ -4586,41 +4587,41 @@ export type ProductPackageInput = {
 
 export type ProductPackagesListResponse = {
   __typename?: 'ProductPackagesListResponse';
-  list?: Maybe<Array<Maybe<ProductPackage>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ProductPackage>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ProductRule = {
   __typename?: 'ProductRule';
   _id: Scalars['String']['output'];
   bundleId?: Maybe<Scalars['String']['output']>;
-  categories?: Maybe<Array<Maybe<ProductCategory>>>;
-  categoryIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  excludeCategories?: Maybe<Array<Maybe<ProductCategory>>>;
-  excludeCategoryIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  excludeProductIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  excludeProducts?: Maybe<Array<Maybe<Product>>>;
-  excludeTagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  excludeTags?: Maybe<Array<Maybe<Tag>>>;
+  categories: Array<ProductCategory>;
+  categoryIds?: Maybe<Array<Scalars['String']['output']>>;
+  excludeCategories: Array<ProductCategory>;
+  excludeCategoryIds?: Maybe<Array<Scalars['String']['output']>>;
+  excludeProductIds?: Maybe<Array<Scalars['String']['output']>>;
+  excludeProducts: Array<Product>;
+  excludeTagIds?: Maybe<Array<Scalars['String']['output']>>;
+  excludeTags: Array<Tag>;
   name: Scalars['String']['output'];
-  productIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  products?: Maybe<Array<Maybe<Product>>>;
-  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  tags?: Maybe<Array<Maybe<Tag>>>;
+  productIds?: Maybe<Array<Scalars['String']['output']>>;
+  products: Array<Product>;
+  tagIds?: Maybe<Array<Scalars['String']['output']>>;
+  tags: Array<Tag>;
   unitPrice: Scalars['Float']['output'];
 };
 
 export type ProductRulesCount = {
   __typename?: 'ProductRulesCount';
-  list?: Maybe<Array<Maybe<ProductRule>>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<ProductRule>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ProductSimilarity = {
   __typename?: 'ProductSimilarity';
-  groups?: Maybe<Array<Maybe<ProductSimilarityGroup>>>;
-  products?: Maybe<Array<Maybe<Product>>>;
+  groups?: Maybe<Array<ProductSimilarityGroup>>;
+  products: Array<Product>;
 };
 
 export type ProductSimilarityField = {
@@ -4645,9 +4646,9 @@ export type ProductsConfig = {
 
 export type ProductsListResponse = {
   __typename?: 'ProductsListResponse';
-  list?: Maybe<Array<Maybe<Product>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Product>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type PropertySystemField = {
@@ -4670,205 +4671,205 @@ export type PropertySystemFieldLogicInput = {
 
 export type PropertyType = {
   __typename?: 'PropertyType';
-  contentType?: Maybe<Scalars['String']['output']>;
+  contentType: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   _sentryGraphqlTest?: Maybe<Scalars['String']['output']>;
-  activeExports?: Maybe<Array<Maybe<Export>>>;
-  activeImports?: Maybe<Array<Maybe<Import>>>;
-  activityLogs?: Maybe<ActivityLogsList>;
-  allBrands?: Maybe<Array<Maybe<Brand>>>;
-  allBundleConditions?: Maybe<Array<Maybe<BundleCondition>>>;
-  allUsers?: Maybe<Array<Maybe<User>>>;
+  activeExports: Array<Export>;
+  activeImports: Array<Import>;
+  activityLogs: ActivityLogsList;
+  allBrands: Array<Brand>;
+  allBundleConditions: Array<BundleCondition>;
+  allUsers: Array<User>;
   appDetail?: Maybe<App>;
-  approvalLockState?: Maybe<ApprovalLockState>;
-  approvalLockStates?: Maybe<Array<Maybe<ApprovalLockState>>>;
-  approvalRequestDetail?: Maybe<ApprovalRequest>;
-  approvalRequests?: Maybe<ApprovalRequestsList>;
-  apps?: Maybe<Array<Maybe<App>>>;
-  appsTotalCount?: Maybe<Scalars['Int']['output']>;
-  automationBotsConstants?: Maybe<Scalars['JSON']['output']>;
-  automationConstants?: Maybe<Scalars['JSON']['output']>;
-  automationDetail?: Maybe<Automation>;
-  automationExecutionCounts?: Maybe<Array<Maybe<AutomationStatsCount>>>;
-  automationHistories?: Maybe<AutomationHistories>;
-  automationHistoriesTotalCount?: Maybe<Scalars['Int']['output']>;
+  approvalLockState: ApprovalLockState;
+  approvalLockStates: Array<ApprovalLockState>;
+  approvalRequestDetail: ApprovalRequest;
+  approvalRequests: ApprovalRequestsList;
+  apps: Array<App>;
+  appsTotalCount: Scalars['Int']['output'];
+  automationBotsConstants: Scalars['JSON']['output'];
+  automationConstants: Scalars['JSON']['output'];
+  automationDetail: Automation;
+  automationExecutionCounts: Array<AutomationStatsCount>;
+  automationHistories: AutomationHistories;
+  automationHistoriesTotalCount: Scalars['Int']['output'];
   automationNodeOutput?: Maybe<Scalars['JSON']['output']>;
-  automationReferenceFields?: Maybe<Scalars['JSON']['output']>;
-  automationSetPropertyTargets?: Maybe<Scalars['JSON']['output']>;
-  automationStats?: Maybe<AutomationStats>;
-  automationWorkflowTemplates?: Maybe<Array<Maybe<AutomationWorkflowTemplate>>>;
-  automations?: Maybe<Array<Maybe<Automation>>>;
+  automationReferenceFields: Scalars['JSON']['output'];
+  automationSetPropertyTargets: Scalars['JSON']['output'];
+  automationStats: AutomationStats;
+  automationWorkflowTemplates: Array<AutomationWorkflowTemplate>;
+  automations: Array<Automation>;
   automationsAiAgentDetail?: Maybe<Scalars['JSON']['output']>;
   automationsAiAgentHealth: AiAgentHealth;
-  automationsAiAgentKnowledgeSourceStatuses?: Maybe<Scalars['JSON']['output']>;
-  automationsAiAgentTotalCounts?: Maybe<Scalars['JSON']['output']>;
-  automationsAiAgents?: Maybe<Scalars['JSON']['output']>;
-  automationsMain?: Maybe<AutomationsListResponse>;
-  automationsTotalCount?: Maybe<AutomationsTotalCountResponse>;
-  beforeResolverAvailable?: Maybe<Scalars['JSON']['output']>;
-  branchDetail?: Maybe<Branch>;
-  branches?: Maybe<Array<Maybe<Branch>>>;
-  branchesMain?: Maybe<BranchesListResponse>;
+  automationsAiAgentKnowledgeSourceStatuses: Scalars['JSON']['output'];
+  automationsAiAgentTotalCounts: Scalars['JSON']['output'];
+  automationsAiAgents: Scalars['JSON']['output'];
+  automationsMain: AutomationsListResponse;
+  automationsTotalCount: AutomationsTotalCountResponse;
+  beforeResolverAvailable: Scalars['JSON']['output'];
+  branchDetail: Branch;
+  branches: Array<Branch>;
+  branchesMain: BranchesListResponse;
   brandDetail?: Maybe<Brand>;
-  brands?: Maybe<BrandListResponse>;
+  brands: BrandListResponse;
   brandsGetLast?: Maybe<Brand>;
-  brandsTotalCount?: Maybe<Scalars['Int']['output']>;
+  brandsTotalCount: Scalars['Int']['output'];
   broadcastEmailDryRun?: Maybe<BroadcastEmailDryRun>;
   broadcastRecipientEmail?: Maybe<BroadcastRecipientEmail>;
   bundleConditionDetail?: Maybe<BundleCondition>;
-  bundleConditionTotalCount?: Maybe<Scalars['Int']['output']>;
-  bundleConditions?: Maybe<Array<Maybe<BundleCondition>>>;
+  bundleConditionTotalCount: Scalars['Int']['output'];
+  bundleConditions: Array<BundleCondition>;
   bundleRuleDetail?: Maybe<BundleRule>;
-  bundleRules?: Maybe<Array<Maybe<BundleRule>>>;
-  categoriesWithChilds?: Maybe<Array<Maybe<ProductCategory>>>;
+  bundleRules: Array<BundleRule>;
+  categoriesWithChilds: Array<ProductCategory>;
   clientPortalComment?: Maybe<CpComment>;
   clientPortalComments?: Maybe<CpCommentListResponse>;
   clientPortalCurrentUser?: Maybe<CpUser>;
   clientPortalNotificationDetail?: Maybe<CpNotification>;
   clientPortalNotifications?: Maybe<CpNotificationListResponse>;
   clientPortalUnreadNotificationCount?: Maybe<Scalars['Int']['output']>;
-  companies?: Maybe<CompaniesListResponse>;
+  companies: CompaniesListResponse;
   companyDetail?: Maybe<Company>;
-  configs?: Maybe<Array<Maybe<Config>>>;
-  configsByCode?: Maybe<Array<Maybe<Config>>>;
+  configs: Array<Config>;
+  configsByCode: Array<Config>;
   configsCheckActivateInstallation?: Maybe<Scalars['JSON']['output']>;
   configsCheckPremiumService?: Maybe<Scalars['Boolean']['output']>;
   configsConstants?: Maybe<Scalars['JSON']['output']>;
-  configsFileUploadInfo?: Maybe<FileUploadServiceInfo>;
+  configsFileUploadInfo: FileUploadServiceInfo;
   configsGetEmailTemplate?: Maybe<Scalars['String']['output']>;
-  configsGetEnv?: Maybe<Env>;
+  configsGetEnv: Env;
   configsGetInstallationStatus?: Maybe<Scalars['JSON']['output']>;
   configsGetValue?: Maybe<Scalars['JSON']['output']>;
   configsGetVersion?: Maybe<Scalars['JSON']['output']>;
-  contactsLogs?: Maybe<Scalars['JSON']['output']>;
-  coreModulesGlobalSearch?: Maybe<CoreModulesGlobalSearchResult>;
+  contactsLogs: Scalars['JSON']['output'];
+  coreModulesGlobalSearch: CoreModulesGlobalSearchResult;
   cpAutomationDetail?: Maybe<Automation>;
-  cpBranchDetail?: Maybe<Branch>;
-  cpBranches?: Maybe<Array<Maybe<Branch>>>;
-  cpBranchesMain?: Maybe<BranchesListResponse>;
-  cpCompanies?: Maybe<CompaniesListResponse>;
-  cpCustomerDetail?: Maybe<Customer>;
-  cpCustomers?: Maybe<CustomersListResponse>;
-  cpDepartments?: Maybe<Array<Maybe<Department>>>;
-  cpFieldDetail?: Maybe<Field>;
-  cpFieldGroups?: Maybe<Array<Maybe<FieldGroup>>>;
-  cpFields?: Maybe<Array<Maybe<Field>>>;
-  cpGetRelationsByEntity?: Maybe<Array<Relation>>;
-  cpProductCategories?: Maybe<Array<Maybe<ProductCategory>>>;
+  cpBranchDetail: Branch;
+  cpBranches: Array<Branch>;
+  cpBranchesMain: BranchesListResponse;
+  cpCompanies: CompaniesListResponse;
+  cpCustomerDetail: Customer;
+  cpCustomers: CustomersListResponse;
+  cpDepartments: Array<Department>;
+  cpFieldDetail: Field;
+  cpFieldGroups: Array<FieldGroup>;
+  cpFields: Array<Field>;
+  cpGetRelationsByEntity: Array<Relation>;
+  cpProductCategories: Array<ProductCategory>;
   cpProductDetail?: Maybe<Product>;
-  cpProducts?: Maybe<Array<Maybe<Product>>>;
-  cpTags?: Maybe<Array<Maybe<Tag>>>;
-  cpUnits?: Maybe<Array<Maybe<CpUnit>>>;
-  cpUoms?: Maybe<Array<Maybe<Uom>>>;
+  cpProducts: Array<Product>;
+  cpTags: Array<Tag>;
+  cpUnits: Array<CpUnit>;
+  cpUoms: Array<Uom>;
   currentUser?: Maybe<User>;
-  currentUserPermissions?: Maybe<CurrentUserPermissionsResult>;
-  customerDetail?: Maybe<Customer>;
-  customers?: Maybe<CustomersListResponse>;
-  customersCount?: Maybe<Scalars['JSON']['output']>;
-  departmentDetail?: Maybe<Department>;
-  departments?: Maybe<Array<Maybe<Department>>>;
-  departmentsMain?: Maybe<DepartmentsListResponse>;
-  documents?: Maybe<DocumentListResponse>;
-  documentsDetail?: Maybe<Document>;
-  documentsGetEditorAttributes?: Maybe<Array<Maybe<DocumentEditorAttribute>>>;
-  documentsProcess?: Maybe<Scalars['String']['output']>;
-  documentsTotalCount?: Maybe<Scalars['Int']['output']>;
-  documentsTypes?: Maybe<Array<Maybe<DocumentsTypes>>>;
-  emailAddresses?: Maybe<EmailAddressesList>;
-  emailContentPreview?: Maybe<Scalars['String']['output']>;
-  emailDeliveries?: Maybe<EmailDeliveriesList>;
+  currentUserPermissions: CurrentUserPermissionsResult;
+  customerDetail: Customer;
+  customers: CustomersListResponse;
+  customersCount: Scalars['JSON']['output'];
+  departmentDetail: Department;
+  departments: Array<Department>;
+  departmentsMain: DepartmentsListResponse;
+  documents: DocumentListResponse;
+  documentsDetail: Document;
+  documentsGetEditorAttributes: Array<DocumentEditorAttribute>;
+  documentsProcess: Scalars['String']['output'];
+  documentsTotalCount: Scalars['Int']['output'];
+  documentsTypes: Array<DocumentsTypes>;
+  emailAddresses: EmailAddressesList;
+  emailContentPreview: Scalars['String']['output'];
+  emailDeliveries: EmailDeliveriesList;
   emailDeliveryDetail?: Maybe<EmailDelivery>;
-  emailRampStatus?: Maybe<EmailRampStatus>;
-  emailSenderOptions?: Maybe<EmailSenderOptions>;
-  emailTemplateDetail?: Maybe<EmailTemplate>;
-  emailTemplates?: Maybe<EmailTemplatesListResponse>;
+  emailRampStatus: EmailRampStatus;
+  emailSenderOptions: EmailSenderOptions;
+  emailTemplateDetail: EmailTemplate;
+  emailTemplates: EmailTemplatesListResponse;
   enabledServices?: Maybe<Scalars['JSON']['output']>;
-  engageBroadcastRecipients?: Maybe<BroadcastRecipientListResponse>;
-  engageBroadcastRuns?: Maybe<Array<Maybe<BroadcastRun>>>;
-  engageBroadcastTraces?: Maybe<Array<Maybe<BroadcastTrace>>>;
+  engageBroadcastRecipients: BroadcastRecipientListResponse;
+  engageBroadcastRuns: Array<BroadcastRun>;
+  engageBroadcastTraces: Array<BroadcastTrace>;
   engageEmailPercentages?: Maybe<AvgEmailStats>;
-  engageMembers?: Maybe<EngageMemberListResponse>;
-  engageMessageCounts?: Maybe<Scalars['JSON']['output']>;
+  engageMembers: EngageMemberListResponse;
+  engageMessageCounts: Scalars['JSON']['output'];
   engageMessageDetail?: Maybe<EngageMessage>;
-  engageMessages?: Maybe<EngageMessageListResponse>;
-  engageMessagesTotalCount?: Maybe<Scalars['Int']['output']>;
-  engageReportsList?: Maybe<EngageDeliveryReport>;
+  engageMessages: EngageMessageListResponse;
+  engageMessagesTotalCount: Scalars['Int']['output'];
+  engageReportsList: EngageDeliveryReport;
   /** What went out, and what is due to, between two moments */
-  engageScheduleCalendar?: Maybe<Array<Maybe<EngageCalendarEntry>>>;
+  engageScheduleCalendar: Array<EngageCalendarEntry>;
   /** How often a proposed recurrence would fire, and when it next would */
-  engageSchedulePreview?: Maybe<Scalars['JSON']['output']>;
-  engageSmsDeliveries?: Maybe<DeliveryList>;
+  engageSchedulePreview: Scalars['JSON']['output'];
+  engageSmsDeliveries: DeliveryList;
   engageVerifiedEmails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  engagesConfigDetail?: Maybe<Scalars['JSON']['output']>;
-  exportHeaders?: Maybe<Array<Maybe<ExportHeader>>>;
-  exportHistories?: Maybe<ExportHistoryList>;
-  exportProgress?: Maybe<Export>;
-  fieldDetail?: Maybe<Field>;
-  fieldGroups?: Maybe<FieldGroupListResponse>;
-  fields?: Maybe<FieldListResponse>;
+  engagesConfigDetail: Scalars['JSON']['output'];
+  exportHeaders: Array<ExportHeader>;
+  exportHistories: ExportHistoryList;
+  exportProgress: Export;
+  fieldDetail: Field;
+  fieldGroups: FieldGroupListResponse;
+  fields: FieldListResponse;
   fieldsCombinedByContentType?: Maybe<Scalars['JSON']['output']>;
-  getAutomationExecutionDetail?: Maybe<AutomationHistory>;
-  getAutomationWebhookEndpoint?: Maybe<Scalars['String']['output']>;
+  getAutomationExecutionDetail: AutomationHistory;
+  getAutomationWebhookEndpoint: Scalars['String']['output'];
   getCPExamplePosts?: Maybe<Array<Maybe<CpExamplePost>>>;
   getClientPortal?: Maybe<ClientPortal>;
   getClientPortalNotificationsByCpUserId?: Maybe<CpNotificationListResponse>;
   getClientPortalUser?: Maybe<CpUser>;
   getClientPortalUsers?: Maybe<CpUserListResponse>;
   getClientPortals?: Maybe<ClientPortalListResponse>;
-  getFavoritesByCurrentUser?: Maybe<Array<Maybe<Favorite>>>;
-  getRelationsByEntities?: Maybe<Array<Relation>>;
-  getRelationsByEntity?: Maybe<Array<Relation>>;
-  importColumnPreview?: Maybe<ImportColumnPreview>;
+  getFavoritesByCurrentUser: Array<Favorite>;
+  getRelationsByEntities: Array<Relation>;
+  getRelationsByEntity: Array<Relation>;
+  importColumnPreview: ImportColumnPreview;
   importExportTypes: Array<ImportExportType>;
-  importFields?: Maybe<Array<Maybe<ImportPreviewField>>>;
-  importHistories?: Maybe<ImportHistoryList>;
-  importProgress?: Maybe<Import>;
-  internalNoteDetail?: Maybe<InternalNote>;
-  internalNotes?: Maybe<Array<Maybe<InternalNote>>>;
-  internalNotesAsLogs?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
-  internalNotesByAction?: Maybe<InternalNotesByAction>;
-  isFavorite?: Maybe<Scalars['Boolean']['output']>;
+  importFields: Array<ImportPreviewField>;
+  importHistories: ImportHistoryList;
+  importProgress: Import;
+  internalNoteDetail: InternalNote;
+  internalNotes: Array<InternalNote>;
+  internalNotesAsLogs: Array<Scalars['JSON']['output']>;
+  internalNotesByAction: InternalNotesByAction;
+  isFavorite: Scalars['Boolean']['output'];
   logDetail?: Maybe<Log>;
   logsGetContentTypes: Array<LogContentType>;
-  logsMainList?: Maybe<MainLogsList>;
-  notificationDetail?: Maybe<Notification>;
+  logsMainList: MainLogsList;
+  notificationDetail: Notification;
   notificationSettings?: Maybe<NotificationSettings>;
-  notifications?: Maybe<NotificationsList>;
+  notifications: NotificationsList;
   oauthClientAppDetail?: Maybe<OAuthClientApp>;
-  oauthClientApps?: Maybe<Array<Maybe<OAuthClientApp>>>;
-  oauthClientAppsTotalCount?: Maybe<Scalars['Int']['output']>;
-  permissionDefaultGroups?: Maybe<Array<Maybe<DefaultPermissionGroup>>>;
+  oauthClientApps: Array<OAuthClientApp>;
+  oauthClientAppsTotalCount: Scalars['Int']['output'];
+  permissionDefaultGroups: Array<DefaultPermissionGroup>;
   permissionGroupDetail?: Maybe<PermissionGroup>;
-  permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
-  permissionModules?: Maybe<Array<Maybe<PermissionModulesByPlugin>>>;
-  pluginsNotifications?: Maybe<Array<Maybe<NotificationPluginType>>>;
-  positionDetail?: Maybe<Position>;
-  positions?: Maybe<Array<Maybe<Position>>>;
-  positionsMain?: Maybe<PositionListQueryResponse>;
-  productBulkSimilarities?: Maybe<Array<Maybe<ProductBulkSimilarity>>>;
-  productBulkSimilaritiesTotalCount?: Maybe<Scalars['Int']['output']>;
+  permissionGroups: Array<PermissionGroup>;
+  permissionModules: Array<PermissionModulesByPlugin>;
+  pluginsNotifications: Array<NotificationPluginType>;
+  positionDetail: Position;
+  positions: Array<Position>;
+  positionsMain: PositionListQueryResponse;
+  productBulkSimilarities: Array<ProductBulkSimilarity>;
+  productBulkSimilaritiesTotalCount: Scalars['Int']['output'];
   productBulkSimilarity?: Maybe<ProductBulkSimilarity>;
-  productCategories?: Maybe<Array<Maybe<ProductCategory>>>;
-  productCategoriesTotalCount?: Maybe<Scalars['Int']['output']>;
+  productCategories: Array<ProductCategory>;
+  productCategoriesTotalCount: Scalars['Int']['output'];
   productCategoryDetail?: Maybe<ProductCategory>;
-  productCountByTags?: Maybe<Scalars['JSON']['output']>;
+  productCountByTags: Scalars['JSON']['output'];
   productDetail?: Maybe<Product>;
   productLastCodeByCategory?: Maybe<Scalars['String']['output']>;
   productPackageDetail?: Maybe<ProductPackage>;
-  productPackages?: Maybe<ProductPackagesListResponse>;
-  productRules?: Maybe<Array<Maybe<ProductRule>>>;
-  productRulesWithCount?: Maybe<ProductRulesCount>;
-  productSimilarities?: Maybe<ProductSimilarity>;
-  products?: Maybe<Array<Maybe<Product>>>;
-  productsConfigs?: Maybe<Array<Maybe<ProductsConfig>>>;
-  productsMain?: Maybe<ProductsListResponse>;
-  productsTotalCount?: Maybe<Scalars['Int']['output']>;
+  productPackages: ProductPackagesListResponse;
+  productRules: Array<ProductRule>;
+  productRulesWithCount: ProductRulesCount;
+  productSimilarities: ProductSimilarity;
+  products: Array<Product>;
+  productsConfigs: Array<ProductsConfig>;
+  productsMain: ProductsListResponse;
+  productsTotalCount: Scalars['Int']['output'];
   propertySystemFields: Array<PropertySystemField>;
-  propertyTypes?: Maybe<Scalars['JSON']['output']>;
+  propertyTypes: Scalars['JSON']['output'];
   recordReferenceFields?: Maybe<Scalars['JSON']['output']>;
   recordReferenceResolvePlaceholders?: Maybe<Scalars['JSON']['output']>;
   search?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
@@ -4885,32 +4886,32 @@ export type Query = {
   segmentSameDefinition?: Maybe<Segment>;
   /** What still points at these segments, read before deleting one. */
   segmentUsage: Array<SegmentUsage>;
-  segments?: Maybe<Array<Maybe<Segment>>>;
-  segmentsGetTypes?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
+  segments: Array<Segment>;
+  segmentsGetTypes: Array<Scalars['JSON']['output']>;
   /** How many records a tree would match, for the form's live count. */
   segmentsPreviewCount: SegmentMemberCount;
-  settingsGlobalSearch?: Maybe<SettingsGlobalSearchResult>;
+  settingsGlobalSearch: SettingsGlobalSearchResult;
   structureDetail?: Maybe<Structure>;
-  tagDetail?: Maybe<Tag>;
-  tags?: Maybe<TagsListResponse>;
-  tagsGetTypes?: Maybe<Scalars['JSON']['output']>;
-  tagsMain?: Maybe<Array<Maybe<Tag>>>;
-  tagsQueryCount?: Maybe<Scalars['Int']['output']>;
-  templateCategories?: Maybe<TemplateCategoryListResponse>;
-  templateCategory?: Maybe<TemplateCategory>;
-  templateDetail?: Maybe<Template>;
-  templateList?: Maybe<TemplateListResponse>;
-  templatesGetTypes?: Maybe<Scalars['JSON']['output']>;
-  unitDetail?: Maybe<Unit>;
-  units?: Maybe<Array<Maybe<Unit>>>;
-  unitsMain?: Maybe<UnitListQueryResponse>;
-  unreadNotificationsCount?: Maybe<Scalars['Int']['output']>;
-  uoms?: Maybe<Array<Maybe<Uom>>>;
-  uomsTotalCount?: Maybe<Scalars['Int']['output']>;
+  tagDetail: Tag;
+  tags: TagsListResponse;
+  tagsGetTypes: Scalars['JSON']['output'];
+  tagsMain: Array<Tag>;
+  tagsQueryCount: Scalars['Int']['output'];
+  templateCategories: TemplateCategoryListResponse;
+  templateCategory: TemplateCategory;
+  templateDetail: Template;
+  templateList: TemplateListResponse;
+  templatesGetTypes: Scalars['JSON']['output'];
+  unitDetail: Unit;
+  units: Array<Unit>;
+  unitsMain: UnitListQueryResponse;
+  unreadNotificationsCount: Scalars['Int']['output'];
+  uoms: Array<Uom>;
+  uomsTotalCount: Scalars['Int']['output'];
   userDetail?: Maybe<User>;
-  userMovements?: Maybe<Array<Maybe<UserMovement>>>;
-  users?: Maybe<UsersListResponse>;
-  usersTotalCount?: Maybe<Scalars['Int']['output']>;
+  userMovements: Array<UserMovement>;
+  users: UsersListResponse;
+  usersTotalCount: Scalars['Int']['output'];
 };
 
 
@@ -5311,8 +5312,8 @@ export type QueryCompaniesArgs = {
   dateFilters?: InputMaybe<Scalars['String']['input']>;
   direction?: InputMaybe<Cursor_Direction>;
   excludeIds?: InputMaybe<Scalars['Boolean']['input']>;
-  excludeTagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excludeTagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['JSON']['input']>;
   searchValue?: InputMaybe<Scalars['String']['input']>;
@@ -5321,7 +5322,7 @@ export type QueryCompaniesArgs = {
   sortField?: InputMaybe<Scalars['String']['input']>;
   sortMode?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Contact_Status>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   tagWithRelated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5370,7 +5371,7 @@ export type QueryConfigsGetVersionArgs = {
 export type QueryContactsLogsArgs = {
   action?: InputMaybe<Scalars['String']['input']>;
   content?: InputMaybe<Scalars['JSON']['input']>;
-  contentType?: InputMaybe<Scalars['String']['input']>;
+  contentType: Scalars['String']['input'];
 };
 
 
@@ -5446,8 +5447,8 @@ export type QueryCpCompaniesArgs = {
   dateFilters?: InputMaybe<Scalars['String']['input']>;
   direction?: InputMaybe<Cursor_Direction>;
   excludeIds?: InputMaybe<Scalars['Boolean']['input']>;
-  excludeTagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excludeTagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['JSON']['input']>;
   searchValue?: InputMaybe<Scalars['String']['input']>;
@@ -5456,7 +5457,7 @@ export type QueryCpCompaniesArgs = {
   sortField?: InputMaybe<Scalars['String']['input']>;
   sortMode?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Contact_Status>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   tagWithRelated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5471,7 +5472,7 @@ export type QueryCpCustomersArgs = {
   autoCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   autoCompletionType?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['Date']['input']>;
-  brandIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  brandIds?: InputMaybe<Array<Scalars['String']['input']>>;
   clientPortalId?: InputMaybe<Scalars['String']['input']>;
   conformityIsRelated?: InputMaybe<Scalars['Boolean']['input']>;
   conformityIsSaved?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5485,25 +5486,25 @@ export type QueryCpCustomersArgs = {
   emailValidationStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['String']['input']>;
   excludeIds?: InputMaybe<Scalars['Boolean']['input']>;
-  excludeTagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  formIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  integrationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  integrationTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excludeTagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  formIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  integrationIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  integrationTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   leadStatus?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['JSON']['input']>;
   propertiesData?: InputMaybe<Scalars['String']['input']>;
   searchValue?: InputMaybe<Scalars['String']['input']>;
   segment?: InputMaybe<Scalars['String']['input']>;
-  segmentIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  segmentIds?: InputMaybe<Array<Scalars['String']['input']>>;
   sex?: InputMaybe<Scalars['Int']['input']>;
   sortDirection?: InputMaybe<Scalars['Int']['input']>;
   sortField?: InputMaybe<Scalars['String']['input']>;
   sortMode?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Contact_Status>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   tagWithRelated?: InputMaybe<Scalars['Boolean']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };
@@ -5633,7 +5634,7 @@ export type QueryCustomersArgs = {
   autoCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   autoCompletionType?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['Date']['input']>;
-  brandIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  brandIds?: InputMaybe<Array<Scalars['String']['input']>>;
   clientPortalId?: InputMaybe<Scalars['String']['input']>;
   conformityIsRelated?: InputMaybe<Scalars['Boolean']['input']>;
   conformityIsSaved?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5647,32 +5648,32 @@ export type QueryCustomersArgs = {
   emailValidationStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['String']['input']>;
   excludeIds?: InputMaybe<Scalars['Boolean']['input']>;
-  excludeTagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  formIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  integrationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  integrationTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excludeTagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  formIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  integrationIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  integrationTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   leadStatus?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['JSON']['input']>;
   propertiesData?: InputMaybe<Scalars['String']['input']>;
   searchValue?: InputMaybe<Scalars['String']['input']>;
   segment?: InputMaybe<Scalars['String']['input']>;
-  segmentIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  segmentIds?: InputMaybe<Array<Scalars['String']['input']>>;
   sex?: InputMaybe<Scalars['Int']['input']>;
   sortDirection?: InputMaybe<Scalars['Int']['input']>;
   sortField?: InputMaybe<Scalars['String']['input']>;
   sortMode?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Contact_Status>;
-  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
   tagWithRelated?: InputMaybe<Scalars['Boolean']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryCustomersCountArgs = {
-  types?: InputMaybe<Array<InputMaybe<Customer_Relation_Type>>>;
+  types?: InputMaybe<Array<Customer_Relation_Type>>;
 };
 
 
@@ -5747,7 +5748,7 @@ export type QueryDocumentsGetEditorAttributesArgs = {
 
 
 export type QueryDocumentsProcessArgs = {
-  _id?: InputMaybe<Scalars['String']['input']>;
+  _id: Scalars['String']['input'];
   config?: InputMaybe<Scalars['JSON']['input']>;
   replacerIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -6106,7 +6107,7 @@ export type QueryInternalNotesAsLogsArgs = {
 
 
 export type QueryInternalNotesByActionArgs = {
-  contentType?: InputMaybe<Scalars['String']['input']>;
+  contentType: Scalars['String']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
   perPage?: InputMaybe<Scalars['Int']['input']>;
   pipelineId?: InputMaybe<Scalars['String']['input']>;
@@ -6191,7 +6192,7 @@ export type QueryPermissionGroupDetailArgs = {
 
 
 export type QueryPositionDetailArgs = {
-  _id?: InputMaybe<Scalars['String']['input']>;
+  _id: Scalars['String']['input'];
 };
 
 
@@ -6504,8 +6505,8 @@ export type QuerySegmentUsageArgs = {
 
 export type QuerySegmentsArgs = {
   contentTypes: Array<InputMaybe<Scalars['String']['input']>>;
-  excludeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excludeIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
   searchValue?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -6580,7 +6581,7 @@ export type QueryTemplateCategoriesArgs = {
 
 
 export type QueryTemplateCategoryArgs = {
-  _id?: InputMaybe<Scalars['String']['input']>;
+  _id: Scalars['String']['input'];
 };
 
 
@@ -6788,7 +6789,7 @@ export type Segment = {
 export type SegmentDay = {
   __typename?: 'SegmentDay';
   /** Start of the bucket this point covers - hourly on a short window. */
-  at?: Maybe<Scalars['Date']['output']>;
+  at: Scalars['Date']['output'];
   /** Closing membership. Absent on days the worker never settled it. */
   count?: Maybe<Scalars['Int']['output']>;
   date: Scalars['String']['output'];
@@ -6880,9 +6881,9 @@ export enum SegmentVisibility {
 
 export type SettingsGlobalSearchResult = {
   __typename?: 'SettingsGlobalSearchResult';
-  list?: Maybe<Array<Maybe<GlobalSearchResultItem>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<GlobalSearchResultItem>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type SmsDelivery = {
@@ -6893,14 +6894,14 @@ export type SmsDelivery = {
   createdAt?: Maybe<Scalars['Date']['output']>;
   direction?: Maybe<Scalars['String']['output']>;
   engageMessageId?: Maybe<Scalars['String']['output']>;
-  errorMessages?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  errorMessages?: Maybe<Array<Scalars['String']['output']>>;
   erxesApiId?: Maybe<Scalars['String']['output']>;
   from?: Maybe<Scalars['String']['output']>;
   integrationId?: Maybe<Scalars['String']['output']>;
   requestData?: Maybe<Scalars['String']['output']>;
   responseData?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
-  statusUpdates?: Maybe<Array<Maybe<SmsStatus>>>;
+  statusUpdates?: Maybe<Array<SmsStatus>>;
   telnyxId?: Maybe<Scalars['String']['output']>;
   to?: Maybe<Scalars['String']['output']>;
 };
@@ -6965,70 +6966,70 @@ export type SuccessResult = {
 
 export type Tag = {
   __typename?: 'Tag';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   colorCode?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  isGroup?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  objectCount?: Maybe<Scalars['Int']['output']>;
+  isGroup: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  objectCount: Scalars['Int']['output'];
   order?: Maybe<Scalars['String']['output']>;
   parentId?: Maybe<Scalars['String']['output']>;
-  relatedIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  relatedIds?: Maybe<Array<Scalars['String']['output']>>;
   totalObjectCount?: Maybe<Scalars['Int']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 export type TagsListResponse = {
   __typename?: 'TagsListResponse';
-  list?: Maybe<Array<Maybe<Tag>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Tag>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Template = {
   __typename?: 'Template';
   _id: Scalars['String']['output'];
-  categories?: Maybe<Array<Maybe<TemplateCategory>>>;
-  categoryIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  content?: Maybe<Scalars['JSON']['output']>;
-  contentType?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  categories: Array<TemplateCategory>;
+  categoryIds?: Maybe<Array<Scalars['String']['output']>>;
+  content: Scalars['JSON']['output'];
+  contentType: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
   updatedBy?: Maybe<User>;
 };
 
 export type TemplateCategory = {
   __typename?: 'TemplateCategory';
-  _id?: Maybe<Scalars['String']['output']>;
-  code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  _id: Scalars['String']['output'];
+  code: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<User>;
-  isRoot?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  isRoot: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
   order?: Maybe<Scalars['String']['output']>;
   parent?: Maybe<TemplateCategory>;
   parentId?: Maybe<Scalars['String']['output']>;
-  templateCount?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['Date']['output']>;
+  templateCount: Scalars['Int']['output'];
+  updatedAt: Scalars['Date']['output'];
   updatedBy?: Maybe<User>;
 };
 
 export type TemplateCategoryListResponse = {
   __typename?: 'TemplateCategoryListResponse';
-  list?: Maybe<Array<Maybe<TemplateCategory>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<TemplateCategory>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type TemplateListResponse = {
   __typename?: 'TemplateListResponse';
-  list?: Maybe<Array<Maybe<Template>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Template>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type TestUser = {
@@ -7086,12 +7087,12 @@ export type Trigger = {
   count?: Maybe<Scalars['Int']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   icon?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
   isCustom?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['JSON']['output']>;
   style?: Maybe<Scalars['JSON']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
   workflowId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -7100,12 +7101,12 @@ export type TriggerInput = {
   config?: InputMaybe<Scalars['JSON']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   icon?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
   isCustom?: InputMaybe<Scalars['Boolean']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['JSON']['input']>;
   style?: InputMaybe<Scalars['JSON']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
   workflowId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -7138,23 +7139,23 @@ export type Unit = {
   supervisor?: Maybe<User>;
   supervisorId?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  userCount?: Maybe<Scalars['Int']['output']>;
-  userIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  users?: Maybe<Array<Maybe<User>>>;
+  userCount: Scalars['Int']['output'];
+  userIds?: Maybe<Array<Scalars['String']['output']>>;
+  users: Array<User>;
 };
 
 export type UnitListQueryResponse = {
   __typename?: 'UnitListQueryResponse';
-  list?: Maybe<Array<Maybe<Unit>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<Unit>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Uom = {
   __typename?: 'Uom';
   _id: Scalars['String']['output'];
   code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   isForSubscription?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   subscriptionConfig?: Maybe<Scalars['JSON']['output']>;
@@ -7163,42 +7164,42 @@ export type Uom = {
 
 export type User = {
   __typename?: 'User';
-  _id?: Maybe<Scalars['String']['output']>;
-  branchIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  branches?: Maybe<Array<Maybe<Branch>>>;
-  brandIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  brands?: Maybe<Array<Maybe<Brand>>>;
+  _id: Scalars['String']['output'];
+  branchIds?: Maybe<Array<Scalars['String']['output']>>;
+  branches: Array<Branch>;
+  brandIds?: Maybe<Array<Scalars['String']['output']>>;
+  brands: Array<Brand>;
   chatStatus?: Maybe<UserChatStatus>;
   configs?: Maybe<Scalars['JSON']['output']>;
   configsConstants?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   currentOrganization?: Maybe<Organization>;
   cursor?: Maybe<Scalars['String']['output']>;
   customPermissions?: Maybe<Array<Maybe<CustomPermission>>>;
   department?: Maybe<Department>;
-  departmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  departments?: Maybe<Array<Maybe<Department>>>;
-  details?: Maybe<UserDetailsType>;
+  departmentIds?: Maybe<Array<Scalars['String']['output']>>;
+  departments: Array<Department>;
+  details: UserDetailsType;
   email?: Maybe<Scalars['String']['output']>;
   emailSignatures?: Maybe<Scalars['JSON']['output']>;
   employeeId?: Maybe<Scalars['String']['output']>;
   getNotificationByEmail?: Maybe<Scalars['Boolean']['output']>;
-  groupIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  isActive?: Maybe<Scalars['Boolean']['output']>;
-  isOnboarded?: Maybe<Scalars['Boolean']['output']>;
+  groupIds?: Maybe<Array<Scalars['String']['output']>>;
+  isActive: Scalars['Boolean']['output'];
+  isOnboarded: Scalars['Boolean']['output'];
   isOwner?: Maybe<Scalars['Boolean']['output']>;
-  isShowNotification?: Maybe<Scalars['Boolean']['output']>;
-  isSubscribed?: Maybe<Scalars['String']['output']>;
-  leaderBoardPosition?: Maybe<Scalars['Int']['output']>;
-  links?: Maybe<Scalars['JSON']['output']>;
-  onboardedPlugins?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  isShowNotification: Scalars['Boolean']['output'];
+  isSubscribed: Scalars['String']['output'];
+  leaderBoardPosition: Scalars['Int']['output'];
+  links: Scalars['JSON']['output'];
+  onboardedPlugins: Array<Scalars['String']['output']>;
   organizations?: Maybe<Array<Maybe<CookieOrganization>>>;
-  permissionGroupIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  positionIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  positions?: Maybe<Array<Maybe<Position>>>;
+  permissionGroupIds: Array<Scalars['String']['output']>;
+  positionIds?: Maybe<Array<Scalars['String']['output']>>;
+  positions: Array<Position>;
   propertiesData?: Maybe<Scalars['JSON']['output']>;
-  score?: Maybe<Scalars['Float']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  score: Scalars['Float']['output'];
+  status: Scalars['String']['output'];
   unitId?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
@@ -7245,21 +7246,21 @@ export type UserDetailsType = {
 
 export type UserMovement = {
   __typename?: 'UserMovement';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   contentType?: Maybe<Scalars['String']['output']>;
   contentTypeDetail?: Maybe<Scalars['JSON']['output']>;
   contentTypeId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['Date']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
   createdByDetail?: Maybe<Scalars['JSON']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
   userDetail?: Maybe<Scalars['JSON']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserPermission = {
   __typename?: 'UserPermission';
-  actions: Array<Maybe<Scalars['String']['output']>>;
+  actions: Array<Scalars['String']['output']>;
   module: Scalars['String']['output'];
   plugin?: Maybe<Scalars['String']['output']>;
   scope: Scalars['String']['output'];
@@ -7267,9 +7268,9 @@ export type UserPermission = {
 
 export type UsersListResponse = {
   __typename?: 'UsersListResponse';
-  list?: Maybe<Array<Maybe<User>>>;
-  pageInfo?: Maybe<PageInfo>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  list: Array<User>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type VerificationRequest = {
@@ -7282,26 +7283,26 @@ export type VerificationRequest = {
 
 export type Workflow = {
   __typename?: 'Workflow';
-  actions?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
+  actions?: Maybe<Array<Scalars['JSON']['output']>>;
   automationId?: Maybe<Scalars['String']['output']>;
   config?: Maybe<Scalars['JSON']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   icon?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
   nextActionId?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['JSON']['output']>;
   templateId?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowInput = {
-  actions?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  actions?: InputMaybe<Array<Scalars['JSON']['input']>>;
   automationId?: InputMaybe<Scalars['String']['input']>;
   config?: InputMaybe<Scalars['JSON']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   icon?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   nextActionId?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['JSON']['input']>;
   templateId?: InputMaybe<Scalars['String']['input']>;
@@ -7470,7 +7471,7 @@ export type ResolversTypes = ResolversObject<{
   ActionCodeType: ActionCodeType;
   ActionInput: ActionInput;
   ActivityLog: ResolverTypeWrapper<IActivityLogDocument>;
-  ActivityLogsList: ResolverTypeWrapper<Omit<ActivityLogsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ActivityLog']>>> }>;
+  ActivityLogsList: ResolverTypeWrapper<Omit<ActivityLogsList, 'list'> & { list: Array<ResolversTypes['ActivityLog']> }>;
   AiAgentHealth: ResolverTypeWrapper<AiAgentHealth>;
   App: ResolverTypeWrapper<IAppDocument>;
   ApprovalChange: ResolverTypeWrapper<ApprovalChange>;
@@ -7482,7 +7483,7 @@ export type ResolversTypes = ResolversObject<{
   ApprovalLockState: ResolverTypeWrapper<Omit<ApprovalLockState, 'lock' | 'pendingRequest'> & { lock?: Maybe<ResolversTypes['ApprovalLock']>, pendingRequest?: Maybe<ResolversTypes['ApprovalRequest']> }>;
   ApprovalRequest: ResolverTypeWrapper<IApprovalRequestDocument>;
   ApprovalRequestCreateInput: ApprovalRequestCreateInput;
-  ApprovalRequestsList: ResolverTypeWrapper<Omit<ApprovalRequestsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ApprovalRequest']>>> }>;
+  ApprovalRequestsList: ResolverTypeWrapper<Omit<ApprovalRequestsList, 'list'> & { list: Array<ResolversTypes['ApprovalRequest']> }>;
   Attachment: ResolverTypeWrapper<Attachment>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   AttachmentInput: AttachmentInput;
@@ -7493,7 +7494,7 @@ export type ResolversTypes = ResolversObject<{
   AuthMethod: AuthMethod;
   AuthTokenResponse: ResolverTypeWrapper<Omit<AuthTokenResponse, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   Automation: ResolverTypeWrapper<IAutomationDocument>;
-  AutomationHistories: ResolverTypeWrapper<Omit<AutomationHistories, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['AutomationHistory']>>> }>;
+  AutomationHistories: ResolverTypeWrapper<Omit<AutomationHistories, 'list'> & { list: Array<ResolversTypes['AutomationHistory']> }>;
   AutomationHistory: ResolverTypeWrapper<IAutomationExecutionDocument>;
   AutomationNote: ResolverTypeWrapper<AutomationNote>;
   AutomationStats: ResolverTypeWrapper<AutomationStats>;
@@ -7502,23 +7503,23 @@ export type ResolversTypes = ResolversObject<{
   AutomationStatsErrorMessage: ResolverTypeWrapper<AutomationStatsErrorMessage>;
   AutomationStatsNode: ResolverTypeWrapper<AutomationStatsNode>;
   AutomationWorkflowTemplate: ResolverTypeWrapper<IAutomationWorkflowTemplateDocument>;
-  AutomationsListResponse: ResolverTypeWrapper<Omit<AutomationsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Automation']>>> }>;
+  AutomationsListResponse: ResolverTypeWrapper<Omit<AutomationsListResponse, 'list'> & { list: Array<ResolversTypes['Automation']> }>;
   AvgEmailStats: ResolverTypeWrapper<AvgEmailStats>;
   Branch: ResolverTypeWrapper<IBranchDocument>;
-  BranchesListResponse: ResolverTypeWrapper<Omit<BranchesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Branch']>>> }>;
+  BranchesListResponse: ResolverTypeWrapper<Omit<BranchesListResponse, 'list'> & { list: Array<ResolversTypes['Branch']> }>;
   Brand: ResolverTypeWrapper<IBrandDocument>;
-  BrandListResponse: ResolverTypeWrapper<Omit<BrandListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Brand']>>> }>;
+  BrandListResponse: ResolverTypeWrapper<Omit<BrandListResponse, 'list'> & { list: Array<ResolversTypes['Brand']> }>;
   BroadcastEmailDryRun: ResolverTypeWrapper<BroadcastEmailDryRun>;
   BroadcastEmailFieldCoverage: ResolverTypeWrapper<BroadcastEmailFieldCoverage>;
   BroadcastRecipient: ResolverTypeWrapper<IBroadcastRecipientDocument>;
   BroadcastRecipientEmail: ResolverTypeWrapper<BroadcastRecipientEmail>;
   BroadcastRecipientEmailEvent: ResolverTypeWrapper<BroadcastRecipientEmailEvent>;
-  BroadcastRecipientListResponse: ResolverTypeWrapper<Omit<BroadcastRecipientListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['BroadcastRecipient']>>> }>;
+  BroadcastRecipientListResponse: ResolverTypeWrapper<Omit<BroadcastRecipientListResponse, 'list'> & { list: Array<ResolversTypes['BroadcastRecipient']> }>;
   BroadcastRun: ResolverTypeWrapper<IBroadcastRunDocument>;
   BroadcastTrace: ResolverTypeWrapper<IBroadcastTraceDocument>;
   BundleCondition: ResolverTypeWrapper<IBundleConditionDocument>;
   BundleRule: ResolverTypeWrapper<IBundleRuleDocument>;
-  BundleRuleItem: ResolverTypeWrapper<Omit<BundleRuleItem, 'products'> & { products?: Maybe<Array<Maybe<ResolversTypes['Product']>>> }>;
+  BundleRuleItem: ResolverTypeWrapper<Omit<BundleRuleItem, 'products'> & { products?: Maybe<Array<ResolversTypes['Product']>> }>;
   BundleRuleItemInput: BundleRuleItemInput;
   CONTACT_STATUS: Contact_Status;
   CPComment: ResolverTypeWrapper<ICPCommentDocument>;
@@ -7537,7 +7538,7 @@ export type ResolversTypes = ResolversObject<{
   CPNotificationSendInput: CpNotificationSendInput;
   CPNotificationStatus: CpNotificationStatus;
   CPNotificationType: CpNotificationType;
-  CPUnit: ResolverTypeWrapper<CpUnit>;
+  CPUnit: ResolverTypeWrapper<IUnitDocument>;
   CPUnitDepartment: ResolverTypeWrapper<CpUnitDepartment>;
   CPUnitUser: ResolverTypeWrapper<CpUnitUser>;
   CPUnitUserDetails: ResolverTypeWrapper<CpUnitUserDetails>;
@@ -7552,7 +7553,7 @@ export type ResolversTypes = ResolversObject<{
   ClientPortal: ResolverTypeWrapper<IClientPortalDocument>;
   ClientPortalConfigInput: ClientPortalConfigInput;
   ClientPortalListResponse: ResolverTypeWrapper<Omit<ClientPortalListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ClientPortal']>>> }>;
-  CompaniesListResponse: ResolverTypeWrapper<Omit<CompaniesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Company']>>> }>;
+  CompaniesListResponse: ResolverTypeWrapper<Omit<CompaniesListResponse, 'list'> & { list: Array<ResolversTypes['Company']> }>;
   Company: ResolverTypeWrapper<ICompanyDocument>;
   Config: ResolverTypeWrapper<IConfigDocument>;
   Conformity: ResolverTypeWrapper<IConformityDocument>;
@@ -7565,34 +7566,34 @@ export type ResolversTypes = ResolversObject<{
   CurrentUserPermissionsResult: ResolverTypeWrapper<CurrentUserPermissionsResult>;
   CustomPermission: ResolverTypeWrapper<CustomPermission>;
   Customer: ResolverTypeWrapper<ICustomerDocument>;
-  CustomersListResponse: ResolverTypeWrapper<Omit<CustomersListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Customer']>>> }>;
+  CustomersListResponse: ResolverTypeWrapper<Omit<CustomersListResponse, 'list'> & { list: Array<ResolversTypes['Customer']> }>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
-  DefaultPermissionGroup: ResolverTypeWrapper<Omit<DefaultPermissionGroup, 'members'> & { members?: Maybe<Array<Maybe<ResolversTypes['User']>>> }>;
-  DeliveryList: ResolverTypeWrapper<Omit<DeliveryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['SmsDelivery']>>> }>;
+  DefaultPermissionGroup: ResolverTypeWrapper<Omit<DefaultPermissionGroup, 'members'> & { members: Array<ResolversTypes['User']> }>;
+  DeliveryList: ResolverTypeWrapper<Omit<DeliveryList, 'list'> & { list: Array<ResolversTypes['SmsDelivery']> }>;
   DeliveryReport: ResolverTypeWrapper<IDeliveryReportsDocument>;
   Department: ResolverTypeWrapper<IDepartmentDocument>;
-  DepartmentsListResponse: ResolverTypeWrapper<Omit<DepartmentsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Department']>>> }>;
+  DepartmentsListResponse: ResolverTypeWrapper<Omit<DepartmentsListResponse, 'list'> & { list: Array<ResolversTypes['Department']> }>;
   Document: ResolverTypeWrapper<IDocumentDocument>;
   DocumentEditorAttribute: ResolverTypeWrapper<DocumentEditorAttribute>;
-  DocumentListResponse: ResolverTypeWrapper<Omit<DocumentListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Document']>>> }>;
+  DocumentListResponse: ResolverTypeWrapper<Omit<DocumentListResponse, 'list'> & { list: Array<ResolversTypes['Document']> }>;
   DocumentsTypes: ResolverTypeWrapper<DocumentsTypes>;
   ENV: ResolverTypeWrapper<Env>;
   EmailAddress: ResolverTypeWrapper<IEmailAddressDocument>;
-  EmailAddressesList: ResolverTypeWrapper<Omit<EmailAddressesList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['EmailAddress']>>> }>;
-  EmailDeliveriesList: ResolverTypeWrapper<Omit<EmailDeliveriesList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['EmailDelivery']>>> }>;
+  EmailAddressesList: ResolverTypeWrapper<Omit<EmailAddressesList, 'list'> & { list: Array<ResolversTypes['EmailAddress']> }>;
+  EmailDeliveriesList: ResolverTypeWrapper<Omit<EmailDeliveriesList, 'list'> & { list: Array<ResolversTypes['EmailDelivery']> }>;
   EmailDelivery: ResolverTypeWrapper<IEmailDeliveryDocument>;
   EmailRampStatus: ResolverTypeWrapper<EmailRampStatus>;
   EmailSender: ResolverTypeWrapper<IEmailSenderDocument>;
-  EmailSenderOptions: ResolverTypeWrapper<Omit<EmailSenderOptions, 'senders'> & { senders?: Maybe<Array<Maybe<ResolversTypes['EmailSender']>>> }>;
+  EmailSenderOptions: ResolverTypeWrapper<Omit<EmailSenderOptions, 'senders'> & { senders?: Maybe<Array<ResolversTypes['EmailSender']>> }>;
   EmailSignature: EmailSignature;
   EmailTemplate: ResolverTypeWrapper<IEmailTemplateDocument>;
-  EmailTemplatesListResponse: ResolverTypeWrapper<Omit<EmailTemplatesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['EmailTemplate']>>> }>;
+  EmailTemplatesListResponse: ResolverTypeWrapper<Omit<EmailTemplatesListResponse, 'list'> & { list: Array<ResolversTypes['EmailTemplate']> }>;
   EngageCalendarEntry: ResolverTypeWrapper<EngageCalendarEntry>;
-  EngageDeliveryReport: ResolverTypeWrapper<Omit<EngageDeliveryReport, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['DeliveryReport']>>> }>;
-  EngageMemberListResponse: ResolverTypeWrapper<Omit<EngageMemberListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['User']>>> }>;
+  EngageDeliveryReport: ResolverTypeWrapper<Omit<EngageDeliveryReport, 'list'> & { list: Array<ResolversTypes['DeliveryReport']> }>;
+  EngageMemberListResponse: ResolverTypeWrapper<Omit<EngageMemberListResponse, 'list'> & { list: Array<ResolversTypes['User']> }>;
   EngageMessage: ResolverTypeWrapper<IEngageMessageDocument>;
   EngageMessageEmail: EngageMessageEmail;
-  EngageMessageListResponse: ResolverTypeWrapper<Omit<EngageMessageListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['EngageMessage']>>> }>;
+  EngageMessageListResponse: ResolverTypeWrapper<Omit<EngageMessageListResponse, 'list'> & { list: Array<ResolversTypes['EngageMessage']> }>;
   EngageMessageMessenger: EngageMessageMessenger;
   EngageMessageNotification: EngageMessageNotification;
   EngageMessageSms: ResolverTypeWrapper<EngageMessageSms>;
@@ -7604,7 +7605,7 @@ export type ResolversTypes = ResolversObject<{
   EntityInput: EntityInput;
   Export: ResolverTypeWrapper<IExportDocument>;
   ExportHeader: ResolverTypeWrapper<ExportHeader>;
-  ExportHistoryList: ResolverTypeWrapper<Omit<ExportHistoryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Export']>>> }>;
+  ExportHistoryList: ResolverTypeWrapper<Omit<ExportHistoryList, 'list'> & { list: Array<ResolversTypes['Export']> }>;
   FacebookOAuthConfig: ResolverTypeWrapper<FacebookOAuthConfig>;
   FacebookOAuthConfigInput: FacebookOAuthConfigInput;
   Favorite: ResolverTypeWrapper<IFavoritesDocument>;
@@ -7612,10 +7613,10 @@ export type ResolversTypes = ResolversObject<{
   FcmPlatform: FcmPlatform;
   Field: ResolverTypeWrapper<IFieldDocument>;
   FieldGroup: ResolverTypeWrapper<IFieldGroupDocument>;
-  FieldGroupListResponse: ResolverTypeWrapper<Omit<FieldGroupListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['FieldGroup']>>> }>;
+  FieldGroupListResponse: ResolverTypeWrapper<Omit<FieldGroupListResponse, 'list'> & { list: Array<ResolversTypes['FieldGroup']> }>;
   FieldGroupOrderItem: FieldGroupOrderItem;
   FieldGroupParams: FieldGroupParams;
-  FieldListResponse: ResolverTypeWrapper<Omit<FieldListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Field']>>> }>;
+  FieldListResponse: ResolverTypeWrapper<Omit<FieldListResponse, 'list'> & { list: Array<ResolversTypes['Field']> }>;
   FieldOption: ResolverTypeWrapper<FieldOption>;
   FieldOptionInput: FieldOptionInput;
   FieldsParams: FieldsParams;
@@ -7633,7 +7634,7 @@ export type ResolversTypes = ResolversObject<{
   ImportColumnPreview: ResolverTypeWrapper<ImportColumnPreview>;
   ImportExportOperation: ImportExportOperation;
   ImportExportType: ResolverTypeWrapper<ImportExportType>;
-  ImportHistoryList: ResolverTypeWrapper<Omit<ImportHistoryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Import']>>> }>;
+  ImportHistoryList: ResolverTypeWrapper<Omit<ImportHistoryList, 'list'> & { list: Array<ResolversTypes['Import']> }>;
   ImportPreviewColumn: ResolverTypeWrapper<ImportPreviewColumn>;
   ImportPreviewField: ResolverTypeWrapper<ImportPreviewField>;
   InputRule: InputRule;
@@ -7645,7 +7646,7 @@ export type ResolversTypes = ResolversObject<{
   LogContentType: ResolverTypeWrapper<LogContentType>;
   MailConfig: ResolverTypeWrapper<MailConfig>;
   MailConfigInput: MailConfigInput;
-  MainLogsList: ResolverTypeWrapper<Omit<MainLogsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Log']>>> }>;
+  MainLogsList: ResolverTypeWrapper<Omit<MainLogsList, 'list'> & { list: Array<ResolversTypes['Log']> }>;
   ManualVerificationConfig: ResolverTypeWrapper<ManualVerificationConfig>;
   ManualVerificationConfigInput: ManualVerificationConfigInput;
   ModifiedNote: ResolverTypeWrapper<ModifiedNote>;
@@ -7666,7 +7667,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationSettingsEventInput: NotificationSettingsEventInput;
   NotificationStatus: NotificationStatus;
   NotificationType: NotificationType;
-  NotificationsList: ResolverTypeWrapper<Omit<NotificationsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Notification']>>> }>;
+  NotificationsList: ResolverTypeWrapper<Omit<NotificationsList, 'list'> & { list: Array<ResolversTypes['Notification']> }>;
   OAuthClientAccessTokenLifetime: OAuthClientAccessTokenLifetime;
   OAuthClientApp: ResolverTypeWrapper<IOAuthClientAppDocument>;
   OAuthClientAppStatus: OAuthClientAppStatus;
@@ -7694,22 +7695,22 @@ export type ResolversTypes = ResolversObject<{
   PermissionModulesByPlugin: ResolverTypeWrapper<PermissionModulesByPlugin>;
   PermissionScopeDescription: ResolverTypeWrapper<PermissionScopeDescription>;
   Position: ResolverTypeWrapper<IPositionDocument>;
-  PositionListQueryResponse: ResolverTypeWrapper<Omit<PositionListQueryResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Position']>>> }>;
+  PositionListQueryResponse: ResolverTypeWrapper<Omit<PositionListQueryResponse, 'list'> & { list: Array<ResolversTypes['Position']> }>;
   PriceType: PriceType;
   Product: ResolverTypeWrapper<IProductDocument>;
-  ProductBulkSimilarity: ResolverTypeWrapper<Omit<ProductBulkSimilarity, 'products'> & { products?: Maybe<Array<Maybe<ResolversTypes['Product']>>> }>;
+  ProductBulkSimilarity: ResolverTypeWrapper<Omit<ProductBulkSimilarity, 'products'> & { products: Array<ResolversTypes['Product']> }>;
   ProductCategory: ResolverTypeWrapper<IProductCategoryDocument>;
   ProductDurationType: ProductDurationType;
   ProductPackage: ResolverTypeWrapper<IPackageDocument>;
   ProductPackageInput: ProductPackageInput;
-  ProductPackagesListResponse: ResolverTypeWrapper<Omit<ProductPackagesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ProductPackage']>>> }>;
+  ProductPackagesListResponse: ResolverTypeWrapper<Omit<ProductPackagesListResponse, 'list'> & { list: Array<ResolversTypes['ProductPackage']> }>;
   ProductRule: ResolverTypeWrapper<IProductRuleDocument>;
-  ProductRulesCount: ResolverTypeWrapper<Omit<ProductRulesCount, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['ProductRule']>>> }>;
+  ProductRulesCount: ResolverTypeWrapper<Omit<ProductRulesCount, 'list'> & { list: Array<ResolversTypes['ProductRule']> }>;
   ProductSimilarity: ResolverTypeWrapper<IProductSimilarityDocument>;
   ProductSimilarityField: ResolverTypeWrapper<ProductSimilarityField>;
   ProductSimilarityGroup: ResolverTypeWrapper<ProductSimilarityGroup>;
   ProductsConfig: ResolverTypeWrapper<IProductsConfigDocument>;
-  ProductsListResponse: ResolverTypeWrapper<Omit<ProductsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Product']>>> }>;
+  ProductsListResponse: ResolverTypeWrapper<Omit<ProductsListResponse, 'list'> & { list: Array<ResolversTypes['Product']> }>;
   PropertySystemField: ResolverTypeWrapper<ISystemFieldSettingDocument>;
   PropertySystemFieldLogicInput: PropertySystemFieldLogicInput;
   PropertyType: ResolverTypeWrapper<PropertyType>;
@@ -7747,11 +7748,11 @@ export type ResolversTypes = ResolversObject<{
   Structure: ResolverTypeWrapper<IStructureDocument>;
   SuccessResult: ResolverTypeWrapper<SuccessResult>;
   Tag: ResolverTypeWrapper<ITagDocument>;
-  TagsListResponse: ResolverTypeWrapper<Omit<TagsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Tag']>>> }>;
+  TagsListResponse: ResolverTypeWrapper<Omit<TagsListResponse, 'list'> & { list: Array<ResolversTypes['Tag']> }>;
   Template: ResolverTypeWrapper<ITemplateDocument>;
   TemplateCategory: ResolverTypeWrapper<ITemplateCategoryDocument>;
-  TemplateCategoryListResponse: ResolverTypeWrapper<Omit<TemplateCategoryListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['TemplateCategory']>>> }>;
-  TemplateListResponse: ResolverTypeWrapper<Omit<TemplateListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Template']>>> }>;
+  TemplateCategoryListResponse: ResolverTypeWrapper<Omit<TemplateCategoryListResponse, 'list'> & { list: Array<ResolversTypes['TemplateCategory']> }>;
+  TemplateListResponse: ResolverTypeWrapper<Omit<TemplateListResponse, 'list'> & { list: Array<ResolversTypes['Template']> }>;
   TestUser: ResolverTypeWrapper<TestUser>;
   TestUserInput: TestUserInput;
   TimelyType: TimelyType;
@@ -7763,7 +7764,7 @@ export type ResolversTypes = ResolversObject<{
   TwoFactorConfig: ResolverTypeWrapper<TwoFactorConfig>;
   TwoFactorConfigInput: TwoFactorConfigInput;
   Unit: ResolverTypeWrapper<IUnitDocument>;
-  UnitListQueryResponse: ResolverTypeWrapper<Omit<UnitListQueryResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['Unit']>>> }>;
+  UnitListQueryResponse: ResolverTypeWrapper<Omit<UnitListQueryResponse, 'list'> & { list: Array<ResolversTypes['Unit']> }>;
   Uom: ResolverTypeWrapper<IUomDocument>;
   User: ResolverTypeWrapper<IUserDocument>;
   UserChatStatus: UserChatStatus;
@@ -7771,7 +7772,7 @@ export type ResolversTypes = ResolversObject<{
   UserDetailsType: ResolverTypeWrapper<UserDetailsType>;
   UserMovement: ResolverTypeWrapper<IUserMovementDocument>;
   UserPermission: ResolverTypeWrapper<UserPermission>;
-  UsersListResponse: ResolverTypeWrapper<Omit<UsersListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversTypes['User']>>> }>;
+  UsersListResponse: ResolverTypeWrapper<Omit<UsersListResponse, 'list'> & { list: Array<ResolversTypes['User']> }>;
   VerificationRequest: ResolverTypeWrapper<VerificationRequest>;
   Workflow: ResolverTypeWrapper<Workflow>;
   WorkflowInput: WorkflowInput;
@@ -7787,7 +7788,7 @@ export type ResolversParentTypes = ResolversObject<{
   ActionCode: ActionCode;
   ActionInput: ActionInput;
   ActivityLog: IActivityLogDocument;
-  ActivityLogsList: Omit<ActivityLogsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ActivityLog']>>> };
+  ActivityLogsList: Omit<ActivityLogsList, 'list'> & { list: Array<ResolversParentTypes['ActivityLog']> };
   AiAgentHealth: AiAgentHealth;
   App: IAppDocument;
   ApprovalChange: ApprovalChange;
@@ -7799,7 +7800,7 @@ export type ResolversParentTypes = ResolversObject<{
   ApprovalLockState: Omit<ApprovalLockState, 'lock' | 'pendingRequest'> & { lock?: Maybe<ResolversParentTypes['ApprovalLock']>, pendingRequest?: Maybe<ResolversParentTypes['ApprovalRequest']> };
   ApprovalRequest: IApprovalRequestDocument;
   ApprovalRequestCreateInput: ApprovalRequestCreateInput;
-  ApprovalRequestsList: Omit<ApprovalRequestsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ApprovalRequest']>>> };
+  ApprovalRequestsList: Omit<ApprovalRequestsList, 'list'> & { list: Array<ResolversParentTypes['ApprovalRequest']> };
   Attachment: Attachment;
   Float: Scalars['Float']['output'];
   AttachmentInput: AttachmentInput;
@@ -7809,7 +7810,7 @@ export type ResolversParentTypes = ResolversObject<{
   AuthInput: AuthInput;
   AuthTokenResponse: Omit<AuthTokenResponse, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   Automation: IAutomationDocument;
-  AutomationHistories: Omit<AutomationHistories, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['AutomationHistory']>>> };
+  AutomationHistories: Omit<AutomationHistories, 'list'> & { list: Array<ResolversParentTypes['AutomationHistory']> };
   AutomationHistory: IAutomationExecutionDocument;
   AutomationNote: AutomationNote;
   AutomationStats: AutomationStats;
@@ -7818,23 +7819,23 @@ export type ResolversParentTypes = ResolversObject<{
   AutomationStatsErrorMessage: AutomationStatsErrorMessage;
   AutomationStatsNode: AutomationStatsNode;
   AutomationWorkflowTemplate: IAutomationWorkflowTemplateDocument;
-  AutomationsListResponse: Omit<AutomationsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Automation']>>> };
+  AutomationsListResponse: Omit<AutomationsListResponse, 'list'> & { list: Array<ResolversParentTypes['Automation']> };
   AvgEmailStats: AvgEmailStats;
   Branch: IBranchDocument;
-  BranchesListResponse: Omit<BranchesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Branch']>>> };
+  BranchesListResponse: Omit<BranchesListResponse, 'list'> & { list: Array<ResolversParentTypes['Branch']> };
   Brand: IBrandDocument;
-  BrandListResponse: Omit<BrandListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Brand']>>> };
+  BrandListResponse: Omit<BrandListResponse, 'list'> & { list: Array<ResolversParentTypes['Brand']> };
   BroadcastEmailDryRun: BroadcastEmailDryRun;
   BroadcastEmailFieldCoverage: BroadcastEmailFieldCoverage;
   BroadcastRecipient: IBroadcastRecipientDocument;
   BroadcastRecipientEmail: BroadcastRecipientEmail;
   BroadcastRecipientEmailEvent: BroadcastRecipientEmailEvent;
-  BroadcastRecipientListResponse: Omit<BroadcastRecipientListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['BroadcastRecipient']>>> };
+  BroadcastRecipientListResponse: Omit<BroadcastRecipientListResponse, 'list'> & { list: Array<ResolversParentTypes['BroadcastRecipient']> };
   BroadcastRun: IBroadcastRunDocument;
   BroadcastTrace: IBroadcastTraceDocument;
   BundleCondition: IBundleConditionDocument;
   BundleRule: IBundleRuleDocument;
-  BundleRuleItem: Omit<BundleRuleItem, 'products'> & { products?: Maybe<Array<Maybe<ResolversParentTypes['Product']>>> };
+  BundleRuleItem: Omit<BundleRuleItem, 'products'> & { products?: Maybe<Array<ResolversParentTypes['Product']>> };
   BundleRuleItemInput: BundleRuleItemInput;
   CPComment: ICPCommentDocument;
   CPCommentFilter: CpCommentFilter;
@@ -7847,7 +7848,7 @@ export type ResolversParentTypes = ResolversObject<{
   CPNotificationListResponse: Omit<CpNotificationListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['CPNotification']>>> };
   CPNotificationResult: CpNotificationResult;
   CPNotificationSendInput: CpNotificationSendInput;
-  CPUnit: CpUnit;
+  CPUnit: IUnitDocument;
   CPUnitDepartment: CpUnitDepartment;
   CPUnitUser: CpUnitUser;
   CPUnitUserDetails: CpUnitUserDetails;
@@ -7857,7 +7858,7 @@ export type ResolversParentTypes = ResolversObject<{
   ClientPortal: IClientPortalDocument;
   ClientPortalConfigInput: ClientPortalConfigInput;
   ClientPortalListResponse: Omit<ClientPortalListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ClientPortal']>>> };
-  CompaniesListResponse: Omit<CompaniesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Company']>>> };
+  CompaniesListResponse: Omit<CompaniesListResponse, 'list'> & { list: Array<ResolversParentTypes['Company']> };
   Company: ICompanyDocument;
   Config: IConfigDocument;
   Conformity: IConformityDocument;
@@ -7870,34 +7871,34 @@ export type ResolversParentTypes = ResolversObject<{
   CurrentUserPermissionsResult: CurrentUserPermissionsResult;
   CustomPermission: CustomPermission;
   Customer: ICustomerDocument;
-  CustomersListResponse: Omit<CustomersListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Customer']>>> };
+  CustomersListResponse: Omit<CustomersListResponse, 'list'> & { list: Array<ResolversParentTypes['Customer']> };
   Date: Scalars['Date']['output'];
-  DefaultPermissionGroup: Omit<DefaultPermissionGroup, 'members'> & { members?: Maybe<Array<Maybe<ResolversParentTypes['User']>>> };
-  DeliveryList: Omit<DeliveryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['SmsDelivery']>>> };
+  DefaultPermissionGroup: Omit<DefaultPermissionGroup, 'members'> & { members: Array<ResolversParentTypes['User']> };
+  DeliveryList: Omit<DeliveryList, 'list'> & { list: Array<ResolversParentTypes['SmsDelivery']> };
   DeliveryReport: IDeliveryReportsDocument;
   Department: IDepartmentDocument;
-  DepartmentsListResponse: Omit<DepartmentsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Department']>>> };
+  DepartmentsListResponse: Omit<DepartmentsListResponse, 'list'> & { list: Array<ResolversParentTypes['Department']> };
   Document: IDocumentDocument;
   DocumentEditorAttribute: DocumentEditorAttribute;
-  DocumentListResponse: Omit<DocumentListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Document']>>> };
+  DocumentListResponse: Omit<DocumentListResponse, 'list'> & { list: Array<ResolversParentTypes['Document']> };
   DocumentsTypes: DocumentsTypes;
   ENV: Env;
   EmailAddress: IEmailAddressDocument;
-  EmailAddressesList: Omit<EmailAddressesList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['EmailAddress']>>> };
-  EmailDeliveriesList: Omit<EmailDeliveriesList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['EmailDelivery']>>> };
+  EmailAddressesList: Omit<EmailAddressesList, 'list'> & { list: Array<ResolversParentTypes['EmailAddress']> };
+  EmailDeliveriesList: Omit<EmailDeliveriesList, 'list'> & { list: Array<ResolversParentTypes['EmailDelivery']> };
   EmailDelivery: IEmailDeliveryDocument;
   EmailRampStatus: EmailRampStatus;
   EmailSender: IEmailSenderDocument;
-  EmailSenderOptions: Omit<EmailSenderOptions, 'senders'> & { senders?: Maybe<Array<Maybe<ResolversParentTypes['EmailSender']>>> };
+  EmailSenderOptions: Omit<EmailSenderOptions, 'senders'> & { senders?: Maybe<Array<ResolversParentTypes['EmailSender']>> };
   EmailSignature: EmailSignature;
   EmailTemplate: IEmailTemplateDocument;
-  EmailTemplatesListResponse: Omit<EmailTemplatesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['EmailTemplate']>>> };
+  EmailTemplatesListResponse: Omit<EmailTemplatesListResponse, 'list'> & { list: Array<ResolversParentTypes['EmailTemplate']> };
   EngageCalendarEntry: EngageCalendarEntry;
-  EngageDeliveryReport: Omit<EngageDeliveryReport, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['DeliveryReport']>>> };
-  EngageMemberListResponse: Omit<EngageMemberListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['User']>>> };
+  EngageDeliveryReport: Omit<EngageDeliveryReport, 'list'> & { list: Array<ResolversParentTypes['DeliveryReport']> };
+  EngageMemberListResponse: Omit<EngageMemberListResponse, 'list'> & { list: Array<ResolversParentTypes['User']> };
   EngageMessage: IEngageMessageDocument;
   EngageMessageEmail: EngageMessageEmail;
-  EngageMessageListResponse: Omit<EngageMessageListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['EngageMessage']>>> };
+  EngageMessageListResponse: Omit<EngageMessageListResponse, 'list'> & { list: Array<ResolversParentTypes['EngageMessage']> };
   EngageMessageMessenger: EngageMessageMessenger;
   EngageMessageNotification: EngageMessageNotification;
   EngageMessageSms: EngageMessageSms;
@@ -7909,17 +7910,17 @@ export type ResolversParentTypes = ResolversObject<{
   EntityInput: EntityInput;
   Export: IExportDocument;
   ExportHeader: ExportHeader;
-  ExportHistoryList: Omit<ExportHistoryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Export']>>> };
+  ExportHistoryList: Omit<ExportHistoryList, 'list'> & { list: Array<ResolversParentTypes['Export']> };
   FacebookOAuthConfig: FacebookOAuthConfig;
   FacebookOAuthConfigInput: FacebookOAuthConfigInput;
   Favorite: IFavoritesDocument;
   FcmDevice: FcmDevice;
   Field: IFieldDocument;
   FieldGroup: IFieldGroupDocument;
-  FieldGroupListResponse: Omit<FieldGroupListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['FieldGroup']>>> };
+  FieldGroupListResponse: Omit<FieldGroupListResponse, 'list'> & { list: Array<ResolversParentTypes['FieldGroup']> };
   FieldGroupOrderItem: FieldGroupOrderItem;
   FieldGroupParams: FieldGroupParams;
-  FieldListResponse: Omit<FieldListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Field']>>> };
+  FieldListResponse: Omit<FieldListResponse, 'list'> & { list: Array<ResolversParentTypes['Field']> };
   FieldOption: FieldOption;
   FieldOptionInput: FieldOptionInput;
   FieldsParams: FieldsParams;
@@ -7936,7 +7937,7 @@ export type ResolversParentTypes = ResolversObject<{
   ImportColumnMappingInput: ImportColumnMappingInput;
   ImportColumnPreview: ImportColumnPreview;
   ImportExportType: ImportExportType;
-  ImportHistoryList: Omit<ImportHistoryList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Import']>>> };
+  ImportHistoryList: Omit<ImportHistoryList, 'list'> & { list: Array<ResolversParentTypes['Import']> };
   ImportPreviewColumn: ImportPreviewColumn;
   ImportPreviewField: ImportPreviewField;
   InputRule: InputRule;
@@ -7948,7 +7949,7 @@ export type ResolversParentTypes = ResolversObject<{
   LogContentType: LogContentType;
   MailConfig: MailConfig;
   MailConfigInput: MailConfigInput;
-  MainLogsList: Omit<MainLogsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Log']>>> };
+  MainLogsList: Omit<MainLogsList, 'list'> & { list: Array<ResolversParentTypes['Log']> };
   ManualVerificationConfig: ManualVerificationConfig;
   ManualVerificationConfigInput: ManualVerificationConfigInput;
   ModifiedNote: ModifiedNote;
@@ -7966,7 +7967,7 @@ export type ResolversParentTypes = ResolversObject<{
   NotificationSettings: NotificationSettings;
   NotificationSettingsChannelInput: NotificationSettingsChannelInput;
   NotificationSettingsEventInput: NotificationSettingsEventInput;
-  NotificationsList: Omit<NotificationsList, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Notification']>>> };
+  NotificationsList: Omit<NotificationsList, 'list'> & { list: Array<ResolversParentTypes['Notification']> };
   OAuthClientApp: IOAuthClientAppDocument;
   OTPConfig: OtpConfig;
   OTPConfigInput: OtpConfigInput;
@@ -7991,20 +7992,20 @@ export type ResolversParentTypes = ResolversObject<{
   PermissionModulesByPlugin: PermissionModulesByPlugin;
   PermissionScopeDescription: PermissionScopeDescription;
   Position: IPositionDocument;
-  PositionListQueryResponse: Omit<PositionListQueryResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Position']>>> };
+  PositionListQueryResponse: Omit<PositionListQueryResponse, 'list'> & { list: Array<ResolversParentTypes['Position']> };
   Product: IProductDocument;
-  ProductBulkSimilarity: Omit<ProductBulkSimilarity, 'products'> & { products?: Maybe<Array<Maybe<ResolversParentTypes['Product']>>> };
+  ProductBulkSimilarity: Omit<ProductBulkSimilarity, 'products'> & { products: Array<ResolversParentTypes['Product']> };
   ProductCategory: IProductCategoryDocument;
   ProductPackage: IPackageDocument;
   ProductPackageInput: ProductPackageInput;
-  ProductPackagesListResponse: Omit<ProductPackagesListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ProductPackage']>>> };
+  ProductPackagesListResponse: Omit<ProductPackagesListResponse, 'list'> & { list: Array<ResolversParentTypes['ProductPackage']> };
   ProductRule: IProductRuleDocument;
-  ProductRulesCount: Omit<ProductRulesCount, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['ProductRule']>>> };
+  ProductRulesCount: Omit<ProductRulesCount, 'list'> & { list: Array<ResolversParentTypes['ProductRule']> };
   ProductSimilarity: IProductSimilarityDocument;
   ProductSimilarityField: ProductSimilarityField;
   ProductSimilarityGroup: ProductSimilarityGroup;
   ProductsConfig: IProductsConfigDocument;
-  ProductsListResponse: Omit<ProductsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Product']>>> };
+  ProductsListResponse: Omit<ProductsListResponse, 'list'> & { list: Array<ResolversParentTypes['Product']> };
   PropertySystemField: ISystemFieldSettingDocument;
   PropertySystemFieldLogicInput: PropertySystemFieldLogicInput;
   PropertyType: PropertyType;
@@ -8039,11 +8040,11 @@ export type ResolversParentTypes = ResolversObject<{
   Structure: IStructureDocument;
   SuccessResult: SuccessResult;
   Tag: ITagDocument;
-  TagsListResponse: Omit<TagsListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Tag']>>> };
+  TagsListResponse: Omit<TagsListResponse, 'list'> & { list: Array<ResolversParentTypes['Tag']> };
   Template: ITemplateDocument;
   TemplateCategory: ITemplateCategoryDocument;
-  TemplateCategoryListResponse: Omit<TemplateCategoryListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['TemplateCategory']>>> };
-  TemplateListResponse: Omit<TemplateListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Template']>>> };
+  TemplateCategoryListResponse: Omit<TemplateCategoryListResponse, 'list'> & { list: Array<ResolversParentTypes['TemplateCategory']> };
+  TemplateListResponse: Omit<TemplateListResponse, 'list'> & { list: Array<ResolversParentTypes['Template']> };
   TestUser: TestUser;
   TestUserInput: TestUserInput;
   TokiConfig: TokiConfig;
@@ -8053,14 +8054,14 @@ export type ResolversParentTypes = ResolversObject<{
   TwoFactorConfig: TwoFactorConfig;
   TwoFactorConfigInput: TwoFactorConfigInput;
   Unit: IUnitDocument;
-  UnitListQueryResponse: Omit<UnitListQueryResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['Unit']>>> };
+  UnitListQueryResponse: Omit<UnitListQueryResponse, 'list'> & { list: Array<ResolversParentTypes['Unit']> };
   Uom: IUomDocument;
   User: IUserDocument;
   UserDetails: UserDetails;
   UserDetailsType: UserDetailsType;
   UserMovement: IUserMovementDocument;
   UserPermission: UserPermission;
-  UsersListResponse: Omit<UsersListResponse, 'list'> & { list?: Maybe<Array<Maybe<ResolversParentTypes['User']>>> };
+  UsersListResponse: Omit<UsersListResponse, 'list'> & { list: Array<ResolversParentTypes['User']> };
   VerificationRequest: VerificationRequest;
   Workflow: Workflow;
   WorkflowInput: WorkflowInput;
@@ -8081,13 +8082,13 @@ export type ActionResolvers<ContextType = IContext, ParentType extends Resolvers
   config?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nextActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   style?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   targetActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   workflowId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -8098,25 +8099,25 @@ export type ActionCodeResolvers<ContextType = IContext, ParentType extends Resol
 }>;
 
 export type ActivityLogResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ActivityLog'] = ResolversParentTypes['ActivityLog']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  action?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  activityType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  actor?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  actorType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  changes?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  action?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  activityType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  actorType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  changes?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   context?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   contextType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   sourcePlugin?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  target?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  targetType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  target?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  targetType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ActivityLogsListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ActivityLogsList'] = ResolversParentTypes['ActivityLogsList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ActivityLog']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ActivityLog']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AiAgentHealthResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AiAgentHealth'] = ResolversParentTypes['AiAgentHealth']> = ResolversObject<{
@@ -8128,58 +8129,58 @@ export type AiAgentHealthResolvers<ContextType = IContext, ParentType extends Re
 }>;
 
 export type AppResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['App'] = ResolversParentTypes['App']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   lastUsedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ApprovalChangeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalChange'] = ResolversParentTypes['ApprovalChange']> = ResolversObject<{
-  changeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  changeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   payload?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  summary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ApprovalContentMetaResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalContentMeta'] = ResolversParentTypes['ApprovalContentMeta']> = ResolversObject<{
-  contentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ownerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type ApprovalDecisionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalDecision'] = ResolversParentTypes['ApprovalDecision']> = ResolversObject<{
-  at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  decision?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  decision?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ApprovalLockResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalLock'] = ResolversParentTypes['ApprovalLock']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  allowedUserIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  approvalMode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  approverScope?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  lockedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  allowedUserIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  approvalMode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  approverScope?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  lockedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ownerIdSnapshot?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   releaseReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   releasedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   releasedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ApprovalLockStateResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalLockState'] = ResolversParentTypes['ApprovalLockState']> = ResolversObject<{
   action?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  content?: Resolver<Maybe<ResolversTypes['ApprovalContentMeta']>, ParentType, ContextType>;
-  contentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  hasAccess?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['ApprovalContentMeta'], ParentType, ContextType>;
+  contentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hasAccess?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lock?: Resolver<Maybe<ResolversTypes['ApprovalLock']>, ParentType, ContextType>;
-  locked?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  locked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   pendingRequest?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType>;
   reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -8189,27 +8190,27 @@ export type ApprovalRequestResolvers<ContextType = IContext, ParentType extends 
   appliedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   applyError?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   change?: Resolver<Maybe<ResolversTypes['ApprovalChange']>, ParentType, ContextType>;
-  content?: Resolver<Maybe<ResolversTypes['ApprovalContentMeta']>, ParentType, ContextType>;
-  contentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  decisions?: Resolver<Maybe<Array<Maybe<ResolversTypes['ApprovalDecision']>>>, ParentType, ContextType>;
-  kind?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['ApprovalContentMeta'], ParentType, ContextType>;
+  contentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  decisions?: Resolver<Array<ResolversTypes['ApprovalDecision']>, ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lockId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  notificationIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  notificationIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   requester?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  requesterId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  requiredApproverIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  requiredApprovers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  requesterId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requiredApproverIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  requiredApprovers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   resolvedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ApprovalRequestsListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ApprovalRequestsList'] = ResolversParentTypes['ApprovalRequestsList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ApprovalRequest']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ApprovalRequest']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AttachmentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Attachment'] = ResolversParentTypes['Attachment']> = ResolversObject<{
@@ -8244,59 +8245,59 @@ export type AuthTokenResponseResolvers<ContextType = IContext, ParentType extend
 
 export type AutomationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Automation'] = ResolversParentTypes['Automation']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  actions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Action']>>>, ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['Action']>, ParentType, ContextType>;
   activatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   activatedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  approvalLockState?: Resolver<Maybe<ResolversTypes['ApprovalLockState']>, ParentType, ContextType, Partial<AutomationApprovalLockStateArgs>>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  approvalLockState?: Resolver<ResolversTypes['ApprovalLockState'], ParentType, ContextType, Partial<AutomationApprovalLockStateArgs>>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   duplicatedFrom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   duplicatedFromName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   edgeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   flowDirection?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  notes?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationNote']>>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes?: Resolver<Array<ResolversTypes['AutomationNote']>, ParentType, ContextType>;
   ownedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ownerContentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ownerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ownerUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  triggers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Trigger']>>>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tagIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  triggers?: Resolver<Array<ResolversTypes['Trigger']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   updatedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  workflows?: Resolver<Maybe<Array<Maybe<ResolversTypes['Workflow']>>>, ParentType, ContextType>;
+  workflows?: Resolver<Array<ResolversTypes['Workflow']>, ParentType, ContextType>;
 }>;
 
 export type AutomationHistoriesResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationHistories'] = ResolversParentTypes['AutomationHistories']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationHistory']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['AutomationHistory']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AutomationHistoryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationHistory'] = ResolversParentTypes['AutomationHistory']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  actions?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
-  automationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  depth?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['JSON']>, ParentType, ContextType>;
+  automationId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  depth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   errorCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   failedActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   failedActionType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  handledFailureActionIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  handledFailureActionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   inputs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  modifiedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  modifiedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   nextActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parentExecutionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   startWaitingDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  targetId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targetId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   triggerConfig?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  triggerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  triggerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   triggerType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   waitingActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   workflowId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8304,71 +8305,71 @@ export type AutomationHistoryResolvers<ContextType = IContext, ParentType extend
 
 export type AutomationNoteResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationNote'] = ResolversParentTypes['AutomationNote']> = ResolversObject<{
   color?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   height?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   width?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
 }>;
 
 export type AutomationStatsResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationStats'] = ResolversParentTypes['AutomationStats']> = ResolversObject<{
-  byErrorCode?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsCount']>>>, ParentType, ContextType>;
-  byStatus?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsCount']>>>, ParentType, ContextType>;
-  errorMessages?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsErrorMessage']>>>, ParentType, ContextType>;
-  nodes?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsNode']>>>, ParentType, ContextType>;
-  timeSeries?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsBucket']>>>, ParentType, ContextType>;
-  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  byErrorCode?: Resolver<Array<ResolversTypes['AutomationStatsCount']>, ParentType, ContextType>;
+  byStatus?: Resolver<Array<ResolversTypes['AutomationStatsCount']>, ParentType, ContextType>;
+  errorMessages?: Resolver<Array<ResolversTypes['AutomationStatsErrorMessage']>, ParentType, ContextType>;
+  nodes?: Resolver<Array<ResolversTypes['AutomationStatsNode']>, ParentType, ContextType>;
+  timeSeries?: Resolver<Array<ResolversTypes['AutomationStatsBucket']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AutomationStatsBucketResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationStatsBucket'] = ResolversParentTypes['AutomationStatsBucket']> = ResolversObject<{
-  complete?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  date?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  error?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  waiting?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  complete?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  error?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  waiting?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AutomationStatsCountResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationStatsCount'] = ResolversParentTypes['AutomationStatsCount']> = ResolversObject<{
-  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type AutomationStatsErrorMessageResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationStatsErrorMessage'] = ResolversParentTypes['AutomationStatsErrorMessage']> = ResolversObject<{
-  actionTypes?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  errorCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  actionTypes?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  errorCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type AutomationStatsNodeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationStatsNode'] = ResolversParentTypes['AutomationStatsNode']> = ResolversObject<{
-  actionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  actionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   actionType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avgDurationMs?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  error?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  errorCodes?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsCount']>>>, ParentType, ContextType>;
+  error?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  errorCodes?: Resolver<Array<ResolversTypes['AutomationStatsCount']>, ParentType, ContextType>;
   maxDurationMs?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  success?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  waiting?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  waiting?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type AutomationWorkflowTemplateResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationWorkflowTemplate'] = ResolversParentTypes['AutomationWorkflowTemplate']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   actions?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   entryActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   inputs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type AutomationsListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AutomationsListResponse'] = ResolversParentTypes['AutomationsListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Automation']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 }>;
 
 export type AvgEmailStatsResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['AvgEmailStats'] = ResolversParentTypes['AvgEmailStats']> = ResolversObject<{
@@ -8385,62 +8386,62 @@ export type AvgEmailStatsResolvers<ContextType = IContext, ParentType extends Re
 
 export type BranchResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Branch'] = ResolversParentTypes['Branch'], FederationReferenceType extends FederationReferenceTypes['Branch'] = FederationReferenceTypes['Branch']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Branch']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  children?: Resolver<Maybe<Array<Maybe<ResolversTypes['Branch']>>>, ParentType, ContextType>;
+  children?: Resolver<Array<ResolversTypes['Branch']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coordinate?: Resolver<Maybe<ResolversTypes['Coordinate']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  hasChildren?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  hasChildren?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   holidays?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
   links?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  order?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['Branch']>, ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   radius?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   supervisor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   supervisorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  userIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  userCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  userIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   workhours?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
 }>;
 
 export type BranchesListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BranchesListResponse'] = ResolversParentTypes['BranchesListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Branch']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Branch']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type BrandResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Brand'] = ResolversParentTypes['Brand'], FederationReferenceType extends FederationReferenceTypes['Brand'] = FederationReferenceTypes['Brand']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Brand']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailConfig?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  memberIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  memberIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type BrandListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BrandListResponse'] = ResolversParentTypes['BrandListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Brand']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type BroadcastEmailDryRunResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BroadcastEmailDryRun'] = ResolversParentTypes['BroadcastEmailDryRun']> = ResolversObject<{
-  fields?: Resolver<Maybe<Array<Maybe<ResolversTypes['BroadcastEmailFieldCoverage']>>>, ParentType, ContextType>;
+  fields?: Resolver<Maybe<Array<ResolversTypes['BroadcastEmailFieldCoverage']>>, ParentType, ContextType>;
   sampleHtml?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sampleTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sampled?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  unresolved?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  unresolved?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
 }>;
 
 export type BroadcastEmailFieldCoverageResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BroadcastEmailFieldCoverage'] = ResolversParentTypes['BroadcastEmailFieldCoverage']> = ResolversObject<{
@@ -8464,7 +8465,7 @@ export type BroadcastRecipientResolvers<ContextType = IContext, ParentType exten
 }>;
 
 export type BroadcastRecipientEmailResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BroadcastRecipientEmail'] = ResolversParentTypes['BroadcastRecipientEmail']> = ResolversObject<{
-  events?: Resolver<Maybe<Array<Maybe<ResolversTypes['BroadcastRecipientEmailEvent']>>>, ParentType, ContextType>;
+  events?: Resolver<Maybe<Array<ResolversTypes['BroadcastRecipientEmailEvent']>>, ParentType, ContextType>;
   from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   html?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8481,9 +8482,9 @@ export type BroadcastRecipientEmailEventResolvers<ContextType = IContext, Parent
 }>;
 
 export type BroadcastRecipientListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BroadcastRecipientListResponse'] = ResolversParentTypes['BroadcastRecipientListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['BroadcastRecipient']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['BroadcastRecipient']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type BroadcastRunResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BroadcastRun'] = ResolversParentTypes['BroadcastRun']> = ResolversObject<{
@@ -8509,7 +8510,7 @@ export type BundleConditionResolvers<ContextType = IContext, ParentType extends 
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['BundleCondition']> | FederationReferenceType, FederationReferenceType, ContextType>;
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isDefault?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8520,23 +8521,23 @@ export type BundleRuleResolvers<ContextType = IContext, ParentType extends Resol
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['BundleRule']> | FederationReferenceType, FederationReferenceType, ContextType>;
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  rules?: Resolver<Maybe<Array<Maybe<ResolversTypes['BundleRuleItem']>>>, ParentType, ContextType>;
+  rules?: Resolver<Array<ResolversTypes['BundleRuleItem']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type BundleRuleItemResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BundleRuleItem'] = ResolversParentTypes['BundleRuleItem']> = ResolversObject<{
-  allowSkip?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  allowSkip?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   percent?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   priceAdjustFactor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   priceAdjustType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   priceType?: Resolver<Maybe<ResolversTypes['PriceType']>, ParentType, ContextType>;
   priceValue?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  productIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  productIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
   quantity?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
@@ -8604,18 +8605,18 @@ export type CpUnitResolvers<ContextType = IContext, ParentType extends Resolvers
   department?: Resolver<Maybe<ResolversTypes['CPUnitDepartment']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPUnitUser']>>>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['CPUnitUser']>, ParentType, ContextType>;
 }>;
 
 export type CpUnitDepartmentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPUnitDepartment'] = ResolversParentTypes['CPUnitDepartment']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type CpUnitUserResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CPUnitUser'] = ResolversParentTypes['CPUnitUser']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   details?: Resolver<Maybe<ResolversTypes['CPUnitUserDetails']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8701,35 +8702,35 @@ export type ClientPortalListResponseResolvers<ContextType = IContext, ParentType
 }>;
 
 export type CompaniesListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CompaniesListResponse'] = ResolversParentTypes['CompaniesListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Company']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CompanyResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company'], FederationReferenceType extends FederationReferenceTypes['Company'] = FederationReferenceTypes['Company']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Company']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   addresses?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  customers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Customer']>>>, ParentType, ContextType>;
+  customers?: Resolver<Array<ResolversTypes['Customer']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  emails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  getTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
-  industry?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  isSubscribed?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  links?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  emails?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  getTags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
+  industry?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  isSubscribed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  mergedIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  names?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  mergedIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  names?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   ownerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parentCompany?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType>;
   parentCompanyId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phones?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  phones?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   primaryAddress?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   primaryEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   primaryName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8737,10 +8738,10 @@ export type CompanyResolvers<ContextType = IContext, ParentType extends Resolver
   propertiesData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   score?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   trackedData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -8769,18 +8770,18 @@ export type CoordinateResolvers<ContextType = IContext, ParentType extends Resol
 }>;
 
 export type CoreModulesGlobalSearchResultResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CoreModulesGlobalSearchResult'] = ResolversParentTypes['CoreModulesGlobalSearchResult']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['GlobalSearchResultItem']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['GlobalSearchResultItem']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type CurrentUserPermissionsResultResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CurrentUserPermissionsResult'] = ResolversParentTypes['CurrentUserPermissionsResult']> = ResolversObject<{
-  permissions?: Resolver<Array<Maybe<ResolversTypes['UserPermission']>>, ParentType, ContextType>;
-  pluginsWithPermissions?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  permissions?: Resolver<Array<ResolversTypes['UserPermission']>, ParentType, ContextType>;
+  pluginsWithPermissions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type CustomPermissionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CustomPermission'] = ResolversParentTypes['CustomPermission']> = ResolversObject<{
-  actions?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   module?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   plugin?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scope?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -8788,37 +8789,37 @@ export type CustomPermissionResolvers<ContextType = IContext, ParentType extends
 
 export type CustomerResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Customer'] = ResolversParentTypes['Customer'], FederationReferenceType extends FederationReferenceTypes['Customer'] = FederationReferenceTypes['Customer']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Customer']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   addresses?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   birthDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   clientPortalId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  companies?: Resolver<Maybe<Array<Maybe<ResolversTypes['Company']>>>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  companies?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  emailValidationStatus?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  emails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  emailValidationStatus?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  emails?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  getTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
-  hasAuthority?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  getTags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
+  hasAuthority?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   integrationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isOnline?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isSubscribed?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isSubscribed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastSeenAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   leadStatus?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  links?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  links?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   middleName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   ownerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phoneValidationStatus?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phones?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  phoneValidationStatus?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  phones?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   primaryAddress?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   primaryEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8827,20 +8828,20 @@ export type CustomerResolvers<ContextType = IContext, ParentType extends Resolve
   remoteAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   score?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   sessionCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  sex?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   trackedData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   urlVisits?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
   visitorContactInfo?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
 }>;
 
 export type CustomersListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CustomersListResponse'] = ResolversParentTypes['CustomersListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Customer']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Customer']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -8850,15 +8851,15 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type DefaultPermissionGroupResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DefaultPermissionGroup'] = ResolversParentTypes['DefaultPermissionGroup']> = ResolversObject<{
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  permissions?: Resolver<Array<Maybe<ResolversTypes['PermissionGroupPermission']>>, ParentType, ContextType>;
+  permissions?: Resolver<Array<ResolversTypes['PermissionGroupPermission']>, ParentType, ContextType>;
   plugin?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type DeliveryListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DeliveryList'] = ResolversParentTypes['DeliveryList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['SmsDelivery']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['SmsDelivery']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type DeliveryReportResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DeliveryReport'] = ResolversParentTypes['DeliveryReport']> = ResolversObject<{
@@ -8874,28 +8875,28 @@ export type DeliveryReportResolvers<ContextType = IContext, ParentType extends R
 
 export type DepartmentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Department'] = ResolversParentTypes['Department'], FederationReferenceType extends FederationReferenceTypes['Department'] = FederationReferenceTypes['Department']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Department']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  childCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  children?: Resolver<Maybe<Array<Maybe<ResolversTypes['Department']>>>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  childCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  children?: Resolver<Array<ResolversTypes['Department']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  order?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['Department']>, ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   supervisor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   supervisorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  userIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  userCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  userIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   workhours?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
 }>;
 
 export type DepartmentsListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DepartmentsListResponse'] = ResolversParentTypes['DepartmentsListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Department']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Department']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type DocumentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
@@ -8904,13 +8905,13 @@ export type DocumentResolvers<ContextType = IContext, ParentType extends Resolve
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   replacer?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
 }>;
 
 export type DocumentEditorAttributeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DocumentEditorAttribute'] = ResolversParentTypes['DocumentEditorAttribute']> = ResolversObject<{
@@ -8920,9 +8921,9 @@ export type DocumentEditorAttributeResolvers<ContextType = IContext, ParentType 
 }>;
 
 export type DocumentListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DocumentListResponse'] = ResolversParentTypes['DocumentListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Document']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type DocumentsTypesResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['DocumentsTypes'] = ResolversParentTypes['DocumentsTypes']> = ResolversObject<{
@@ -8937,77 +8938,77 @@ export type EnvResolvers<ContextType = IContext, ParentType extends ResolversPar
 }>;
 
 export type EmailAddressResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailAddress'] = ResolversParentTypes['EmailAddress']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  deliveredCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  lane?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  deliveredCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lane?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastDeliveredAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   lastSentAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   lastSoftBounceAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   releaseNote?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   releasedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   releasedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  softBounceCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  softBounceCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   suppressedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   suppressedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   suppressionReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type EmailAddressesListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailAddressesList'] = ResolversParentTypes['EmailAddressesList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['EmailAddress']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['EmailAddress']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EmailDeliveriesListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailDeliveriesList'] = ResolversParentTypes['EmailDeliveriesList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['EmailDelivery']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['EmailDelivery']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EmailDeliveryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailDelivery'] = ResolversParentTypes['EmailDelivery']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  bounced?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  ccEmails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  clicked?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  complained?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bounced?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  ccEmails?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  clicked?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  complained?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   deliveryStatus?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deliveryStatusAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messageId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   notificationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  opened?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  opened?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   providerResponse?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  rejected?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  rejected?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   sentAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sourceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  subject?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  toEmails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subject?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  toEmails?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type EmailRampStatusResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailRampStatus'] = ResolversParentTypes['EmailRampStatus']> = ResolversObject<{
-  advanceRate?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  dailyBudget?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  dropRate?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  haltRate?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  advanceRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  dailyBudget?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  dropRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  haltRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   haltReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   haltedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   lastEvaluatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   lastRate?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  tier?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  tiers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
-  usedToday?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  windowDays?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  tier?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tiers?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
+  usedToday?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  windowDays?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EmailSenderResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailSender'] = ResolversParentTypes['EmailSender']> = ResolversObject<{
@@ -9023,7 +9024,7 @@ export type EmailSenderOptionsResolvers<ContextType = IContext, ParentType exten
   defaultSenderEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   provider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sameAsMailConfig?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  senders?: Resolver<Maybe<Array<Maybe<ResolversTypes['EmailSender']>>>, ParentType, ContextType>;
+  senders?: Resolver<Maybe<Array<ResolversTypes['EmailSender']>>, ParentType, ContextType>;
   supportsDynamicSender?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   supportsSenderVerification?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 }>;
@@ -9033,18 +9034,18 @@ export type EmailTemplateResolvers<ContextType = IContext, ParentType extends Re
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentFormat?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentJson?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type EmailTemplatesListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EmailTemplatesListResponse'] = ResolversParentTypes['EmailTemplatesListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['EmailTemplate']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['EmailTemplate']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 }>;
 
 export type EngageCalendarEntryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageCalendarEntry'] = ResolversParentTypes['EngageCalendarEntry']> = ResolversObject<{
@@ -9059,54 +9060,54 @@ export type EngageCalendarEntryResolvers<ContextType = IContext, ParentType exte
 }>;
 
 export type EngageDeliveryReportResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageDeliveryReport'] = ResolversParentTypes['EngageDeliveryReport']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['DeliveryReport']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['DeliveryReport']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EngageMemberListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageMemberListResponse'] = ResolversParentTypes['EngageMemberListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EngageMessageResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageMessage'] = ResolversParentTypes['EngageMessage']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   approvalLockState?: Resolver<Maybe<ResolversTypes['ApprovalLockState']>, ParentType, ContextType, Partial<EngageMessageApprovalLockStateArgs>>;
   brandId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  brandIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  brands?: Resolver<Maybe<Array<Maybe<ResolversTypes['Brand']>>>, ParentType, ContextType>;
+  brandIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  brands?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
   cpId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  customerIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  customerTagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  customerTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
+  customerIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  customerTagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  customerTags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   fromEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fromIntegration?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   fromUserId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  getTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
+  getTags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   isDraft?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isLive?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   kind?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastRunAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   messenger?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  messengerReceivedCustomerIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  messengerReceivedCustomerIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   method?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nextRunAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   notification?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   progress?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   runCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   scheduleDate?: Resolver<Maybe<ResolversTypes['EngageScheduleDate']>, ParentType, ContextType>;
-  segmentIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  segments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Segment']>>>, ParentType, ContextType>;
+  segmentIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  segments?: Resolver<Array<ResolversTypes['Segment']>, ParentType, ContextType>;
   shortMessage?: Resolver<Maybe<ResolversTypes['EngageMessageSms']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stopDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   targetCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  targetIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  targetIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   targetType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   totalCustomersCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -9116,9 +9117,9 @@ export type EngageMessageResolvers<ContextType = IContext, ParentType extends Re
 }>;
 
 export type EngageMessageListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageMessageListResponse'] = ResolversParentTypes['EngageMessageListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['EngageMessage']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['EngageMessage']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type EngageMessageSmsResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['EngageMessageSms'] = ResolversParentTypes['EngageMessageSms']> = ResolversObject<{
@@ -9149,45 +9150,45 @@ export type EntityResolvers<ContextType = IContext, ParentType extends Resolvers
 }>;
 
 export type ExportResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Export'] = ResolversParentTypes['Export']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  collectionName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  collectionName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   completedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   elapsedSeconds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  entityType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   estimatedSecondsRemaining?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   fileKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  fileName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fileName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   filters?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  ids?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  ids?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   jobId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  moduleName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pluginName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  processedRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  moduleName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pluginName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  processedRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   progress?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rowsPerSecond?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  selectedFields?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  selectedFields?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  subdomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  totalRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subdomain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  totalRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ExportHeaderResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ExportHeader'] = ResolversParentTypes['ExportHeader']> = ResolversObject<{
   isDefault?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type ExportHistoryListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ExportHistoryList'] = ResolversParentTypes['ExportHistoryList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Export']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Export']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type FacebookOAuthConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FacebookOAuthConfig'] = ResolversParentTypes['FacebookOAuthConfig']> = ResolversObject<{
@@ -9198,7 +9199,7 @@ export type FacebookOAuthConfigResolvers<ContextType = IContext, ParentType exte
 
 export type FavoriteResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Favorite'] = ResolversParentTypes['Favorite']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  breadcrumb?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  breadcrumb?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   path?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
@@ -9210,58 +9211,58 @@ export type FcmDeviceResolvers<ContextType = IContext, ParentType extends Resolv
 }>;
 
 export type FieldResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Field'] = ResolversParentTypes['Field']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   configs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  groupId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  groupId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  isRequired?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isVisible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isVisibleInCard?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isVisibleToCreate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isRequired?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isVisibleInCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isVisibleToCreate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   logics?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  options?: Resolver<Maybe<Array<Maybe<ResolversTypes['FieldOption']>>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  options?: Resolver<Maybe<Array<ResolversTypes['FieldOption']>>, ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   validations?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
 }>;
 
 export type FieldGroupResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FieldGroup'] = ResolversParentTypes['FieldGroup']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   configs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   logics?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type FieldGroupListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FieldGroupListResponse'] = ResolversParentTypes['FieldGroupListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['FieldGroup']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['FieldGroup']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type FieldListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FieldListResponse'] = ResolversParentTypes['FieldListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Field']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Field']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type FieldOptionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FieldOption'] = ResolversParentTypes['FieldOption']> = ResolversObject<{
   coordinates?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type FileUploadServiceInfoResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FileUploadServiceInfo'] = ResolversParentTypes['FileUploadServiceInfo']> = ResolversObject<{
-  videoUploadEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  videoUploadEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 }>;
 
 export type FirebaseConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['FirebaseConfig'] = ResolversParentTypes['FirebaseConfig']> = ResolversObject<{
@@ -9290,44 +9291,44 @@ export type GoogleOAuthConfigResolvers<ContextType = IContext, ParentType extend
 }>;
 
 export type ImportResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Import'] = ResolversParentTypes['Import']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  collectionName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  columnMapping?: Resolver<Maybe<Array<Maybe<ResolversTypes['ImportColumnMapping']>>>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  collectionName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  columnMapping?: Resolver<Array<ResolversTypes['ImportColumnMapping']>, ParentType, ContextType>;
   completedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   elapsedSeconds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  entityType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   errorFileUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  errorRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  errorRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   estimatedSecondsRemaining?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  fileKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  fileName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  importedIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  fileKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fileName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  importedIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   jobId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  moduleName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pluginName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  processedRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  moduleName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pluginName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  processedRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   progress?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rowsPerSecond?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  subdomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  successRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  totalRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subdomain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  successRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ImportColumnMappingResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportColumnMapping'] = ResolversParentTypes['ImportColumnMapping']> = ResolversObject<{
-  header?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  header?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ImportColumnPreviewResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportColumnPreview'] = ResolversParentTypes['ImportColumnPreview']> = ResolversObject<{
-  columns?: Resolver<Maybe<Array<Maybe<ResolversTypes['ImportPreviewColumn']>>>, ParentType, ContextType>;
-  fields?: Resolver<Maybe<Array<Maybe<ResolversTypes['ImportPreviewField']>>>, ParentType, ContextType>;
-  totalRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  columns?: Resolver<Array<ResolversTypes['ImportPreviewColumn']>, ParentType, ContextType>;
+  fields?: Resolver<Array<ResolversTypes['ImportPreviewField']>, ParentType, ContextType>;
+  totalRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ImportExportTypeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportExportType'] = ResolversParentTypes['ImportExportType']> = ResolversObject<{
@@ -9337,28 +9338,28 @@ export type ImportExportTypeResolvers<ContextType = IContext, ParentType extends
 }>;
 
 export type ImportHistoryListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportHistoryList'] = ResolversParentTypes['ImportHistoryList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Import']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Import']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ImportPreviewColumnResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportPreviewColumn'] = ResolversParentTypes['ImportPreviewColumn']> = ResolversObject<{
-  confidence?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  header?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  confidence?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  header?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  sampleValues?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sampleValues?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ImportPreviewFieldResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ImportPreviewField'] = ResolversParentTypes['ImportPreviewField']> = ResolversObject<{
-  dataType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  example?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  options?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  required?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  dataType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  example?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  options?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  required?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type InternalNoteResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['InternalNote'] = ResolversParentTypes['InternalNote']> = ResolversObject<{
@@ -9366,14 +9367,14 @@ export type InternalNoteResolvers<ContextType = IContext, ParentType extends Res
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contentTypeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdUserId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type InternalNotesByActionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['InternalNotesByAction'] = ResolversParentTypes['InternalNotesByAction']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ModifiedNote']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ModifiedNote']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
@@ -9381,17 +9382,17 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type LogResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Log'] = ResolversParentTypes['Log']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   payload?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   prevObject?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   processId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -9410,9 +9411,9 @@ export type MailConfigResolvers<ContextType = IContext, ParentType extends Resol
 }>;
 
 export type MainLogsListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['MainLogsList'] = ResolversParentTypes['MainLogsList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Log']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Log']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ManualVerificationConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ManualVerificationConfig'] = ResolversParentTypes['ManualVerificationConfig']> = ResolversObject<{
@@ -9428,7 +9429,7 @@ export type ModifiedNoteResolvers<ContextType = IContext, ParentType extends Res
   contentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contentTypeDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -9439,48 +9440,48 @@ export type MultiFactorConfigResolvers<ContextType = IContext, ParentType extend
 }>;
 
 export type MutationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  approvalLockCreate?: Resolver<Maybe<ResolversTypes['ApprovalLock']>, ParentType, ContextType, RequireFields<MutationApprovalLockCreateArgs, 'input'>>;
-  approvalLockForceRelease?: Resolver<Maybe<ResolversTypes['ApprovalLock']>, ParentType, ContextType, RequireFields<MutationApprovalLockForceReleaseArgs, '_id' | 'reason'>>;
-  approvalLockRelease?: Resolver<Maybe<ResolversTypes['ApprovalLock']>, ParentType, ContextType, RequireFields<MutationApprovalLockReleaseArgs, '_id'>>;
-  approvalRequestApprove?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<MutationApprovalRequestApproveArgs, '_id'>>;
-  approvalRequestCancel?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<MutationApprovalRequestCancelArgs, '_id'>>;
-  approvalRequestCreate?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<MutationApprovalRequestCreateArgs, 'input'>>;
-  approvalRequestReject?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<MutationApprovalRequestRejectArgs, '_id'>>;
-  appsAdd?: Resolver<Maybe<ResolversTypes['App']>, ParentType, ContextType, RequireFields<MutationAppsAddArgs, 'name'>>;
+  approvalLockCreate?: Resolver<ResolversTypes['ApprovalLock'], ParentType, ContextType, RequireFields<MutationApprovalLockCreateArgs, 'input'>>;
+  approvalLockForceRelease?: Resolver<ResolversTypes['ApprovalLock'], ParentType, ContextType, RequireFields<MutationApprovalLockForceReleaseArgs, '_id' | 'reason'>>;
+  approvalLockRelease?: Resolver<ResolversTypes['ApprovalLock'], ParentType, ContextType, RequireFields<MutationApprovalLockReleaseArgs, '_id'>>;
+  approvalRequestApprove?: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<MutationApprovalRequestApproveArgs, '_id'>>;
+  approvalRequestCancel?: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<MutationApprovalRequestCancelArgs, '_id'>>;
+  approvalRequestCreate?: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<MutationApprovalRequestCreateArgs, 'input'>>;
+  approvalRequestReject?: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<MutationApprovalRequestRejectArgs, '_id'>>;
+  appsAdd?: Resolver<ResolversTypes['App'], ParentType, ContextType, RequireFields<MutationAppsAddArgs, 'name'>>;
   appsEdit?: Resolver<Maybe<ResolversTypes['App']>, ParentType, ContextType, RequireFields<MutationAppsEditArgs, '_id'>>;
-  appsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationAppsRemoveArgs, '_id'>>;
+  appsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationAppsRemoveArgs, '_id'>>;
   appsRevoke?: Resolver<Maybe<ResolversTypes['App']>, ParentType, ContextType, RequireFields<MutationAppsRevokeArgs, '_id'>>;
-  archiveAutomations?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, Partial<MutationArchiveAutomationsArgs>>;
-  archiveNotification?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationArchiveNotificationArgs, '_id'>>;
-  archiveNotifications?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationArchiveNotificationsArgs>>;
-  automationWorkflowTemplatesAdd?: Resolver<Maybe<ResolversTypes['AutomationWorkflowTemplate']>, ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesAddArgs, 'name'>>;
-  automationWorkflowTemplatesEdit?: Resolver<Maybe<ResolversTypes['AutomationWorkflowTemplate']>, ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesEditArgs, '_id'>>;
-  automationWorkflowTemplatesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesRemoveArgs, '_id'>>;
-  automationsAdd?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, Partial<MutationAutomationsAddArgs>>;
-  automationsAiAgentAdd?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationAutomationsAiAgentAddArgs>>;
-  automationsAiAgentEdit?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationAutomationsAiAgentEditArgs, '_id'>>;
-  automationsAiAgentReindex?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationAutomationsAiAgentReindexArgs, '_id'>>;
-  automationsAiAgentRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationAutomationsAiAgentRemoveArgs, '_id'>>;
+  archiveAutomations?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationArchiveAutomationsArgs, 'automationIds'>>;
+  archiveNotification?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationArchiveNotificationArgs, '_id'>>;
+  archiveNotifications?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationArchiveNotificationsArgs>>;
+  automationWorkflowTemplatesAdd?: Resolver<ResolversTypes['AutomationWorkflowTemplate'], ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesAddArgs, 'name'>>;
+  automationWorkflowTemplatesEdit?: Resolver<ResolversTypes['AutomationWorkflowTemplate'], ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesEditArgs, '_id'>>;
+  automationWorkflowTemplatesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationAutomationWorkflowTemplatesRemoveArgs, '_id'>>;
+  automationsAdd?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, Partial<MutationAutomationsAddArgs>>;
+  automationsAiAgentAdd?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationAutomationsAiAgentAddArgs>>;
+  automationsAiAgentEdit?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationAutomationsAiAgentEditArgs, '_id'>>;
+  automationsAiAgentReindex?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationAutomationsAiAgentReindexArgs, '_id'>>;
+  automationsAiAgentRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationAutomationsAiAgentRemoveArgs, '_id'>>;
   automationsCreateFromTemplate?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, Partial<MutationAutomationsCreateFromTemplateArgs>>;
-  automationsDuplicate?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<MutationAutomationsDuplicateArgs, '_id'>>;
-  automationsEdit?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, Partial<MutationAutomationsEditArgs>>;
-  automationsRemove?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, Partial<MutationAutomationsRemoveArgs>>;
+  automationsDuplicate?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationAutomationsDuplicateArgs, '_id'>>;
+  automationsEdit?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<MutationAutomationsEditArgs, '_id'>>;
+  automationsRemove?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAutomationsRemoveArgs, 'automationIds'>>;
   automationsSaveAsTemplate?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<MutationAutomationsSaveAsTemplateArgs, '_id'>>;
-  branchesAdd?: Resolver<Maybe<ResolversTypes['Branch']>, ParentType, ContextType, Partial<MutationBranchesAddArgs>>;
+  branchesAdd?: Resolver<ResolversTypes['Branch'], ParentType, ContextType, Partial<MutationBranchesAddArgs>>;
   branchesEdit?: Resolver<Maybe<ResolversTypes['Branch']>, ParentType, ContextType, RequireFields<MutationBranchesEditArgs, '_id'>>;
-  branchesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationBranchesRemoveArgs>>;
-  brandsAdd?: Resolver<Maybe<ResolversTypes['Brand']>, ParentType, ContextType, RequireFields<MutationBrandsAddArgs, 'name'>>;
+  branchesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationBranchesRemoveArgs, 'ids'>>;
+  brandsAdd?: Resolver<ResolversTypes['Brand'], ParentType, ContextType, RequireFields<MutationBrandsAddArgs, 'name'>>;
   brandsEdit?: Resolver<Maybe<ResolversTypes['Brand']>, ParentType, ContextType, RequireFields<MutationBrandsEditArgs, '_id' | 'name'>>;
-  brandsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationBrandsRemoveArgs>>;
-  broadcastUpdateConfigs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationBroadcastUpdateConfigsArgs, 'configsMap'>>;
-  bundleConditionAdd?: Resolver<Maybe<ResolversTypes['BundleCondition']>, ParentType, ContextType, Partial<MutationBundleConditionAddArgs>>;
-  bundleConditionDefault?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationBundleConditionDefaultArgs, '_id'>>;
+  brandsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationBrandsRemoveArgs, '_ids'>>;
+  broadcastUpdateConfigs?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationBroadcastUpdateConfigsArgs, 'configsMap'>>;
+  bundleConditionAdd?: Resolver<ResolversTypes['BundleCondition'], ParentType, ContextType, Partial<MutationBundleConditionAddArgs>>;
+  bundleConditionDefault?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationBundleConditionDefaultArgs, '_id'>>;
   bundleConditionEdit?: Resolver<Maybe<ResolversTypes['BundleCondition']>, ParentType, ContextType, RequireFields<MutationBundleConditionEditArgs, '_id'>>;
-  bundleConditionRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationBundleConditionRemoveArgs>>;
-  bundleConditionSetBulk?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationBundleConditionSetBulkArgs, 'bundleId'>>;
-  bundleRulesAdd?: Resolver<Maybe<ResolversTypes['BundleRule']>, ParentType, ContextType, Partial<MutationBundleRulesAddArgs>>;
+  bundleConditionRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationBundleConditionRemoveArgs>>;
+  bundleConditionSetBulk?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationBundleConditionSetBulkArgs, 'bundleId' | 'productIds'>>;
+  bundleRulesAdd?: Resolver<ResolversTypes['BundleRule'], ParentType, ContextType, Partial<MutationBundleRulesAddArgs>>;
   bundleRulesEdit?: Resolver<Maybe<ResolversTypes['BundleRule']>, ParentType, ContextType, RequireFields<MutationBundleRulesEditArgs, '_id'>>;
-  bundleRulesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationBundleRulesRemoveArgs>>;
+  bundleRulesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationBundleRulesRemoveArgs>>;
   checkTokiUserLegalAge?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCheckTokiUserLegalAgeArgs, 'token'>>;
   clientPortalAdd?: Resolver<Maybe<ResolversTypes['ClientPortal']>, ParentType, ContextType, RequireFields<MutationClientPortalAddArgs, 'name'>>;
   clientPortalChangeToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationClientPortalChangeTokenArgs, '_id'>>;
@@ -9517,181 +9518,181 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   clientPortalUserResetPassword?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationClientPortalUserResetPasswordArgs, 'newPassword'>>;
   clientPortalUserUnlinkSocialAccount?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserUnlinkSocialAccountArgs, 'provider'>>;
   clientPortalUserVerify?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationClientPortalUserVerifyArgs, 'code'>>;
-  companiesAdd?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, Partial<MutationCompaniesAddArgs>>;
+  companiesAdd?: Resolver<ResolversTypes['Company'], ParentType, ContextType, Partial<MutationCompaniesAddArgs>>;
   companiesEdit?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<MutationCompaniesEditArgs, '_id'>>;
-  companiesMerge?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, Partial<MutationCompaniesMergeArgs>>;
-  companiesRemove?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, Partial<MutationCompaniesRemoveArgs>>;
+  companiesMerge?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<MutationCompaniesMergeArgs, 'companyIds'>>;
+  companiesRemove?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationCompaniesRemoveArgs, 'companyIds'>>;
   configsActivateInstallation?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationConfigsActivateInstallationArgs, 'hostname' | 'token'>>;
   configsManagePluginInstall?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationConfigsManagePluginInstallArgs, 'name' | 'type'>>;
-  configsUpdate?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationConfigsUpdateArgs, 'configsMap'>>;
-  conformityAdd?: Resolver<Maybe<ResolversTypes['Conformity']>, ParentType, ContextType, Partial<MutationConformityAddArgs>>;
-  conformityEdit?: Resolver<Maybe<ResolversTypes['SuccessResult']>, ParentType, ContextType, Partial<MutationConformityEditArgs>>;
-  cpCustomersAdd?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, Partial<MutationCpCustomersAddArgs>>;
-  cpManageRelations?: Resolver<Maybe<Array<ResolversTypes['Relation']>>, ParentType, ContextType, RequireFields<MutationCpManageRelationsArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
-  cpTagsAdd?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<MutationCpTagsAddArgs, 'name'>>;
+  configsUpdate?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationConfigsUpdateArgs, 'configsMap'>>;
+  conformityAdd?: Resolver<ResolversTypes['Conformity'], ParentType, ContextType, RequireFields<MutationConformityAddArgs, 'mainType' | 'mainTypeId' | 'relType' | 'relTypeId'>>;
+  conformityEdit?: Resolver<Maybe<ResolversTypes['SuccessResult']>, ParentType, ContextType, RequireFields<MutationConformityEditArgs, 'mainType' | 'mainTypeId' | 'relType'>>;
+  cpCustomersAdd?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, Partial<MutationCpCustomersAddArgs>>;
+  cpManageRelations?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<MutationCpManageRelationsArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
+  cpTagsAdd?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCpTagsAddArgs, 'name'>>;
   cpTagsTag?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationCpTagsTagArgs, 'tagIds' | 'targetIds' | 'type'>>;
   cpUsersAdd?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersAddArgs, 'clientPortalId'>>;
   cpUsersEdit?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersEditArgs, '_id'>>;
   cpUsersRemove?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, RequireFields<MutationCpUsersRemoveArgs, 'ids'>>;
   cpUsersSetPassword?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<MutationCpUsersSetPasswordArgs, '_id' | 'newPassword'>>;
-  createMultipleRelations?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationCreateMultipleRelationsArgs, 'relations'>>;
+  createMultipleRelations?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationCreateMultipleRelationsArgs, 'relations'>>;
   createRelation?: Resolver<ResolversTypes['Relation'], ParentType, ContextType, RequireFields<MutationCreateRelationArgs, 'relation'>>;
-  customersAdd?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, Partial<MutationCustomersAddArgs>>;
+  customersAdd?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, Partial<MutationCustomersAddArgs>>;
   customersChangeState?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<MutationCustomersChangeStateArgs, '_id' | 'value'>>;
-  customersChangeStateBulk?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationCustomersChangeStateBulkArgs, '_ids' | 'value'>>;
-  customersChangeVerificationStatus?: Resolver<Maybe<Array<Maybe<ResolversTypes['Customer']>>>, ParentType, ContextType, RequireFields<MutationCustomersChangeVerificationStatusArgs, 'status' | 'type'>>;
+  customersChangeStateBulk?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationCustomersChangeStateBulkArgs, '_ids' | 'value'>>;
+  customersChangeVerificationStatus?: Resolver<Array<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<MutationCustomersChangeVerificationStatusArgs, 'customerIds' | 'status' | 'type'>>;
   customersEdit?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<MutationCustomersEditArgs, '_id'>>;
-  customersMerge?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, Partial<MutationCustomersMergeArgs>>;
-  customersRemove?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, Partial<MutationCustomersRemoveArgs>>;
-  customersVerify?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationCustomersVerifyArgs, 'verificationType'>>;
+  customersMerge?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<MutationCustomersMergeArgs, 'customerIds'>>;
+  customersRemove?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationCustomersRemoveArgs, 'customerIds'>>;
+  customersVerify?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationCustomersVerifyArgs, 'verificationType'>>;
   deleteRelation?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteRelationArgs, 'id'>>;
-  departmentsAdd?: Resolver<Maybe<ResolversTypes['Department']>, ParentType, ContextType, Partial<MutationDepartmentsAddArgs>>;
+  departmentsAdd?: Resolver<ResolversTypes['Department'], ParentType, ContextType, Partial<MutationDepartmentsAddArgs>>;
   departmentsEdit?: Resolver<Maybe<ResolversTypes['Department']>, ParentType, ContextType, RequireFields<MutationDepartmentsEditArgs, '_id'>>;
-  departmentsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationDepartmentsRemoveArgs>>;
+  departmentsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationDepartmentsRemoveArgs, 'ids'>>;
   documentsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationDocumentsRemoveArgs, '_id'>>;
   documentsSave?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<MutationDocumentsSaveArgs, 'name'>>;
   editOrganizationDomain?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, Partial<MutationEditOrganizationDomainArgs>>;
   editOrganizationInfo?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, Partial<MutationEditOrganizationInfoArgs>>;
-  emailAddressRelease?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationEmailAddressReleaseArgs, 'email' | 'note'>>;
-  emailRampRelease?: Resolver<Maybe<ResolversTypes['EmailRampStatus']>, ParentType, ContextType, RequireFields<MutationEmailRampReleaseArgs, 'note'>>;
-  emailTemplateAdd?: Resolver<Maybe<ResolversTypes['EmailTemplate']>, ParentType, ContextType, RequireFields<MutationEmailTemplateAddArgs, 'name'>>;
+  emailAddressRelease?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationEmailAddressReleaseArgs, 'email' | 'note'>>;
+  emailRampRelease?: Resolver<ResolversTypes['EmailRampStatus'], ParentType, ContextType, RequireFields<MutationEmailRampReleaseArgs, 'note'>>;
+  emailTemplateAdd?: Resolver<ResolversTypes['EmailTemplate'], ParentType, ContextType, RequireFields<MutationEmailTemplateAddArgs, 'name'>>;
   emailTemplateEdit?: Resolver<Maybe<ResolversTypes['EmailTemplate']>, ParentType, ContextType, RequireFields<MutationEmailTemplateEditArgs, '_id' | 'name'>>;
-  emailTemplateRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationEmailTemplateRemoveArgs, '_id'>>;
-  engageMessageAdd?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, Partial<MutationEngageMessageAddArgs>>;
-  engageMessageCancelSchedule?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageCancelScheduleArgs, '_id'>>;
-  engageMessageCopy?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageCopyArgs, '_id'>>;
+  emailTemplateRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationEmailTemplateRemoveArgs, '_id'>>;
+  engageMessageAdd?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, Partial<MutationEngageMessageAddArgs>>;
+  engageMessageCancelSchedule?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageCancelScheduleArgs, '_id'>>;
+  engageMessageCopy?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageCopyArgs, '_id'>>;
   engageMessageEdit?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageEditArgs, '_id'>>;
-  engageMessageRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationEngageMessageRemoveArgs>>;
-  engageMessageRemoveVerifiedEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationEngageMessageRemoveVerifiedEmailArgs, 'email'>>;
-  engageMessageSendTestEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationEngageMessageSendTestEmailArgs, 'content' | 'from' | 'title' | 'to'>>;
-  engageMessageSetLive?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageSetLiveArgs, '_id'>>;
-  engageMessageSetLiveManual?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageSetLiveManualArgs, '_id'>>;
-  engageMessageSetPause?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageSetPauseArgs, '_id'>>;
-  engageMessageSetSchedule?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, RequireFields<MutationEngageMessageSetScheduleArgs, '_id'>>;
-  engageMessageVerifyEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationEngageMessageVerifyEmailArgs, 'email'>>;
+  engageMessageRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationEngageMessageRemoveArgs, '_ids'>>;
+  engageMessageRemoveVerifiedEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationEngageMessageRemoveVerifiedEmailArgs, 'email'>>;
+  engageMessageSendTestEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationEngageMessageSendTestEmailArgs, 'content' | 'from' | 'title' | 'to'>>;
+  engageMessageSetLive?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageSetLiveArgs, '_id'>>;
+  engageMessageSetLiveManual?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageSetLiveManualArgs, '_id'>>;
+  engageMessageSetPause?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageSetPauseArgs, '_id'>>;
+  engageMessageSetSchedule?: Resolver<ResolversTypes['EngageMessage'], ParentType, ContextType, RequireFields<MutationEngageMessageSetScheduleArgs, '_id'>>;
+  engageMessageVerifyEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationEngageMessageVerifyEmailArgs, 'email'>>;
   engageSendMail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationEngageSendMailArgs, 'from' | 'subject' | 'to'>>;
-  engagesUpdateConfigs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationEngagesUpdateConfigsArgs, 'configsMap'>>;
-  exportCancel?: Resolver<Maybe<ResolversTypes['Export']>, ParentType, ContextType, RequireFields<MutationExportCancelArgs, 'exportId'>>;
-  exportRetry?: Resolver<Maybe<ResolversTypes['Export']>, ParentType, ContextType, RequireFields<MutationExportRetryArgs, 'exportId'>>;
-  exportStart?: Resolver<Maybe<ResolversTypes['Export']>, ParentType, ContextType, RequireFields<MutationExportStartArgs, 'entityType'>>;
-  fieldAdd?: Resolver<Maybe<ResolversTypes['Field']>, ParentType, ContextType, Partial<MutationFieldAddArgs>>;
+  engagesUpdateConfigs?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationEngagesUpdateConfigsArgs, 'configsMap'>>;
+  exportCancel?: Resolver<ResolversTypes['Export'], ParentType, ContextType, RequireFields<MutationExportCancelArgs, 'exportId'>>;
+  exportRetry?: Resolver<ResolversTypes['Export'], ParentType, ContextType, RequireFields<MutationExportRetryArgs, 'exportId'>>;
+  exportStart?: Resolver<ResolversTypes['Export'], ParentType, ContextType, RequireFields<MutationExportStartArgs, 'entityType'>>;
+  fieldAdd?: Resolver<ResolversTypes['Field'], ParentType, ContextType, Partial<MutationFieldAddArgs>>;
   fieldEdit?: Resolver<Maybe<ResolversTypes['Field']>, ParentType, ContextType, RequireFields<MutationFieldEditArgs, '_id'>>;
-  fieldGroupAdd?: Resolver<Maybe<ResolversTypes['FieldGroup']>, ParentType, ContextType, Partial<MutationFieldGroupAddArgs>>;
+  fieldGroupAdd?: Resolver<ResolversTypes['FieldGroup'], ParentType, ContextType, Partial<MutationFieldGroupAddArgs>>;
   fieldGroupEdit?: Resolver<Maybe<ResolversTypes['FieldGroup']>, ParentType, ContextType, RequireFields<MutationFieldGroupEditArgs, '_id'>>;
   fieldGroupRemove?: Resolver<Maybe<ResolversTypes['FieldGroup']>, ParentType, ContextType, RequireFields<MutationFieldGroupRemoveArgs, '_id'>>;
-  fieldGroupsUpdateOrder?: Resolver<Maybe<Array<Maybe<ResolversTypes['FieldGroup']>>>, ParentType, ContextType, RequireFields<MutationFieldGroupsUpdateOrderArgs, 'orders'>>;
+  fieldGroupsUpdateOrder?: Resolver<Array<ResolversTypes['FieldGroup']>, ParentType, ContextType, RequireFields<MutationFieldGroupsUpdateOrderArgs, 'orders'>>;
   fieldRemove?: Resolver<Maybe<ResolversTypes['Field']>, ParentType, ContextType, RequireFields<MutationFieldRemoveArgs, '_id'>>;
   forgotPassword?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationForgotPasswordArgs, 'email'>>;
-  importCancel?: Resolver<Maybe<ResolversTypes['Import']>, ParentType, ContextType, RequireFields<MutationImportCancelArgs, 'importId'>>;
-  importResume?: Resolver<Maybe<ResolversTypes['Import']>, ParentType, ContextType, RequireFields<MutationImportResumeArgs, 'importId'>>;
-  importRetry?: Resolver<Maybe<ResolversTypes['Import']>, ParentType, ContextType, RequireFields<MutationImportRetryArgs, 'importId'>>;
-  importStart?: Resolver<Maybe<ResolversTypes['Import']>, ParentType, ContextType, RequireFields<MutationImportStartArgs, 'entityType' | 'fileKey' | 'fileName'>>;
+  importCancel?: Resolver<ResolversTypes['Import'], ParentType, ContextType, RequireFields<MutationImportCancelArgs, 'importId'>>;
+  importResume?: Resolver<ResolversTypes['Import'], ParentType, ContextType, RequireFields<MutationImportResumeArgs, 'importId'>>;
+  importRetry?: Resolver<ResolversTypes['Import'], ParentType, ContextType, RequireFields<MutationImportRetryArgs, 'importId'>>;
+  importStart?: Resolver<ResolversTypes['Import'], ParentType, ContextType, RequireFields<MutationImportStartArgs, 'entityType' | 'fileKey' | 'fileName'>>;
   internalNotesAdd?: Resolver<Maybe<ResolversTypes['InternalNote']>, ParentType, ContextType, RequireFields<MutationInternalNotesAddArgs, 'contentType'>>;
   internalNotesEdit?: Resolver<Maybe<ResolversTypes['InternalNote']>, ParentType, ContextType, RequireFields<MutationInternalNotesEditArgs, '_id'>>;
   internalNotesRemove?: Resolver<Maybe<ResolversTypes['InternalNote']>, ParentType, ContextType, RequireFields<MutationInternalNotesRemoveArgs, '_id'>>;
-  login?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
-  loginWithGoogle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  loginWithMagicLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLoginWithMagicLinkArgs, 'email'>>;
+  login?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  loginWithGoogle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  loginWithMagicLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginWithMagicLinkArgs, 'email'>>;
   logout?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  manageRelations?: Resolver<Maybe<Array<ResolversTypes['Relation']>>, ParentType, ContextType, RequireFields<MutationManageRelationsArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
-  markAsReadNotifications?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationMarkAsReadNotificationsArgs>>;
-  markNotificationAsRead?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationMarkNotificationAsReadArgs, '_id'>>;
-  oauthClientAppsAdd?: Resolver<Maybe<ResolversTypes['OAuthClientApp']>, ParentType, ContextType, RequireFields<MutationOauthClientAppsAddArgs, 'name' | 'type'>>;
+  manageRelations?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<MutationManageRelationsArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
+  markAsReadNotifications?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationMarkAsReadNotificationsArgs>>;
+  markNotificationAsRead?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationMarkNotificationAsReadArgs, '_id'>>;
+  oauthClientAppsAdd?: Resolver<ResolversTypes['OAuthClientApp'], ParentType, ContextType, RequireFields<MutationOauthClientAppsAddArgs, 'name' | 'type'>>;
   oauthClientAppsEdit?: Resolver<Maybe<ResolversTypes['OAuthClientApp']>, ParentType, ContextType, RequireFields<MutationOauthClientAppsEditArgs, '_id' | 'name' | 'type'>>;
-  oauthClientAppsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationOauthClientAppsRemoveArgs, '_id'>>;
+  oauthClientAppsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationOauthClientAppsRemoveArgs, '_id'>>;
   oauthClientAppsRevoke?: Resolver<Maybe<ResolversTypes['OAuthClientApp']>, ParentType, ContextType, RequireFields<MutationOauthClientAppsRevokeArgs, '_id'>>;
-  permissionGroupAdd?: Resolver<Maybe<ResolversTypes['PermissionGroup']>, ParentType, ContextType, RequireFields<MutationPermissionGroupAddArgs, 'name' | 'permissions'>>;
+  permissionGroupAdd?: Resolver<ResolversTypes['PermissionGroup'], ParentType, ContextType, RequireFields<MutationPermissionGroupAddArgs, 'name' | 'permissions'>>;
   permissionGroupEdit?: Resolver<Maybe<ResolversTypes['PermissionGroup']>, ParentType, ContextType, RequireFields<MutationPermissionGroupEditArgs, '_id'>>;
-  permissionGroupRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationPermissionGroupRemoveArgs, '_id'>>;
-  positionsAdd?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, Partial<MutationPositionsAddArgs>>;
+  permissionGroupRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationPermissionGroupRemoveArgs, '_id'>>;
+  positionsAdd?: Resolver<ResolversTypes['Position'], ParentType, ContextType, Partial<MutationPositionsAddArgs>>;
   positionsEdit?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<MutationPositionsEditArgs, '_id'>>;
-  positionsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationPositionsRemoveArgs>>;
-  productBulkSimilarityAdd?: Resolver<Maybe<ResolversTypes['ProductBulkSimilarity']>, ParentType, ContextType, RequireFields<MutationProductBulkSimilarityAddArgs, 'doc'>>;
-  productBulkSimilarityEdit?: Resolver<Maybe<ResolversTypes['ProductBulkSimilarity']>, ParentType, ContextType, RequireFields<MutationProductBulkSimilarityEditArgs, '_id' | 'doc'>>;
-  productBulkSimilarityRemove?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationProductBulkSimilarityRemoveArgs, '_id'>>;
-  productCategoriesAdd?: Resolver<Maybe<ResolversTypes['ProductCategory']>, ParentType, ContextType, RequireFields<MutationProductCategoriesAddArgs, 'code' | 'name'>>;
+  positionsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationPositionsRemoveArgs, 'ids'>>;
+  productBulkSimilarityAdd?: Resolver<ResolversTypes['ProductBulkSimilarity'], ParentType, ContextType, RequireFields<MutationProductBulkSimilarityAddArgs, 'doc'>>;
+  productBulkSimilarityEdit?: Resolver<ResolversTypes['ProductBulkSimilarity'], ParentType, ContextType, RequireFields<MutationProductBulkSimilarityEditArgs, '_id' | 'doc'>>;
+  productBulkSimilarityRemove?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationProductBulkSimilarityRemoveArgs, '_id'>>;
+  productCategoriesAdd?: Resolver<ResolversTypes['ProductCategory'], ParentType, ContextType, RequireFields<MutationProductCategoriesAddArgs, 'code' | 'name'>>;
   productCategoriesEdit?: Resolver<Maybe<ResolversTypes['ProductCategory']>, ParentType, ContextType, RequireFields<MutationProductCategoriesEditArgs, '_id' | 'code' | 'name'>>;
-  productCategoriesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationProductCategoriesRemoveArgs, '_id'>>;
-  productPackagesAdd?: Resolver<Maybe<ResolversTypes['ProductPackage']>, ParentType, ContextType, Partial<MutationProductPackagesAddArgs>>;
-  productPackagesChangeStatus?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductPackage']>>>, ParentType, ContextType, RequireFields<MutationProductPackagesChangeStatusArgs, '_ids' | 'status'>>;
+  productCategoriesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationProductCategoriesRemoveArgs, '_id'>>;
+  productPackagesAdd?: Resolver<ResolversTypes['ProductPackage'], ParentType, ContextType, Partial<MutationProductPackagesAddArgs>>;
+  productPackagesChangeStatus?: Resolver<Array<ResolversTypes['ProductPackage']>, ParentType, ContextType, RequireFields<MutationProductPackagesChangeStatusArgs, '_ids' | 'status'>>;
   productPackagesEdit?: Resolver<Maybe<ResolversTypes['ProductPackage']>, ParentType, ContextType, RequireFields<MutationProductPackagesEditArgs, '_id'>>;
-  productPackagesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationProductPackagesRemoveArgs, '_ids'>>;
-  productRulesAdd?: Resolver<Maybe<ResolversTypes['ProductRule']>, ParentType, ContextType, RequireFields<MutationProductRulesAddArgs, 'name' | 'unitPrice'>>;
+  productPackagesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationProductPackagesRemoveArgs, '_ids'>>;
+  productRulesAdd?: Resolver<ResolversTypes['ProductRule'], ParentType, ContextType, RequireFields<MutationProductRulesAddArgs, 'name' | 'unitPrice'>>;
   productRulesEdit?: Resolver<Maybe<ResolversTypes['ProductRule']>, ParentType, ContextType, RequireFields<MutationProductRulesEditArgs, '_id' | 'name' | 'unitPrice'>>;
-  productRulesRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationProductRulesRemoveArgs>>;
-  productsAdd?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, Partial<MutationProductsAddArgs>>;
-  productsConfigsUpdate?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationProductsConfigsUpdateArgs, 'configsMap'>>;
-  productsDuplicate?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationProductsDuplicateArgs, '_id'>>;
-  productsEdit?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationProductsEditArgs, '_id'>>;
-  productsMerge?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, Partial<MutationProductsMergeArgs>>;
-  productsRemove?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationProductsRemoveArgs>>;
+  productRulesRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationProductRulesRemoveArgs, '_ids'>>;
+  productsAdd?: Resolver<ResolversTypes['Product'], ParentType, ContextType, Partial<MutationProductsAddArgs>>;
+  productsConfigsUpdate?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationProductsConfigsUpdateArgs, 'configsMap'>>;
+  productsDuplicate?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationProductsDuplicateArgs, '_id'>>;
+  productsEdit?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationProductsEditArgs, '_id'>>;
+  productsMerge?: Resolver<ResolversTypes['Product'], ParentType, ContextType, Partial<MutationProductsMergeArgs>>;
+  productsRemove?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<MutationProductsRemoveArgs>>;
   propertySystemFieldEdit?: Resolver<ResolversTypes['PropertySystemField'], ParentType, ContextType, RequireFields<MutationPropertySystemFieldEditArgs, 'code' | 'contentType'>>;
-  resetPassword?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'newPassword' | 'token'>>;
-  segmentsAdd?: Resolver<Maybe<ResolversTypes['Segment']>, ParentType, ContextType, RequireFields<MutationSegmentsAddArgs, 'contentType' | 'root'>>;
+  resetPassword?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'newPassword' | 'token'>>;
+  segmentsAdd?: Resolver<ResolversTypes['Segment'], ParentType, ContextType, RequireFields<MutationSegmentsAddArgs, 'contentType' | 'root'>>;
   segmentsEdit?: Resolver<Maybe<ResolversTypes['Segment']>, ParentType, ContextType, RequireFields<MutationSegmentsEditArgs, '_id' | 'root'>>;
-  segmentsRebuild?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationSegmentsRebuildArgs, '_id'>>;
-  segmentsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationSegmentsRemoveArgs, 'ids'>>;
-  segmentsStopRebuild?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationSegmentsStopRebuildArgs, '_id'>>;
-  structuresAdd?: Resolver<Maybe<ResolversTypes['Structure']>, ParentType, ContextType, RequireFields<MutationStructuresAddArgs, 'title'>>;
+  segmentsRebuild?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationSegmentsRebuildArgs, '_id'>>;
+  segmentsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationSegmentsRemoveArgs, 'ids'>>;
+  segmentsStopRebuild?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationSegmentsStopRebuildArgs, '_id'>>;
+  structuresAdd?: Resolver<ResolversTypes['Structure'], ParentType, ContextType, RequireFields<MutationStructuresAddArgs, 'title'>>;
   structuresEdit?: Resolver<Maybe<ResolversTypes['Structure']>, ParentType, ContextType, RequireFields<MutationStructuresEditArgs, '_id' | 'title'>>;
-  structuresRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationStructuresRemoveArgs, '_id'>>;
-  tagsAdd?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<MutationTagsAddArgs, 'name'>>;
+  structuresRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationStructuresRemoveArgs, '_id'>>;
+  tagsAdd?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationTagsAddArgs, 'name'>>;
   tagsEdit?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<MutationTagsEditArgs, '_id'>>;
-  tagsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationTagsRemoveArgs, '_id'>>;
+  tagsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationTagsRemoveArgs, '_id'>>;
   tagsTag?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationTagsTagArgs, 'tagIds' | 'targetIds' | 'type'>>;
-  templateAdd?: Resolver<Maybe<ResolversTypes['Template']>, ParentType, ContextType, Partial<MutationTemplateAddArgs>>;
-  templateCategoryAdd?: Resolver<Maybe<ResolversTypes['TemplateCategory']>, ParentType, ContextType, Partial<MutationTemplateCategoryAddArgs>>;
+  templateAdd?: Resolver<ResolversTypes['Template'], ParentType, ContextType, Partial<MutationTemplateAddArgs>>;
+  templateCategoryAdd?: Resolver<ResolversTypes['TemplateCategory'], ParentType, ContextType, Partial<MutationTemplateCategoryAddArgs>>;
   templateCategoryEdit?: Resolver<Maybe<ResolversTypes['TemplateCategory']>, ParentType, ContextType, RequireFields<MutationTemplateCategoryEditArgs, '_id'>>;
-  templateCategoryRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationTemplateCategoryRemoveArgs>>;
+  templateCategoryRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationTemplateCategoryRemoveArgs, '_ids'>>;
   templateEdit?: Resolver<Maybe<ResolversTypes['Template']>, ParentType, ContextType, RequireFields<MutationTemplateEditArgs, '_id'>>;
-  templateRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationTemplateRemoveArgs>>;
+  templateRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationTemplateRemoveArgs, '_ids'>>;
   templateUse?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationTemplateUseArgs, '_id'>>;
   toggleFavorite?: Resolver<Maybe<ResolversTypes['Favorite']>, ParentType, ContextType, RequireFields<MutationToggleFavoriteArgs, 'path'>>;
-  unitsAdd?: Resolver<Maybe<ResolversTypes['Unit']>, ParentType, ContextType, Partial<MutationUnitsAddArgs>>;
+  unitsAdd?: Resolver<ResolversTypes['Unit'], ParentType, ContextType, Partial<MutationUnitsAddArgs>>;
   unitsEdit?: Resolver<Maybe<ResolversTypes['Unit']>, ParentType, ContextType, RequireFields<MutationUnitsEditArgs, '_id'>>;
-  unitsRemove?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationUnitsRemoveArgs>>;
-  uomsAdd?: Resolver<Maybe<ResolversTypes['Uom']>, ParentType, ContextType, Partial<MutationUomsAddArgs>>;
+  unitsRemove?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationUnitsRemoveArgs, 'ids'>>;
+  uomsAdd?: Resolver<ResolversTypes['Uom'], ParentType, ContextType, Partial<MutationUomsAddArgs>>;
   uomsEdit?: Resolver<Maybe<ResolversTypes['Uom']>, ParentType, ContextType, RequireFields<MutationUomsEditArgs, '_id'>>;
   uomsRemove?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationUomsRemoveArgs>>;
-  updateNotificationSettingsChannel?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationUpdateNotificationSettingsChannelArgs>>;
-  updateNotificationSettingsEvent?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<MutationUpdateNotificationSettingsEventArgs>>;
+  updateNotificationSettingsChannel?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationUpdateNotificationSettingsChannelArgs>>;
+  updateNotificationSettingsEvent?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<MutationUpdateNotificationSettingsEventArgs>>;
   updateRelation?: Resolver<ResolversTypes['Relation'], ParentType, ContextType, RequireFields<MutationUpdateRelationArgs, 'id' | 'relation'>>;
   userAddCustomPermission?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUserAddCustomPermissionArgs, 'permission' | 'userId'>>;
   userRemoveCustomPermission?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUserRemoveCustomPermissionArgs, 'module' | 'userId'>>;
   userUpdatePermissionGroups?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUserUpdatePermissionGroupsArgs, 'groupIds' | 'userId'>>;
   usersChangePassword?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersChangePasswordArgs, 'currentPassword' | 'newPassword'>>;
   usersConfigEmailSignatures?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationUsersConfigEmailSignaturesArgs>>;
-  usersConfigGetNotificationByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationUsersConfigGetNotificationByEmailArgs>>;
-  usersConfirmInvitation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationUsersConfirmInvitationArgs>>;
-  usersCreateOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUsersCreateOwnerArgs, 'email' | 'firstName' | 'password'>>;
+  usersConfigGetNotificationByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersConfigGetNotificationByEmailArgs, 'isAllowed'>>;
+  usersConfirmInvitation?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationUsersConfirmInvitationArgs, 'token'>>;
+  usersCreateOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationUsersCreateOwnerArgs, 'email' | 'firstName' | 'password'>>;
   usersEdit?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersEditArgs, '_id'>>;
   usersEditProfile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersEditProfileArgs, 'email' | 'username'>>;
-  usersInvite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<MutationUsersInviteArgs>>;
-  usersResendInvitation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUsersResendInvitationArgs, 'email'>>;
+  usersInvite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationUsersInviteArgs, 'entries'>>;
+  usersResendInvitation?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationUsersResendInvitationArgs, 'email'>>;
   usersResetMemberPassword?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersResetMemberPasswordArgs, '_id' | 'newPassword'>>;
   usersSetActiveStatus?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersSetActiveStatusArgs, '_id'>>;
-  usersSetActiveStatusBatch?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationUsersSetActiveStatusBatchArgs, '_ids'>>;
-  usersSetChatStatus?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersSetChatStatusArgs, '_id'>>;
-  usersUpdatePermissionGroups?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<MutationUsersUpdatePermissionGroupsArgs, 'groupIds' | 'userIds'>>;
+  usersSetActiveStatusBatch?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUsersSetActiveStatusBatchArgs, '_ids'>>;
+  usersSetChatStatus?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUsersSetChatStatusArgs, '_id' | 'status'>>;
+  usersUpdatePermissionGroups?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<MutationUsersUpdatePermissionGroupsArgs, 'groupIds' | 'userIds'>>;
 }>;
 
 export type NotificationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentTypeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   emailDelivery?: Resolver<Maybe<ResolversTypes['EmailDelivery']>, ParentType, ContextType>;
   fromUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   fromUserId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  isRead?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  kind?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isRead?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  priority?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  priority?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type NotificationConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationConfig'] = ResolversParentTypes['NotificationConfig']> = ResolversObject<{
@@ -9710,13 +9711,13 @@ export type NotificationConfigResolvers<ContextType = IContext, ParentType exten
 }>;
 
 export type NotificationConfigListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationConfigListResponse'] = ResolversParentTypes['NotificationConfigListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['NotificationConfig']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['NotificationConfig']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type NotificationModuleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationModule'] = ResolversParentTypes['NotificationModule']> = ResolversObject<{
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  events?: Resolver<Maybe<Array<Maybe<ResolversTypes['NotificationModuleEvent']>>>, ParentType, ContextType>;
+  events?: Resolver<Maybe<Array<ResolversTypes['NotificationModuleEvent']>>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -9728,38 +9729,38 @@ export type NotificationModuleEventResolvers<ContextType = IContext, ParentType 
 }>;
 
 export type NotificationPluginTypeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationPluginType'] = ResolversParentTypes['NotificationPluginType']> = ResolversObject<{
-  modules?: Resolver<Maybe<Array<Maybe<ResolversTypes['NotificationModule']>>>, ParentType, ContextType>;
-  pluginName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  modules?: Resolver<Array<ResolversTypes['NotificationModule']>, ParentType, ContextType>;
+  pluginName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type NotificationSettingsResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationSettings'] = ResolversParentTypes['NotificationSettings']> = ResolversObject<{
-  channels?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  events?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  channels?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  events?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type NotificationsListResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['NotificationsList'] = ResolversParentTypes['NotificationsList']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Notification']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Notification']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type OAuthClientAppResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['OAuthClientApp'] = ResolversParentTypes['OAuthClientApp']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   accessTokenLifetime?: Resolver<Maybe<ResolversTypes['OAuthClientAccessTokenLifetime']>, ParentType, ContextType>;
-  clientId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  clientId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   generatedSecret?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastUsedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   logo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  redirectUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['OAuthClientAppStatus']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['OAuthClientAppType']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  redirectUrls?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['OAuthClientAppStatus'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['OAuthClientAppType'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type OtpConfigResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['OTPConfig'] = ResolversParentTypes['OTPConfig']> = ResolversObject<{
@@ -9846,34 +9847,34 @@ export type PermissionActionResolvers<ContextType = IContext, ParentType extends
 
 export type PermissionGroupResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PermissionGroup'] = ResolversParentTypes['PermissionGroup']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  permissions?: Resolver<Array<Maybe<ResolversTypes['PermissionGroupPermission']>>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  permissions?: Resolver<Array<ResolversTypes['PermissionGroupPermission']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type PermissionGroupPermissionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PermissionGroupPermission'] = ResolversParentTypes['PermissionGroupPermission']> = ResolversObject<{
-  actions?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   module?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   plugin?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scope?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type PermissionModuleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PermissionModule'] = ResolversParentTypes['PermissionModule']> = ResolversObject<{
-  actions?: Resolver<Array<Maybe<ResolversTypes['PermissionAction']>>, ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['PermissionAction']>, ParentType, ContextType>;
   always?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  ownerFields?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  ownerFields?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   plugin?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scopeField?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  scopes?: Resolver<Maybe<Array<Maybe<ResolversTypes['PermissionScopeDescription']>>>, ParentType, ContextType>;
+  scopes?: Resolver<Maybe<Array<ResolversTypes['PermissionScopeDescription']>>, ParentType, ContextType>;
 }>;
 
 export type PermissionModulesByPluginResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PermissionModulesByPlugin'] = ResolversParentTypes['PermissionModulesByPlugin']> = ResolversObject<{
-  modules?: Resolver<Array<Maybe<ResolversTypes['PermissionModule']>>, ParentType, ContextType>;
+  modules?: Resolver<Array<ResolversTypes['PermissionModule']>, ParentType, ContextType>;
   plugin?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
@@ -9885,35 +9886,35 @@ export type PermissionScopeDescriptionResolvers<ContextType = IContext, ParentTy
 export type PositionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Position'] = ResolversParentTypes['Position'], FederationReferenceType extends FederationReferenceTypes['Position'] = FederationReferenceTypes['Position']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Position']> | FederationReferenceType, FederationReferenceType, ContextType>;
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  children?: Resolver<Maybe<Array<Maybe<ResolversTypes['Position']>>>, ParentType, ContextType>;
+  children?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  order?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  userIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  userCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  userIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type PositionListQueryResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PositionListQueryResponse'] = ResolversParentTypes['PositionListQueryResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Position']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ProductResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product'], FederationReferenceType extends FederationReferenceTypes['Product'] = FederationReferenceTypes['Product']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Product']> | FederationReferenceType, FederationReferenceType, ContextType>;
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   attachment?: Resolver<Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
-  attachmentMore?: Resolver<Maybe<Array<Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType>;
+  attachmentMore?: Resolver<Maybe<Array<ResolversTypes['Attachment']>>, ParentType, ContextType>;
   barcodeDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  barcodes?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  barcodes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   category?: Resolver<Maybe<ResolversTypes['ProductCategory']>, ParentType, ContextType>;
   categoryId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -9926,35 +9927,35 @@ export type ProductResolvers<ContextType = IContext, ParentType extends Resolver
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   pdfAttachment?: Resolver<Maybe<ResolversTypes['PdfAttachment']>, ParentType, ContextType>;
   propertiesData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  remainder?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  scopeBrandIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  remainder?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  scopeBrandIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   shortName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   similarity?: Resolver<Maybe<ResolversTypes['ProductBulkSimilarity']>, ParentType, ContextType>;
   similarityId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subUoms?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unitPrice?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   uom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   variants?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   vendor?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType>;
   vendorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  videos?: Resolver<Maybe<Array<Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType>;
+  videos?: Resolver<Maybe<Array<ResolversTypes['Attachment']>>, ParentType, ContextType>;
   weight?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
 }>;
 
 export type ProductBulkSimilarityResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductBulkSimilarity'] = ResolversParentTypes['ProductBulkSimilarity']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  fields?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductSimilarityField']>>>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  fields?: Resolver<Array<ResolversTypes['ProductSimilarityField']>, ParentType, ContextType>;
   info?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  productIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  productIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   propertiesData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   starProductId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type ProductCategoryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductCategory'] = ResolversParentTypes['ProductCategory'], FederationReferenceType extends FederationReferenceTypes['ProductCategory'] = FederationReferenceTypes['ProductCategory']> = ResolversObject<{
@@ -9963,7 +9964,7 @@ export type ProductCategoryResolvers<ContextType = IContext, ParentType extends 
   attachment?: Resolver<Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  isRoot?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isRoot?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isSimilarity?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   mask?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   maskType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -9971,61 +9972,61 @@ export type ProductCategoryResolvers<ContextType = IContext, ParentType extends 
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   order?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  productCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  scopeBrandIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  productCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scopeBrandIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   similarities?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ProductPackageResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductPackage'] = ResolversParentTypes['ProductPackage']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coverImage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   percent?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   price?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['PackageProduct']>>>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
-  totalPrice?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['PackageProduct']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  totalPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
 }>;
 
 export type ProductPackagesListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductPackagesListResponse'] = ResolversParentTypes['ProductPackagesListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductPackage']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ProductPackage']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ProductRuleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductRule'] = ResolversParentTypes['ProductRule']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   bundleId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductCategory']>>>, ParentType, ContextType>;
-  categoryIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  excludeCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductCategory']>>>, ParentType, ContextType>;
-  excludeCategoryIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  excludeProductIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  excludeProducts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
-  excludeTagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  excludeTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType>;
+  categoryIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  excludeCategories?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType>;
+  excludeCategoryIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  excludeProductIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  excludeProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  excludeTagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  excludeTags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  productIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
-  tagIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
+  productIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  tagIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 }>;
 
 export type ProductRulesCountResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductRulesCount'] = ResolversParentTypes['ProductRulesCount']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductRule']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['ProductRule']>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type ProductSimilarityResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductSimilarity'] = ResolversParentTypes['ProductSimilarity']> = ResolversObject<{
-  groups?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductSimilarityGroup']>>>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  groups?: Resolver<Maybe<Array<ResolversTypes['ProductSimilarityGroup']>>, ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
 }>;
 
 export type ProductSimilarityFieldResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductSimilarityField'] = ResolversParentTypes['ProductSimilarityField']> = ResolversObject<{
@@ -10047,9 +10048,9 @@ export type ProductsConfigResolvers<ContextType = IContext, ParentType extends R
 }>;
 
 export type ProductsListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ProductsListResponse'] = ResolversParentTypes['ProductsListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type PropertySystemFieldResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PropertySystemField'] = ResolversParentTypes['PropertySystemField']> = ResolversObject<{
@@ -10063,202 +10064,202 @@ export type PropertySystemFieldResolvers<ContextType = IContext, ParentType exte
 }>;
 
 export type PropertyTypeResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['PropertyType'] = ResolversParentTypes['PropertyType']> = ResolversObject<{
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   _sentryGraphqlTest?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  activeExports?: Resolver<Maybe<Array<Maybe<ResolversTypes['Export']>>>, ParentType, ContextType, Partial<QueryActiveExportsArgs>>;
-  activeImports?: Resolver<Maybe<Array<Maybe<ResolversTypes['Import']>>>, ParentType, ContextType, Partial<QueryActiveImportsArgs>>;
-  activityLogs?: Resolver<Maybe<ResolversTypes['ActivityLogsList']>, ParentType, ContextType, RequireFields<QueryActivityLogsArgs, 'targetId'>>;
-  allBrands?: Resolver<Maybe<Array<Maybe<ResolversTypes['Brand']>>>, ParentType, ContextType>;
-  allBundleConditions?: Resolver<Maybe<Array<Maybe<ResolversTypes['BundleCondition']>>>, ParentType, ContextType>;
-  allUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, Partial<QueryAllUsersArgs>>;
+  activeExports?: Resolver<Array<ResolversTypes['Export']>, ParentType, ContextType, Partial<QueryActiveExportsArgs>>;
+  activeImports?: Resolver<Array<ResolversTypes['Import']>, ParentType, ContextType, Partial<QueryActiveImportsArgs>>;
+  activityLogs?: Resolver<ResolversTypes['ActivityLogsList'], ParentType, ContextType, RequireFields<QueryActivityLogsArgs, 'targetId'>>;
+  allBrands?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
+  allBundleConditions?: Resolver<Array<ResolversTypes['BundleCondition']>, ParentType, ContextType>;
+  allUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryAllUsersArgs>>;
   appDetail?: Resolver<Maybe<ResolversTypes['App']>, ParentType, ContextType, Partial<QueryAppDetailArgs>>;
-  approvalLockState?: Resolver<Maybe<ResolversTypes['ApprovalLockState']>, ParentType, ContextType, RequireFields<QueryApprovalLockStateArgs, 'contentId' | 'contentType'>>;
-  approvalLockStates?: Resolver<Maybe<Array<Maybe<ResolversTypes['ApprovalLockState']>>>, ParentType, ContextType, RequireFields<QueryApprovalLockStatesArgs, 'contentIds' | 'contentType'>>;
-  approvalRequestDetail?: Resolver<Maybe<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<QueryApprovalRequestDetailArgs, '_id'>>;
-  approvalRequests?: Resolver<Maybe<ResolversTypes['ApprovalRequestsList']>, ParentType, ContextType, Partial<QueryApprovalRequestsArgs>>;
-  apps?: Resolver<Maybe<Array<Maybe<ResolversTypes['App']>>>, ParentType, ContextType, Partial<QueryAppsArgs>>;
-  appsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryAppsTotalCountArgs>>;
-  automationBotsConstants?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  automationConstants?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  automationDetail?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<QueryAutomationDetailArgs, '_id'>>;
-  automationExecutionCounts?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationStatsCount']>>>, ParentType, ContextType, RequireFields<QueryAutomationExecutionCountsArgs, 'automationIds'>>;
-  automationHistories?: Resolver<Maybe<ResolversTypes['AutomationHistories']>, ParentType, ContextType, RequireFields<QueryAutomationHistoriesArgs, 'automationId'>>;
-  automationHistoriesTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<QueryAutomationHistoriesTotalCountArgs, 'automationId'>>;
+  approvalLockState?: Resolver<ResolversTypes['ApprovalLockState'], ParentType, ContextType, RequireFields<QueryApprovalLockStateArgs, 'contentId' | 'contentType'>>;
+  approvalLockStates?: Resolver<Array<ResolversTypes['ApprovalLockState']>, ParentType, ContextType, RequireFields<QueryApprovalLockStatesArgs, 'contentIds' | 'contentType'>>;
+  approvalRequestDetail?: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<QueryApprovalRequestDetailArgs, '_id'>>;
+  approvalRequests?: Resolver<ResolversTypes['ApprovalRequestsList'], ParentType, ContextType, Partial<QueryApprovalRequestsArgs>>;
+  apps?: Resolver<Array<ResolversTypes['App']>, ParentType, ContextType, Partial<QueryAppsArgs>>;
+  appsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryAppsTotalCountArgs>>;
+  automationBotsConstants?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  automationConstants?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  automationDetail?: Resolver<ResolversTypes['Automation'], ParentType, ContextType, RequireFields<QueryAutomationDetailArgs, '_id'>>;
+  automationExecutionCounts?: Resolver<Array<ResolversTypes['AutomationStatsCount']>, ParentType, ContextType, RequireFields<QueryAutomationExecutionCountsArgs, 'automationIds'>>;
+  automationHistories?: Resolver<ResolversTypes['AutomationHistories'], ParentType, ContextType, RequireFields<QueryAutomationHistoriesArgs, 'automationId'>>;
+  automationHistoriesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryAutomationHistoriesTotalCountArgs, 'automationId'>>;
   automationNodeOutput?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryAutomationNodeOutputArgs, 'nodeType'>>;
-  automationReferenceFields?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryAutomationReferenceFieldsArgs, 'field' | 'type'>>;
-  automationSetPropertyTargets?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryAutomationSetPropertyTargetsArgs, 'sourceType'>>;
-  automationStats?: Resolver<Maybe<ResolversTypes['AutomationStats']>, ParentType, ContextType, RequireFields<QueryAutomationStatsArgs, 'automationId'>>;
-  automationWorkflowTemplates?: Resolver<Maybe<Array<Maybe<ResolversTypes['AutomationWorkflowTemplate']>>>, ParentType, ContextType, Partial<QueryAutomationWorkflowTemplatesArgs>>;
-  automations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Automation']>>>, ParentType, ContextType, Partial<QueryAutomationsArgs>>;
+  automationReferenceFields?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryAutomationReferenceFieldsArgs, 'field' | 'type'>>;
+  automationSetPropertyTargets?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryAutomationSetPropertyTargetsArgs, 'sourceType'>>;
+  automationStats?: Resolver<ResolversTypes['AutomationStats'], ParentType, ContextType, RequireFields<QueryAutomationStatsArgs, 'automationId'>>;
+  automationWorkflowTemplates?: Resolver<Array<ResolversTypes['AutomationWorkflowTemplate']>, ParentType, ContextType, Partial<QueryAutomationWorkflowTemplatesArgs>>;
+  automations?: Resolver<Array<ResolversTypes['Automation']>, ParentType, ContextType, Partial<QueryAutomationsArgs>>;
   automationsAiAgentDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<QueryAutomationsAiAgentDetailArgs>>;
   automationsAiAgentHealth?: Resolver<ResolversTypes['AiAgentHealth'], ParentType, ContextType, RequireFields<QueryAutomationsAiAgentHealthArgs, 'agentId'>>;
-  automationsAiAgentKnowledgeSourceStatuses?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryAutomationsAiAgentKnowledgeSourceStatusesArgs, 'agentId'>>;
-  automationsAiAgentTotalCounts?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  automationsAiAgents?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<QueryAutomationsAiAgentsArgs>>;
-  automationsMain?: Resolver<Maybe<ResolversTypes['AutomationsListResponse']>, ParentType, ContextType, Partial<QueryAutomationsMainArgs>>;
-  automationsTotalCount?: Resolver<Maybe<ResolversTypes['automationsTotalCountResponse']>, ParentType, ContextType, Partial<QueryAutomationsTotalCountArgs>>;
-  beforeResolverAvailable?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryBeforeResolverAvailableArgs, 'resolver'>>;
-  branchDetail?: Resolver<Maybe<ResolversTypes['Branch']>, ParentType, ContextType, RequireFields<QueryBranchDetailArgs, '_id'>>;
-  branches?: Resolver<Maybe<Array<Maybe<ResolversTypes['Branch']>>>, ParentType, ContextType, Partial<QueryBranchesArgs>>;
-  branchesMain?: Resolver<Maybe<ResolversTypes['BranchesListResponse']>, ParentType, ContextType, Partial<QueryBranchesMainArgs>>;
+  automationsAiAgentKnowledgeSourceStatuses?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryAutomationsAiAgentKnowledgeSourceStatusesArgs, 'agentId'>>;
+  automationsAiAgentTotalCounts?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  automationsAiAgents?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<QueryAutomationsAiAgentsArgs>>;
+  automationsMain?: Resolver<ResolversTypes['AutomationsListResponse'], ParentType, ContextType, Partial<QueryAutomationsMainArgs>>;
+  automationsTotalCount?: Resolver<ResolversTypes['automationsTotalCountResponse'], ParentType, ContextType, Partial<QueryAutomationsTotalCountArgs>>;
+  beforeResolverAvailable?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryBeforeResolverAvailableArgs, 'resolver'>>;
+  branchDetail?: Resolver<ResolversTypes['Branch'], ParentType, ContextType, RequireFields<QueryBranchDetailArgs, '_id'>>;
+  branches?: Resolver<Array<ResolversTypes['Branch']>, ParentType, ContextType, Partial<QueryBranchesArgs>>;
+  branchesMain?: Resolver<ResolversTypes['BranchesListResponse'], ParentType, ContextType, Partial<QueryBranchesMainArgs>>;
   brandDetail?: Resolver<Maybe<ResolversTypes['Brand']>, ParentType, ContextType, RequireFields<QueryBrandDetailArgs, '_id'>>;
-  brands?: Resolver<Maybe<ResolversTypes['BrandListResponse']>, ParentType, ContextType, Partial<QueryBrandsArgs>>;
+  brands?: Resolver<ResolversTypes['BrandListResponse'], ParentType, ContextType, Partial<QueryBrandsArgs>>;
   brandsGetLast?: Resolver<Maybe<ResolversTypes['Brand']>, ParentType, ContextType>;
-  brandsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  brandsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   broadcastEmailDryRun?: Resolver<Maybe<ResolversTypes['BroadcastEmailDryRun']>, ParentType, ContextType, RequireFields<QueryBroadcastEmailDryRunArgs, '_id'>>;
   broadcastRecipientEmail?: Resolver<Maybe<ResolversTypes['BroadcastRecipientEmail']>, ParentType, ContextType, RequireFields<QueryBroadcastRecipientEmailArgs, '_id'>>;
   bundleConditionDetail?: Resolver<Maybe<ResolversTypes['BundleCondition']>, ParentType, ContextType, RequireFields<QueryBundleConditionDetailArgs, '_id'>>;
-  bundleConditionTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  bundleConditions?: Resolver<Maybe<Array<Maybe<ResolversTypes['BundleCondition']>>>, ParentType, ContextType, Partial<QueryBundleConditionsArgs>>;
+  bundleConditionTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  bundleConditions?: Resolver<Array<ResolversTypes['BundleCondition']>, ParentType, ContextType, Partial<QueryBundleConditionsArgs>>;
   bundleRuleDetail?: Resolver<Maybe<ResolversTypes['BundleRule']>, ParentType, ContextType, RequireFields<QueryBundleRuleDetailArgs, '_id'>>;
-  bundleRules?: Resolver<Maybe<Array<Maybe<ResolversTypes['BundleRule']>>>, ParentType, ContextType>;
-  categoriesWithChilds?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductCategory']>>>, ParentType, ContextType, RequireFields<QueryCategoriesWithChildsArgs, 'ids'>>;
+  bundleRules?: Resolver<Array<ResolversTypes['BundleRule']>, ParentType, ContextType>;
+  categoriesWithChilds?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType, RequireFields<QueryCategoriesWithChildsArgs, 'ids'>>;
   clientPortalComment?: Resolver<Maybe<ResolversTypes['CPComment']>, ParentType, ContextType, RequireFields<QueryClientPortalCommentArgs, '_id'>>;
   clientPortalComments?: Resolver<Maybe<ResolversTypes['CPCommentListResponse']>, ParentType, ContextType, Partial<QueryClientPortalCommentsArgs>>;
   clientPortalCurrentUser?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType>;
   clientPortalNotificationDetail?: Resolver<Maybe<ResolversTypes['CPNotification']>, ParentType, ContextType, RequireFields<QueryClientPortalNotificationDetailArgs, '_id'>>;
   clientPortalNotifications?: Resolver<Maybe<ResolversTypes['CPNotificationListResponse']>, ParentType, ContextType, Partial<QueryClientPortalNotificationsArgs>>;
   clientPortalUnreadNotificationCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryClientPortalUnreadNotificationCountArgs>>;
-  companies?: Resolver<Maybe<ResolversTypes['CompaniesListResponse']>, ParentType, ContextType, Partial<QueryCompaniesArgs>>;
+  companies?: Resolver<ResolversTypes['CompaniesListResponse'], ParentType, ContextType, Partial<QueryCompaniesArgs>>;
   companyDetail?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, RequireFields<QueryCompanyDetailArgs, '_id'>>;
-  configs?: Resolver<Maybe<Array<Maybe<ResolversTypes['Config']>>>, ParentType, ContextType>;
-  configsByCode?: Resolver<Maybe<Array<Maybe<ResolversTypes['Config']>>>, ParentType, ContextType, Partial<QueryConfigsByCodeArgs>>;
+  configs?: Resolver<Array<ResolversTypes['Config']>, ParentType, ContextType>;
+  configsByCode?: Resolver<Array<ResolversTypes['Config']>, ParentType, ContextType, Partial<QueryConfigsByCodeArgs>>;
   configsCheckActivateInstallation?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryConfigsCheckActivateInstallationArgs, 'hostname'>>;
   configsCheckPremiumService?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryConfigsCheckPremiumServiceArgs, 'type'>>;
   configsConstants?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  configsFileUploadInfo?: Resolver<Maybe<ResolversTypes['FileUploadServiceInfo']>, ParentType, ContextType>;
+  configsFileUploadInfo?: Resolver<ResolversTypes['FileUploadServiceInfo'], ParentType, ContextType>;
   configsGetEmailTemplate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryConfigsGetEmailTemplateArgs>>;
-  configsGetEnv?: Resolver<Maybe<ResolversTypes['ENV']>, ParentType, ContextType>;
+  configsGetEnv?: Resolver<ResolversTypes['ENV'], ParentType, ContextType>;
   configsGetInstallationStatus?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryConfigsGetInstallationStatusArgs, 'name'>>;
   configsGetValue?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryConfigsGetValueArgs, 'code'>>;
   configsGetVersion?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<QueryConfigsGetVersionArgs>>;
-  contactsLogs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<QueryContactsLogsArgs>>;
-  coreModulesGlobalSearch?: Resolver<Maybe<ResolversTypes['CoreModulesGlobalSearchResult']>, ParentType, ContextType, Partial<QueryCoreModulesGlobalSearchArgs>>;
+  contactsLogs?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryContactsLogsArgs, 'contentType'>>;
+  coreModulesGlobalSearch?: Resolver<ResolversTypes['CoreModulesGlobalSearchResult'], ParentType, ContextType, Partial<QueryCoreModulesGlobalSearchArgs>>;
   cpAutomationDetail?: Resolver<Maybe<ResolversTypes['Automation']>, ParentType, ContextType, RequireFields<QueryCpAutomationDetailArgs, '_id'>>;
-  cpBranchDetail?: Resolver<Maybe<ResolversTypes['Branch']>, ParentType, ContextType, RequireFields<QueryCpBranchDetailArgs, '_id'>>;
-  cpBranches?: Resolver<Maybe<Array<Maybe<ResolversTypes['Branch']>>>, ParentType, ContextType, Partial<QueryCpBranchesArgs>>;
-  cpBranchesMain?: Resolver<Maybe<ResolversTypes['BranchesListResponse']>, ParentType, ContextType, Partial<QueryCpBranchesMainArgs>>;
-  cpCompanies?: Resolver<Maybe<ResolversTypes['CompaniesListResponse']>, ParentType, ContextType, Partial<QueryCpCompaniesArgs>>;
-  cpCustomerDetail?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCpCustomerDetailArgs, '_id'>>;
-  cpCustomers?: Resolver<Maybe<ResolversTypes['CustomersListResponse']>, ParentType, ContextType, Partial<QueryCpCustomersArgs>>;
-  cpDepartments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Department']>>>, ParentType, ContextType, Partial<QueryCpDepartmentsArgs>>;
-  cpFieldDetail?: Resolver<Maybe<ResolversTypes['Field']>, ParentType, ContextType, RequireFields<QueryCpFieldDetailArgs, '_id'>>;
-  cpFieldGroups?: Resolver<Maybe<Array<Maybe<ResolversTypes['FieldGroup']>>>, ParentType, ContextType, Partial<QueryCpFieldGroupsArgs>>;
-  cpFields?: Resolver<Maybe<Array<Maybe<ResolversTypes['Field']>>>, ParentType, ContextType, Partial<QueryCpFieldsArgs>>;
-  cpGetRelationsByEntity?: Resolver<Maybe<Array<ResolversTypes['Relation']>>, ParentType, ContextType, RequireFields<QueryCpGetRelationsByEntityArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
-  cpProductCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductCategory']>>>, ParentType, ContextType, Partial<QueryCpProductCategoriesArgs>>;
+  cpBranchDetail?: Resolver<ResolversTypes['Branch'], ParentType, ContextType, RequireFields<QueryCpBranchDetailArgs, '_id'>>;
+  cpBranches?: Resolver<Array<ResolversTypes['Branch']>, ParentType, ContextType, Partial<QueryCpBranchesArgs>>;
+  cpBranchesMain?: Resolver<ResolversTypes['BranchesListResponse'], ParentType, ContextType, Partial<QueryCpBranchesMainArgs>>;
+  cpCompanies?: Resolver<ResolversTypes['CompaniesListResponse'], ParentType, ContextType, Partial<QueryCpCompaniesArgs>>;
+  cpCustomerDetail?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<QueryCpCustomerDetailArgs, '_id'>>;
+  cpCustomers?: Resolver<ResolversTypes['CustomersListResponse'], ParentType, ContextType, Partial<QueryCpCustomersArgs>>;
+  cpDepartments?: Resolver<Array<ResolversTypes['Department']>, ParentType, ContextType, Partial<QueryCpDepartmentsArgs>>;
+  cpFieldDetail?: Resolver<ResolversTypes['Field'], ParentType, ContextType, RequireFields<QueryCpFieldDetailArgs, '_id'>>;
+  cpFieldGroups?: Resolver<Array<ResolversTypes['FieldGroup']>, ParentType, ContextType, Partial<QueryCpFieldGroupsArgs>>;
+  cpFields?: Resolver<Array<ResolversTypes['Field']>, ParentType, ContextType, Partial<QueryCpFieldsArgs>>;
+  cpGetRelationsByEntity?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<QueryCpGetRelationsByEntityArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
+  cpProductCategories?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType, Partial<QueryCpProductCategoriesArgs>>;
   cpProductDetail?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, Partial<QueryCpProductDetailArgs>>;
-  cpProducts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, Partial<QueryCpProductsArgs>>;
-  cpTags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType, Partial<QueryCpTagsArgs>>;
-  cpUnits?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPUnit']>>>, ParentType, ContextType, Partial<QueryCpUnitsArgs>>;
-  cpUoms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Uom']>>>, ParentType, ContextType>;
+  cpProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, Partial<QueryCpProductsArgs>>;
+  cpTags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, Partial<QueryCpTagsArgs>>;
+  cpUnits?: Resolver<Array<ResolversTypes['CPUnit']>, ParentType, ContextType, Partial<QueryCpUnitsArgs>>;
+  cpUoms?: Resolver<Array<ResolversTypes['Uom']>, ParentType, ContextType>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  currentUserPermissions?: Resolver<Maybe<ResolversTypes['CurrentUserPermissionsResult']>, ParentType, ContextType>;
-  customerDetail?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomerDetailArgs, '_id'>>;
-  customers?: Resolver<Maybe<ResolversTypes['CustomersListResponse']>, ParentType, ContextType, Partial<QueryCustomersArgs>>;
-  customersCount?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, Partial<QueryCustomersCountArgs>>;
-  departmentDetail?: Resolver<Maybe<ResolversTypes['Department']>, ParentType, ContextType, RequireFields<QueryDepartmentDetailArgs, '_id'>>;
-  departments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Department']>>>, ParentType, ContextType, Partial<QueryDepartmentsArgs>>;
-  departmentsMain?: Resolver<Maybe<ResolversTypes['DepartmentsListResponse']>, ParentType, ContextType, Partial<QueryDepartmentsMainArgs>>;
-  documents?: Resolver<Maybe<ResolversTypes['DocumentListResponse']>, ParentType, ContextType, Partial<QueryDocumentsArgs>>;
-  documentsDetail?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryDocumentsDetailArgs, '_id'>>;
-  documentsGetEditorAttributes?: Resolver<Maybe<Array<Maybe<ResolversTypes['DocumentEditorAttribute']>>>, ParentType, ContextType, RequireFields<QueryDocumentsGetEditorAttributesArgs, 'contentType'>>;
-  documentsProcess?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryDocumentsProcessArgs>>;
-  documentsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryDocumentsTotalCountArgs>>;
-  documentsTypes?: Resolver<Maybe<Array<Maybe<ResolversTypes['DocumentsTypes']>>>, ParentType, ContextType>;
-  emailAddresses?: Resolver<Maybe<ResolversTypes['EmailAddressesList']>, ParentType, ContextType, Partial<QueryEmailAddressesArgs>>;
-  emailContentPreview?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryEmailContentPreviewArgs>>;
-  emailDeliveries?: Resolver<Maybe<ResolversTypes['EmailDeliveriesList']>, ParentType, ContextType, Partial<QueryEmailDeliveriesArgs>>;
+  currentUserPermissions?: Resolver<ResolversTypes['CurrentUserPermissionsResult'], ParentType, ContextType>;
+  customerDetail?: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<QueryCustomerDetailArgs, '_id'>>;
+  customers?: Resolver<ResolversTypes['CustomersListResponse'], ParentType, ContextType, Partial<QueryCustomersArgs>>;
+  customersCount?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, Partial<QueryCustomersCountArgs>>;
+  departmentDetail?: Resolver<ResolversTypes['Department'], ParentType, ContextType, RequireFields<QueryDepartmentDetailArgs, '_id'>>;
+  departments?: Resolver<Array<ResolversTypes['Department']>, ParentType, ContextType, Partial<QueryDepartmentsArgs>>;
+  departmentsMain?: Resolver<ResolversTypes['DepartmentsListResponse'], ParentType, ContextType, Partial<QueryDepartmentsMainArgs>>;
+  documents?: Resolver<ResolversTypes['DocumentListResponse'], ParentType, ContextType, Partial<QueryDocumentsArgs>>;
+  documentsDetail?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<QueryDocumentsDetailArgs, '_id'>>;
+  documentsGetEditorAttributes?: Resolver<Array<ResolversTypes['DocumentEditorAttribute']>, ParentType, ContextType, RequireFields<QueryDocumentsGetEditorAttributesArgs, 'contentType'>>;
+  documentsProcess?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryDocumentsProcessArgs, '_id'>>;
+  documentsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryDocumentsTotalCountArgs>>;
+  documentsTypes?: Resolver<Array<ResolversTypes['DocumentsTypes']>, ParentType, ContextType>;
+  emailAddresses?: Resolver<ResolversTypes['EmailAddressesList'], ParentType, ContextType, Partial<QueryEmailAddressesArgs>>;
+  emailContentPreview?: Resolver<ResolversTypes['String'], ParentType, ContextType, Partial<QueryEmailContentPreviewArgs>>;
+  emailDeliveries?: Resolver<ResolversTypes['EmailDeliveriesList'], ParentType, ContextType, Partial<QueryEmailDeliveriesArgs>>;
   emailDeliveryDetail?: Resolver<Maybe<ResolversTypes['EmailDelivery']>, ParentType, ContextType, RequireFields<QueryEmailDeliveryDetailArgs, '_id'>>;
-  emailRampStatus?: Resolver<Maybe<ResolversTypes['EmailRampStatus']>, ParentType, ContextType>;
-  emailSenderOptions?: Resolver<Maybe<ResolversTypes['EmailSenderOptions']>, ParentType, ContextType, Partial<QueryEmailSenderOptionsArgs>>;
-  emailTemplateDetail?: Resolver<Maybe<ResolversTypes['EmailTemplate']>, ParentType, ContextType, RequireFields<QueryEmailTemplateDetailArgs, '_id'>>;
-  emailTemplates?: Resolver<Maybe<ResolversTypes['EmailTemplatesListResponse']>, ParentType, ContextType, Partial<QueryEmailTemplatesArgs>>;
+  emailRampStatus?: Resolver<ResolversTypes['EmailRampStatus'], ParentType, ContextType>;
+  emailSenderOptions?: Resolver<ResolversTypes['EmailSenderOptions'], ParentType, ContextType, Partial<QueryEmailSenderOptionsArgs>>;
+  emailTemplateDetail?: Resolver<ResolversTypes['EmailTemplate'], ParentType, ContextType, RequireFields<QueryEmailTemplateDetailArgs, '_id'>>;
+  emailTemplates?: Resolver<ResolversTypes['EmailTemplatesListResponse'], ParentType, ContextType, Partial<QueryEmailTemplatesArgs>>;
   enabledServices?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  engageBroadcastRecipients?: Resolver<Maybe<ResolversTypes['BroadcastRecipientListResponse']>, ParentType, ContextType, RequireFields<QueryEngageBroadcastRecipientsArgs, 'runId'>>;
-  engageBroadcastRuns?: Resolver<Maybe<Array<Maybe<ResolversTypes['BroadcastRun']>>>, ParentType, ContextType, RequireFields<QueryEngageBroadcastRunsArgs, 'engageMessageId'>>;
-  engageBroadcastTraces?: Resolver<Maybe<Array<Maybe<ResolversTypes['BroadcastTrace']>>>, ParentType, ContextType, RequireFields<QueryEngageBroadcastTracesArgs, 'engageMessageId'>>;
+  engageBroadcastRecipients?: Resolver<ResolversTypes['BroadcastRecipientListResponse'], ParentType, ContextType, RequireFields<QueryEngageBroadcastRecipientsArgs, 'runId'>>;
+  engageBroadcastRuns?: Resolver<Array<ResolversTypes['BroadcastRun']>, ParentType, ContextType, RequireFields<QueryEngageBroadcastRunsArgs, 'engageMessageId'>>;
+  engageBroadcastTraces?: Resolver<Array<ResolversTypes['BroadcastTrace']>, ParentType, ContextType, RequireFields<QueryEngageBroadcastTracesArgs, 'engageMessageId'>>;
   engageEmailPercentages?: Resolver<Maybe<ResolversTypes['AvgEmailStats']>, ParentType, ContextType>;
-  engageMembers?: Resolver<Maybe<ResolversTypes['EngageMemberListResponse']>, ParentType, ContextType, Partial<QueryEngageMembersArgs>>;
-  engageMessageCounts?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryEngageMessageCountsArgs, 'name'>>;
+  engageMembers?: Resolver<ResolversTypes['EngageMemberListResponse'], ParentType, ContextType, Partial<QueryEngageMembersArgs>>;
+  engageMessageCounts?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryEngageMessageCountsArgs, 'name'>>;
   engageMessageDetail?: Resolver<Maybe<ResolversTypes['EngageMessage']>, ParentType, ContextType, Partial<QueryEngageMessageDetailArgs>>;
-  engageMessages?: Resolver<Maybe<ResolversTypes['EngageMessageListResponse']>, ParentType, ContextType, Partial<QueryEngageMessagesArgs>>;
-  engageMessagesTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryEngageMessagesTotalCountArgs>>;
-  engageReportsList?: Resolver<Maybe<ResolversTypes['EngageDeliveryReport']>, ParentType, ContextType, Partial<QueryEngageReportsListArgs>>;
-  engageScheduleCalendar?: Resolver<Maybe<Array<Maybe<ResolversTypes['EngageCalendarEntry']>>>, ParentType, ContextType, RequireFields<QueryEngageScheduleCalendarArgs, 'from' | 'to'>>;
-  engageSchedulePreview?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryEngageSchedulePreviewArgs, 'recurrence'>>;
-  engageSmsDeliveries?: Resolver<Maybe<ResolversTypes['DeliveryList']>, ParentType, ContextType, RequireFields<QueryEngageSmsDeliveriesArgs, 'type'>>;
+  engageMessages?: Resolver<ResolversTypes['EngageMessageListResponse'], ParentType, ContextType, Partial<QueryEngageMessagesArgs>>;
+  engageMessagesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryEngageMessagesTotalCountArgs>>;
+  engageReportsList?: Resolver<ResolversTypes['EngageDeliveryReport'], ParentType, ContextType, Partial<QueryEngageReportsListArgs>>;
+  engageScheduleCalendar?: Resolver<Array<ResolversTypes['EngageCalendarEntry']>, ParentType, ContextType, RequireFields<QueryEngageScheduleCalendarArgs, 'from' | 'to'>>;
+  engageSchedulePreview?: Resolver<ResolversTypes['JSON'], ParentType, ContextType, RequireFields<QueryEngageSchedulePreviewArgs, 'recurrence'>>;
+  engageSmsDeliveries?: Resolver<ResolversTypes['DeliveryList'], ParentType, ContextType, RequireFields<QueryEngageSmsDeliveriesArgs, 'type'>>;
   engageVerifiedEmails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  engagesConfigDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  exportHeaders?: Resolver<Maybe<Array<Maybe<ResolversTypes['ExportHeader']>>>, ParentType, ContextType, RequireFields<QueryExportHeadersArgs, 'entityType'>>;
-  exportHistories?: Resolver<Maybe<ResolversTypes['ExportHistoryList']>, ParentType, ContextType, Partial<QueryExportHistoriesArgs>>;
-  exportProgress?: Resolver<Maybe<ResolversTypes['Export']>, ParentType, ContextType, RequireFields<QueryExportProgressArgs, 'exportId'>>;
-  fieldDetail?: Resolver<Maybe<ResolversTypes['Field']>, ParentType, ContextType, RequireFields<QueryFieldDetailArgs, '_id'>>;
-  fieldGroups?: Resolver<Maybe<ResolversTypes['FieldGroupListResponse']>, ParentType, ContextType, Partial<QueryFieldGroupsArgs>>;
-  fields?: Resolver<Maybe<ResolversTypes['FieldListResponse']>, ParentType, ContextType, Partial<QueryFieldsArgs>>;
+  engagesConfigDetail?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  exportHeaders?: Resolver<Array<ResolversTypes['ExportHeader']>, ParentType, ContextType, RequireFields<QueryExportHeadersArgs, 'entityType'>>;
+  exportHistories?: Resolver<ResolversTypes['ExportHistoryList'], ParentType, ContextType, Partial<QueryExportHistoriesArgs>>;
+  exportProgress?: Resolver<ResolversTypes['Export'], ParentType, ContextType, RequireFields<QueryExportProgressArgs, 'exportId'>>;
+  fieldDetail?: Resolver<ResolversTypes['Field'], ParentType, ContextType, RequireFields<QueryFieldDetailArgs, '_id'>>;
+  fieldGroups?: Resolver<ResolversTypes['FieldGroupListResponse'], ParentType, ContextType, Partial<QueryFieldGroupsArgs>>;
+  fields?: Resolver<ResolversTypes['FieldListResponse'], ParentType, ContextType, Partial<QueryFieldsArgs>>;
   fieldsCombinedByContentType?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryFieldsCombinedByContentTypeArgs, 'contentType'>>;
-  getAutomationExecutionDetail?: Resolver<Maybe<ResolversTypes['AutomationHistory']>, ParentType, ContextType, RequireFields<QueryGetAutomationExecutionDetailArgs, 'executionId'>>;
-  getAutomationWebhookEndpoint?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryGetAutomationWebhookEndpointArgs, '_id'>>;
+  getAutomationExecutionDetail?: Resolver<ResolversTypes['AutomationHistory'], ParentType, ContextType, RequireFields<QueryGetAutomationExecutionDetailArgs, 'executionId'>>;
+  getAutomationWebhookEndpoint?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryGetAutomationWebhookEndpointArgs, '_id'>>;
   getCPExamplePosts?: Resolver<Maybe<Array<Maybe<ResolversTypes['CPExamplePost']>>>, ParentType, ContextType>;
   getClientPortal?: Resolver<Maybe<ResolversTypes['ClientPortal']>, ParentType, ContextType, Partial<QueryGetClientPortalArgs>>;
   getClientPortalNotificationsByCpUserId?: Resolver<Maybe<ResolversTypes['CPNotificationListResponse']>, ParentType, ContextType, RequireFields<QueryGetClientPortalNotificationsByCpUserIdArgs, 'cpUserId'>>;
   getClientPortalUser?: Resolver<Maybe<ResolversTypes['CPUser']>, ParentType, ContextType, RequireFields<QueryGetClientPortalUserArgs, '_id'>>;
   getClientPortalUsers?: Resolver<Maybe<ResolversTypes['CPUserListResponse']>, ParentType, ContextType, Partial<QueryGetClientPortalUsersArgs>>;
   getClientPortals?: Resolver<Maybe<ResolversTypes['ClientPortalListResponse']>, ParentType, ContextType, Partial<QueryGetClientPortalsArgs>>;
-  getFavoritesByCurrentUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['Favorite']>>>, ParentType, ContextType>;
-  getRelationsByEntities?: Resolver<Maybe<Array<ResolversTypes['Relation']>>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntitiesArgs, 'contentIds' | 'contentTypes'>>;
-  getRelationsByEntity?: Resolver<Maybe<Array<ResolversTypes['Relation']>>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntityArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
-  importColumnPreview?: Resolver<Maybe<ResolversTypes['ImportColumnPreview']>, ParentType, ContextType, RequireFields<QueryImportColumnPreviewArgs, 'entityType' | 'fileKey' | 'fileName'>>;
+  getFavoritesByCurrentUser?: Resolver<Array<ResolversTypes['Favorite']>, ParentType, ContextType>;
+  getRelationsByEntities?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntitiesArgs, 'contentIds' | 'contentTypes'>>;
+  getRelationsByEntity?: Resolver<Array<ResolversTypes['Relation']>, ParentType, ContextType, RequireFields<QueryGetRelationsByEntityArgs, 'contentId' | 'contentType' | 'relatedContentType'>>;
+  importColumnPreview?: Resolver<ResolversTypes['ImportColumnPreview'], ParentType, ContextType, RequireFields<QueryImportColumnPreviewArgs, 'entityType' | 'fileKey' | 'fileName'>>;
   importExportTypes?: Resolver<Array<ResolversTypes['ImportExportType']>, ParentType, ContextType, RequireFields<QueryImportExportTypesArgs, 'operation'>>;
-  importFields?: Resolver<Maybe<Array<Maybe<ResolversTypes['ImportPreviewField']>>>, ParentType, ContextType, RequireFields<QueryImportFieldsArgs, 'entityType'>>;
-  importHistories?: Resolver<Maybe<ResolversTypes['ImportHistoryList']>, ParentType, ContextType, Partial<QueryImportHistoriesArgs>>;
-  importProgress?: Resolver<Maybe<ResolversTypes['Import']>, ParentType, ContextType, RequireFields<QueryImportProgressArgs, 'importId'>>;
-  internalNoteDetail?: Resolver<Maybe<ResolversTypes['InternalNote']>, ParentType, ContextType, RequireFields<QueryInternalNoteDetailArgs, '_id'>>;
-  internalNotes?: Resolver<Maybe<Array<Maybe<ResolversTypes['InternalNote']>>>, ParentType, ContextType, RequireFields<QueryInternalNotesArgs, 'contentType'>>;
-  internalNotesAsLogs?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType, RequireFields<QueryInternalNotesAsLogsArgs, 'contentTypeId'>>;
-  internalNotesByAction?: Resolver<Maybe<ResolversTypes['InternalNotesByAction']>, ParentType, ContextType, Partial<QueryInternalNotesByActionArgs>>;
-  isFavorite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryIsFavoriteArgs, 'path'>>;
+  importFields?: Resolver<Array<ResolversTypes['ImportPreviewField']>, ParentType, ContextType, RequireFields<QueryImportFieldsArgs, 'entityType'>>;
+  importHistories?: Resolver<ResolversTypes['ImportHistoryList'], ParentType, ContextType, Partial<QueryImportHistoriesArgs>>;
+  importProgress?: Resolver<ResolversTypes['Import'], ParentType, ContextType, RequireFields<QueryImportProgressArgs, 'importId'>>;
+  internalNoteDetail?: Resolver<ResolversTypes['InternalNote'], ParentType, ContextType, RequireFields<QueryInternalNoteDetailArgs, '_id'>>;
+  internalNotes?: Resolver<Array<ResolversTypes['InternalNote']>, ParentType, ContextType, RequireFields<QueryInternalNotesArgs, 'contentType'>>;
+  internalNotesAsLogs?: Resolver<Array<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryInternalNotesAsLogsArgs, 'contentTypeId'>>;
+  internalNotesByAction?: Resolver<ResolversTypes['InternalNotesByAction'], ParentType, ContextType, RequireFields<QueryInternalNotesByActionArgs, 'contentType'>>;
+  isFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryIsFavoriteArgs, 'path'>>;
   logDetail?: Resolver<Maybe<ResolversTypes['Log']>, ParentType, ContextType, RequireFields<QueryLogDetailArgs, '_id'>>;
   logsGetContentTypes?: Resolver<Array<ResolversTypes['LogContentType']>, ParentType, ContextType>;
-  logsMainList?: Resolver<Maybe<ResolversTypes['MainLogsList']>, ParentType, ContextType, Partial<QueryLogsMainListArgs>>;
-  notificationDetail?: Resolver<Maybe<ResolversTypes['Notification']>, ParentType, ContextType, RequireFields<QueryNotificationDetailArgs, '_id'>>;
+  logsMainList?: Resolver<ResolversTypes['MainLogsList'], ParentType, ContextType, Partial<QueryLogsMainListArgs>>;
+  notificationDetail?: Resolver<ResolversTypes['Notification'], ParentType, ContextType, RequireFields<QueryNotificationDetailArgs, '_id'>>;
   notificationSettings?: Resolver<Maybe<ResolversTypes['NotificationSettings']>, ParentType, ContextType>;
-  notifications?: Resolver<Maybe<ResolversTypes['NotificationsList']>, ParentType, ContextType, Partial<QueryNotificationsArgs>>;
+  notifications?: Resolver<ResolversTypes['NotificationsList'], ParentType, ContextType, Partial<QueryNotificationsArgs>>;
   oauthClientAppDetail?: Resolver<Maybe<ResolversTypes['OAuthClientApp']>, ParentType, ContextType, RequireFields<QueryOauthClientAppDetailArgs, '_id'>>;
-  oauthClientApps?: Resolver<Maybe<Array<Maybe<ResolversTypes['OAuthClientApp']>>>, ParentType, ContextType, Partial<QueryOauthClientAppsArgs>>;
-  oauthClientAppsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryOauthClientAppsTotalCountArgs>>;
-  permissionDefaultGroups?: Resolver<Maybe<Array<Maybe<ResolversTypes['DefaultPermissionGroup']>>>, ParentType, ContextType>;
+  oauthClientApps?: Resolver<Array<ResolversTypes['OAuthClientApp']>, ParentType, ContextType, Partial<QueryOauthClientAppsArgs>>;
+  oauthClientAppsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryOauthClientAppsTotalCountArgs>>;
+  permissionDefaultGroups?: Resolver<Array<ResolversTypes['DefaultPermissionGroup']>, ParentType, ContextType>;
   permissionGroupDetail?: Resolver<Maybe<ResolversTypes['PermissionGroup']>, ParentType, ContextType, RequireFields<QueryPermissionGroupDetailArgs, 'id'>>;
-  permissionGroups?: Resolver<Maybe<Array<Maybe<ResolversTypes['PermissionGroup']>>>, ParentType, ContextType>;
-  permissionModules?: Resolver<Maybe<Array<Maybe<ResolversTypes['PermissionModulesByPlugin']>>>, ParentType, ContextType>;
-  pluginsNotifications?: Resolver<Maybe<Array<Maybe<ResolversTypes['NotificationPluginType']>>>, ParentType, ContextType>;
-  positionDetail?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, Partial<QueryPositionDetailArgs>>;
-  positions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Position']>>>, ParentType, ContextType, Partial<QueryPositionsArgs>>;
-  positionsMain?: Resolver<Maybe<ResolversTypes['PositionListQueryResponse']>, ParentType, ContextType, Partial<QueryPositionsMainArgs>>;
-  productBulkSimilarities?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductBulkSimilarity']>>>, ParentType, ContextType, Partial<QueryProductBulkSimilaritiesArgs>>;
-  productBulkSimilaritiesTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryProductBulkSimilaritiesTotalCountArgs>>;
+  permissionGroups?: Resolver<Array<ResolversTypes['PermissionGroup']>, ParentType, ContextType>;
+  permissionModules?: Resolver<Array<ResolversTypes['PermissionModulesByPlugin']>, ParentType, ContextType>;
+  pluginsNotifications?: Resolver<Array<ResolversTypes['NotificationPluginType']>, ParentType, ContextType>;
+  positionDetail?: Resolver<ResolversTypes['Position'], ParentType, ContextType, RequireFields<QueryPositionDetailArgs, '_id'>>;
+  positions?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType, Partial<QueryPositionsArgs>>;
+  positionsMain?: Resolver<ResolversTypes['PositionListQueryResponse'], ParentType, ContextType, Partial<QueryPositionsMainArgs>>;
+  productBulkSimilarities?: Resolver<Array<ResolversTypes['ProductBulkSimilarity']>, ParentType, ContextType, Partial<QueryProductBulkSimilaritiesArgs>>;
+  productBulkSimilaritiesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryProductBulkSimilaritiesTotalCountArgs>>;
   productBulkSimilarity?: Resolver<Maybe<ResolversTypes['ProductBulkSimilarity']>, ParentType, ContextType, RequireFields<QueryProductBulkSimilarityArgs, '_id'>>;
-  productCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductCategory']>>>, ParentType, ContextType, Partial<QueryProductCategoriesArgs>>;
-  productCategoriesTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryProductCategoriesTotalCountArgs>>;
+  productCategories?: Resolver<Array<ResolversTypes['ProductCategory']>, ParentType, ContextType, Partial<QueryProductCategoriesArgs>>;
+  productCategoriesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryProductCategoriesTotalCountArgs>>;
   productCategoryDetail?: Resolver<Maybe<ResolversTypes['ProductCategory']>, ParentType, ContextType, Partial<QueryProductCategoryDetailArgs>>;
-  productCountByTags?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  productCountByTags?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   productDetail?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, Partial<QueryProductDetailArgs>>;
   productLastCodeByCategory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<QueryProductLastCodeByCategoryArgs>>;
   productPackageDetail?: Resolver<Maybe<ResolversTypes['ProductPackage']>, ParentType, ContextType, RequireFields<QueryProductPackageDetailArgs, '_id'>>;
-  productPackages?: Resolver<Maybe<ResolversTypes['ProductPackagesListResponse']>, ParentType, ContextType, Partial<QueryProductPackagesArgs>>;
-  productRules?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductRule']>>>, ParentType, ContextType>;
-  productRulesWithCount?: Resolver<Maybe<ResolversTypes['ProductRulesCount']>, ParentType, ContextType>;
-  productSimilarities?: Resolver<Maybe<ResolversTypes['ProductSimilarity']>, ParentType, ContextType, RequireFields<QueryProductSimilaritiesArgs, '_id'>>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, Partial<QueryProductsArgs>>;
-  productsConfigs?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProductsConfig']>>>, ParentType, ContextType>;
-  productsMain?: Resolver<Maybe<ResolversTypes['ProductsListResponse']>, ParentType, ContextType, Partial<QueryProductsMainArgs>>;
-  productsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryProductsTotalCountArgs>>;
+  productPackages?: Resolver<ResolversTypes['ProductPackagesListResponse'], ParentType, ContextType, Partial<QueryProductPackagesArgs>>;
+  productRules?: Resolver<Array<ResolversTypes['ProductRule']>, ParentType, ContextType>;
+  productRulesWithCount?: Resolver<ResolversTypes['ProductRulesCount'], ParentType, ContextType>;
+  productSimilarities?: Resolver<ResolversTypes['ProductSimilarity'], ParentType, ContextType, RequireFields<QueryProductSimilaritiesArgs, '_id'>>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, Partial<QueryProductsArgs>>;
+  productsConfigs?: Resolver<Array<ResolversTypes['ProductsConfig']>, ParentType, ContextType>;
+  productsMain?: Resolver<ResolversTypes['ProductsListResponse'], ParentType, ContextType, Partial<QueryProductsMainArgs>>;
+  productsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryProductsTotalCountArgs>>;
   propertySystemFields?: Resolver<Array<ResolversTypes['PropertySystemField']>, ParentType, ContextType, RequireFields<QueryPropertySystemFieldsArgs, 'contentType'>>;
-  propertyTypes?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  propertyTypes?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   recordReferenceFields?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryRecordReferenceFieldsArgs, 'type'>>;
   recordReferenceResolvePlaceholders?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QueryRecordReferenceResolvePlaceholdersArgs, 'targetType'>>;
   search?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'value'>>;
@@ -10270,31 +10271,31 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   segmentRelations?: Resolver<Array<ResolversTypes['SegmentRelation']>, ParentType, ContextType, RequireFields<QuerySegmentRelationsArgs, 'subjectType'>>;
   segmentSameDefinition?: Resolver<Maybe<ResolversTypes['Segment']>, ParentType, ContextType, RequireFields<QuerySegmentSameDefinitionArgs, 'contentType' | 'root'>>;
   segmentUsage?: Resolver<Array<ResolversTypes['SegmentUsage']>, ParentType, ContextType, RequireFields<QuerySegmentUsageArgs, 'ids'>>;
-  segments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Segment']>>>, ParentType, ContextType, RequireFields<QuerySegmentsArgs, 'contentTypes'>>;
-  segmentsGetTypes?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
+  segments?: Resolver<Array<ResolversTypes['Segment']>, ParentType, ContextType, RequireFields<QuerySegmentsArgs, 'contentTypes'>>;
+  segmentsGetTypes?: Resolver<Array<ResolversTypes['JSON']>, ParentType, ContextType>;
   segmentsPreviewCount?: Resolver<ResolversTypes['SegmentMemberCount'], ParentType, ContextType, RequireFields<QuerySegmentsPreviewCountArgs, 'contentType' | 'root'>>;
-  settingsGlobalSearch?: Resolver<Maybe<ResolversTypes['SettingsGlobalSearchResult']>, ParentType, ContextType, Partial<QuerySettingsGlobalSearchArgs>>;
+  settingsGlobalSearch?: Resolver<ResolversTypes['SettingsGlobalSearchResult'], ParentType, ContextType, Partial<QuerySettingsGlobalSearchArgs>>;
   structureDetail?: Resolver<Maybe<ResolversTypes['Structure']>, ParentType, ContextType>;
-  tagDetail?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagDetailArgs, '_id'>>;
-  tags?: Resolver<Maybe<ResolversTypes['TagsListResponse']>, ParentType, ContextType, Partial<QueryTagsArgs>>;
-  tagsGetTypes?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  tagsMain?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType, Partial<QueryTagsMainArgs>>;
-  tagsQueryCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryTagsQueryCountArgs>>;
-  templateCategories?: Resolver<Maybe<ResolversTypes['TemplateCategoryListResponse']>, ParentType, ContextType, Partial<QueryTemplateCategoriesArgs>>;
-  templateCategory?: Resolver<Maybe<ResolversTypes['TemplateCategory']>, ParentType, ContextType, Partial<QueryTemplateCategoryArgs>>;
-  templateDetail?: Resolver<Maybe<ResolversTypes['Template']>, ParentType, ContextType, RequireFields<QueryTemplateDetailArgs, '_id'>>;
-  templateList?: Resolver<Maybe<ResolversTypes['TemplateListResponse']>, ParentType, ContextType, Partial<QueryTemplateListArgs>>;
-  templatesGetTypes?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  unitDetail?: Resolver<Maybe<ResolversTypes['Unit']>, ParentType, ContextType, RequireFields<QueryUnitDetailArgs, '_id'>>;
-  units?: Resolver<Maybe<Array<Maybe<ResolversTypes['Unit']>>>, ParentType, ContextType, Partial<QueryUnitsArgs>>;
-  unitsMain?: Resolver<Maybe<ResolversTypes['UnitListQueryResponse']>, ParentType, ContextType, Partial<QueryUnitsMainArgs>>;
-  unreadNotificationsCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  uoms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Uom']>>>, ParentType, ContextType>;
-  uomsTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  tagDetail?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<QueryTagDetailArgs, '_id'>>;
+  tags?: Resolver<ResolversTypes['TagsListResponse'], ParentType, ContextType, Partial<QueryTagsArgs>>;
+  tagsGetTypes?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  tagsMain?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, Partial<QueryTagsMainArgs>>;
+  tagsQueryCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryTagsQueryCountArgs>>;
+  templateCategories?: Resolver<ResolversTypes['TemplateCategoryListResponse'], ParentType, ContextType, Partial<QueryTemplateCategoriesArgs>>;
+  templateCategory?: Resolver<ResolversTypes['TemplateCategory'], ParentType, ContextType, RequireFields<QueryTemplateCategoryArgs, '_id'>>;
+  templateDetail?: Resolver<ResolversTypes['Template'], ParentType, ContextType, RequireFields<QueryTemplateDetailArgs, '_id'>>;
+  templateList?: Resolver<ResolversTypes['TemplateListResponse'], ParentType, ContextType, Partial<QueryTemplateListArgs>>;
+  templatesGetTypes?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  unitDetail?: Resolver<ResolversTypes['Unit'], ParentType, ContextType, RequireFields<QueryUnitDetailArgs, '_id'>>;
+  units?: Resolver<Array<ResolversTypes['Unit']>, ParentType, ContextType, Partial<QueryUnitsArgs>>;
+  unitsMain?: Resolver<ResolversTypes['UnitListQueryResponse'], ParentType, ContextType, Partial<QueryUnitsMainArgs>>;
+  unreadNotificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  uoms?: Resolver<Array<ResolversTypes['Uom']>, ParentType, ContextType>;
+  uomsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userDetail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserDetailArgs>>;
-  userMovements?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserMovement']>>>, ParentType, ContextType, RequireFields<QueryUserMovementsArgs, 'userId'>>;
-  users?: Resolver<Maybe<ResolversTypes['UsersListResponse']>, ParentType, ContextType, Partial<QueryUsersArgs>>;
-  usersTotalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryUsersTotalCountArgs>>;
+  userMovements?: Resolver<Array<ResolversTypes['UserMovement']>, ParentType, ContextType, RequireFields<QueryUserMovementsArgs, 'userId'>>;
+  users?: Resolver<ResolversTypes['UsersListResponse'], ParentType, ContextType, Partial<QueryUsersArgs>>;
+  usersTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryUsersTotalCountArgs>>;
 }>;
 
 export type RefreshTokenResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RefreshToken'] = ResolversParentTypes['RefreshToken']> = ResolversObject<{
@@ -10357,7 +10358,7 @@ export type SegmentResolvers<ContextType = IContext, ParentType extends Resolver
 }>;
 
 export type SegmentDayResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SegmentDay'] = ResolversParentTypes['SegmentDay']> = ResolversObject<{
-  at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   joined?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -10421,9 +10422,9 @@ export type SegmentUsageSegmentResolvers<ContextType = IContext, ParentType exte
 }>;
 
 export type SettingsGlobalSearchResultResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SettingsGlobalSearchResult'] = ResolversParentTypes['SettingsGlobalSearchResult']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['GlobalSearchResultItem']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['GlobalSearchResultItem']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type SmsDeliveryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['SmsDelivery'] = ResolversParentTypes['SmsDelivery']> = ResolversObject<{
@@ -10433,14 +10434,14 @@ export type SmsDeliveryResolvers<ContextType = IContext, ParentType extends Reso
   createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   direction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   engageMessageId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  errorMessages?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  errorMessages?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   erxesApiId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   integrationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   requestData?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   responseData?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  statusUpdates?: Resolver<Maybe<Array<Maybe<ResolversTypes['SmsStatus']>>>, ParentType, ContextType>;
+  statusUpdates?: Resolver<Maybe<Array<ResolversTypes['SmsStatus']>>, ParentType, ContextType>;
   telnyxId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   to?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -10487,65 +10488,65 @@ export type SuccessResultResolvers<ContextType = IContext, ParentType extends Re
 
 export type TagResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag'], FederationReferenceType extends FederationReferenceTypes['Tag'] = FederationReferenceTypes['Tag']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['Tag']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   colorCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  isGroup?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  objectCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isGroup?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  objectCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  relatedIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  relatedIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   totalObjectCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type TagsListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TagsListResponse'] = ResolversParentTypes['TagsListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type TemplateResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Template'] = ResolversParentTypes['Template']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['TemplateCategory']>>>, ParentType, ContextType>;
-  categoryIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  content?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['TemplateCategory']>, ParentType, ContextType>;
+  categoryIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   updatedBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type TemplateCategoryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TemplateCategory'] = ResolversParentTypes['TemplateCategory']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  isRoot?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isRoot?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['TemplateCategory']>, ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  templateCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  templateCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   updatedBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type TemplateCategoryListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TemplateCategoryListResponse'] = ResolversParentTypes['TemplateCategoryListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['TemplateCategory']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['TemplateCategory']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type TemplateListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TemplateListResponse'] = ResolversParentTypes['TemplateListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Template']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Template']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type TestUserResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['TestUser'] = ResolversParentTypes['TestUser']> = ResolversObject<{
@@ -10571,12 +10572,12 @@ export type TriggerResolvers<ContextType = IContext, ParentType extends Resolver
   count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isCustom?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   style?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   workflowId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -10599,21 +10600,21 @@ export type UnitResolvers<ContextType = IContext, ParentType extends ResolversPa
   supervisor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   supervisorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  userIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  userCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  userIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type UnitListQueryResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UnitListQueryResponse'] = ResolversParentTypes['UnitListQueryResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['Unit']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['Unit']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type UomResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Uom'] = ResolversParentTypes['Uom']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   isForSubscription?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscriptionConfig?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
@@ -10622,42 +10623,42 @@ export type UomResolvers<ContextType = IContext, ParentType extends ResolversPar
 
 export type UserResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'], FederationReferenceType extends FederationReferenceTypes['User'] = FederationReferenceTypes['User']> = ResolversObject<{
   __resolveReference?: ReferenceResolver<Maybe<ResolversTypes['User']> | FederationReferenceType, FederationReferenceType, ContextType>;
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  branchIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  branches?: Resolver<Maybe<Array<Maybe<ResolversTypes['Branch']>>>, ParentType, ContextType>;
-  brandIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  brands?: Resolver<Maybe<Array<Maybe<ResolversTypes['Brand']>>>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  branchIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  branches?: Resolver<Array<ResolversTypes['Branch']>, ParentType, ContextType>;
+  brandIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  brands?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
   chatStatus?: Resolver<Maybe<ResolversTypes['UserChatStatus']>, ParentType, ContextType>;
   configs?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   configsConstants?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   currentOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   customPermissions?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomPermission']>>>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['Department']>, ParentType, ContextType>;
-  departmentIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  departments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Department']>>>, ParentType, ContextType>;
-  details?: Resolver<Maybe<ResolversTypes['UserDetailsType']>, ParentType, ContextType>;
+  departmentIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  departments?: Resolver<Array<ResolversTypes['Department']>, ParentType, ContextType>;
+  details?: Resolver<ResolversTypes['UserDetailsType'], ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailSignatures?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   employeeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   getNotificationByEmail?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  groupIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  isActive?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isOnboarded?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  groupIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isOnboarded?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isOwner?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isShowNotification?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  isSubscribed?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  leaderBoardPosition?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  links?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  onboardedPlugins?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  isShowNotification?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isSubscribed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  leaderBoardPosition?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  links?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  onboardedPlugins?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   organizations?: Resolver<Maybe<Array<Maybe<ResolversTypes['CookieOrganization']>>>, ParentType, ContextType>;
-  permissionGroupIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  positionIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  positions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Position']>>>, ParentType, ContextType>;
+  permissionGroupIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  positionIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  positions?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType>;
   propertiesData?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  score?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unitId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -10680,29 +10681,29 @@ export type UserDetailsTypeResolvers<ContextType = IContext, ParentType extends 
 }>;
 
 export type UserMovementResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UserMovement'] = ResolversParentTypes['UserMovement']> = ResolversObject<{
-  _id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contentType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentTypeDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   contentTypeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdByDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userDetail?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type UserPermissionResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UserPermission'] = ResolversParentTypes['UserPermission']> = ResolversObject<{
-  actions?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  actions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   module?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   plugin?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   scope?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type UsersListResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UsersListResponse'] = ResolversParentTypes['UsersListResponse']> = ResolversObject<{
-  list?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
-  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type VerificationRequestResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['VerificationRequest'] = ResolversParentTypes['VerificationRequest']> = ResolversObject<{
@@ -10713,13 +10714,13 @@ export type VerificationRequestResolvers<ContextType = IContext, ParentType exte
 }>;
 
 export type WorkflowResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Workflow'] = ResolversParentTypes['Workflow']> = ResolversObject<{
-  actions?: Resolver<Maybe<Array<Maybe<ResolversTypes['JSON']>>>, ParentType, ContextType>;
+  actions?: Resolver<Maybe<Array<ResolversTypes['JSON']>>, ParentType, ContextType>;
   automationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   config?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nextActionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   templateId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

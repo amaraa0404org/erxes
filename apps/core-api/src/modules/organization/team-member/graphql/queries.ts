@@ -1,50 +1,80 @@
 import { USER_ROLES } from 'erxes-api-shared/core-modules';
-import {
-  ICursorPaginateParams,
-  IUserDocument,
-} from 'erxes-api-shared/core-types';
+import { IUserDocument } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  Cursor_Direction,
+  QueryAllUsersArgs,
+  QueryResolvers,
+  QueryUserDetailArgs,
+  QueryUserMovementsArgs,
+  QueryUsersArgs,
+  QueryUsersTotalCountArgs,
+} from '~/__generated__/graphql';
 import { IContext, IModels } from '~/connectionResolvers';
 
 type IListArgs = {
-  sortDirection?: number;
-  sortField?: string;
-  searchValue?: string;
-  excludeIds?: boolean;
-  isActive?: boolean;
-  requireUsername: boolean;
-  ids?: string[];
-  email?: string;
-  status?: string;
-  brandIds?: string[];
-  departmentId?: string;
-  branchId?: string;
-  isAssignee?: boolean;
-  departmentIds: string[];
-  branchIds: string[];
-  unitId?: string;
-  segment?: string;
+  sortDirection?: number | null;
+  sortField?: string | null;
+  searchValue?: string | null;
+  excludeIds?: boolean | null;
+  isActive?: boolean | null;
+  requireUsername?: boolean | null;
+  ids?: Array<string | null> | null;
+  email?: string | null;
+  status?: string | null;
+  brandIds?: Array<string | null> | null;
+  departmentId?: string | null;
+  branchId?: string | null;
+  isAssignee?: boolean | null;
+  departmentIds?: Array<string | null> | null;
+  branchIds?: Array<string | null> | null;
+  unitId?: string | null;
+  segment?: string | null;
 };
 
 const NORMAL_USER_SELECTOR = { role: { $ne: USER_ROLES.SYSTEM } };
+
+const toCursorPaginateParams = (params: {
+  limit?: number | null;
+  cursor?: string | null;
+  direction?: Cursor_Direction | null;
+  orderBy?: Record<string, unknown> | null;
+}): {
+  limit?: number;
+  cursor?: string;
+  direction?: 'forward' | 'backward';
+  orderBy?: Record<string, SortOrder>;
+} => ({
+  limit: params.limit ?? undefined,
+  cursor: params.cursor ?? undefined,
+  direction:
+    params.direction === Cursor_Direction.Backward ? 'backward' : 'forward',
+  orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+});
 
 const queryBuilder = async (params: IListArgs, models: IModels) => {
   const {
     searchValue,
     isActive,
     requireUsername,
-    ids,
     status,
     excludeIds,
-    brandIds,
     departmentId,
     branchId,
-    departmentIds,
-    branchIds,
     unitId,
   } = params;
 
-  const selector: any = {
+  const ids = params.ids?.filter((id): id is string => Boolean(id));
+  const brandIds = params.brandIds?.filter((id): id is string => Boolean(id));
+  const departmentIds = params.departmentIds?.filter((id): id is string =>
+    Boolean(id),
+  );
+  const branchIds = params.branchIds?.filter((id): id is string =>
+    Boolean(id),
+  );
+
+  const selector: FilterQuery<IUserDocument> = {
     isActive,
   };
   if (searchValue) {
@@ -111,15 +141,11 @@ const queryBuilder = async (params: IListArgs, models: IModels) => {
   return selector;
 };
 
-export const userQueries = {
-  async userMovements(_parent, args, { models }: IContext) {
+export const userQueries: QueryResolvers<IContext> = {
+  async userMovements(_parent, args: QueryUserMovementsArgs, { models }) {
     return await models.UserMovements.find(args).sort({ createdAt: -1 });
   },
-  async usersTotalCount(
-    _parent: undefined,
-    args: IListArgs,
-    { models }: IContext,
-  ) {
+  async usersTotalCount(_parent, args: QueryUsersTotalCountArgs, { models }) {
     const selector = {
       ...(await queryBuilder(args, models)),
       ...NORMAL_USER_SELECTOR,
@@ -128,30 +154,15 @@ export const userQueries = {
     return models.Users.countDocuments(selector);
   },
 
-  async userDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
-    { models }: IContext,
-  ) {
+  async userDetail(_parent, { _id }: QueryUserDetailArgs, { models }) {
     return models.Users.findOne({ _id });
   },
 
-  async allUsers(
-    _parent: undefined,
-    {
-      searchValue,
-      isActive,
-      ids,
-      assignedToMe,
-    }: {
-      searchValue: string;
-      isActive: boolean;
-      ids: string[];
-      assignedToMe: string;
-    },
-    { user, models }: IContext,
-  ) {
-    const selector: any = {};
+  async allUsers(_parent, args: QueryAllUsersArgs, { user, models }) {
+    const { searchValue, isActive, assignedToMe } = args;
+    const ids = args.ids?.filter((id): id is string => Boolean(id));
+
+    const selector: FilterQuery<IUserDocument> = {};
 
     if (searchValue) {
       const fields = [
@@ -180,11 +191,7 @@ export const userQueries = {
     });
   },
 
-  async users(
-    _parent: undefined,
-    args: IListArgs & ICursorPaginateParams,
-    { models }: IContext,
-  ) {
+  async users(_parent, args: QueryUsersArgs, { models }) {
     const selector = {
       ...(await queryBuilder(args, models)),
       ...NORMAL_USER_SELECTOR,
@@ -192,7 +199,7 @@ export const userQueries = {
 
     const { list, totalCount, pageInfo } = await cursorPaginate<IUserDocument>({
       model: models.Users,
-      params: args,
+      params: toCursorPaginateParams(args),
       query: selector,
     });
 

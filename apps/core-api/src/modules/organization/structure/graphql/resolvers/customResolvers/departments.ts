@@ -1,29 +1,21 @@
 import { IContext } from '~/connectionResolvers';
-import { IDepartmentDocument } from '@/organization/structure/@types/structure';
+import { DepartmentResolvers } from '~/__generated__/graphql';
 
-export default {
-  async __resolveReference({ _id }, { models }: IContext) {
+const Department: DepartmentResolvers<IContext> = {
+  async __resolveReference({ _id }, { models }) {
     return models.Departments.findOne({ _id });
   },
 
-  async users(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async users(department, _args, { models }) {
     return models.Users.findUsers({
       departmentIds: { $in: department._id },
       isActive: true,
     });
   },
 
-  async userIds(
-    branch: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async userIds(department, _args, { models }) {
     const departmentUsers = await models.Users.findUsers({
-      departmentIds: { $in: branch._id },
+      departmentIds: { $in: department._id },
       isActive: true,
     });
 
@@ -31,49 +23,31 @@ export default {
     return userIds;
   },
 
-  async userCount(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async userCount(department, _args, { models }) {
     return models.Users.countDocuments({
       departmentIds: { $in: department._id || [] },
       isActive: true,
     });
   },
 
-  async parent(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async parent(department, _args, { models }) {
     return models.Departments.findOne({ _id: department.parentId });
   },
 
-  async children(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async children(department, _args, { models }) {
     return models.Departments.find({ parentId: department._id });
   },
 
-  async childCount(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async childCount(department, _args, { models }) {
     return models.Departments.countDocuments({ parentId: department._id });
   },
 
-  async supervisor(
-    department: IDepartmentDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async supervisor(department, _args, { models }) {
     return models.Users.findOne({
       _id: department.supervisorId,
       isActive: true,
     });
   },
 };
+
+export default Department;

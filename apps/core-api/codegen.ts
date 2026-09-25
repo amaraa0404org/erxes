@@ -62,7 +62,7 @@ const mappers = {
   AutomationWorkflowTemplate:
     '../modules/automations/db/models/AutomationWorkflowTemplates#IAutomationWorkflowTemplateDocument',
   Branch: '../modules/organization/structure/@types/structure#IBranchDocument',
-  Brand: 'erxes-api-shared/core-types#IBrandDocument',
+  Brand: '../modules/organization/brand/types#IBrandDocument',
   BroadcastRecipient:
     '../modules/broadcast/db/models/BroadcastRecipients#IBroadcastRecipientDocument',
   BroadcastRun:
@@ -74,6 +74,7 @@ const mappers = {
   CPComment: '../modules/clientportal/types/comment#ICPCommentDocument',
   CPNotification:
     '../modules/clientportal/types/cpNotification#ICPNotificationDocument',
+  CPUnit: '../modules/organization/structure/@types/structure#IUnitDocument',
   CPUser: '../modules/clientportal/types/cpUser#ICPUserDocument',
   ClientPortal: '../modules/clientportal/types/clientPortal#IClientPortalDocument',
   Company: 'erxes-api-shared/core-types#ICompanyDocument',

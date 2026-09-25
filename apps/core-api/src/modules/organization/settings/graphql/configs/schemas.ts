@@ -11,28 +11,28 @@ export const ConfigTypes = `
   }
 
   type FileUploadServiceInfo {
-    videoUploadEnabled: Boolean
+    videoUploadEnabled: Boolean!
   }
 `;
 
 export const queries = `
   search(value: String!): [JSON]
-  configs: [Config]
-  configsByCode(codes: [String], pattern: String): [Config]
+  configs: [Config!]!
+  configsByCode(codes: [String], pattern: String): [Config!]!
   configsGetVersion(releaseNotes: Boolean): JSON
-  configsGetEnv: ENV
+  configsGetEnv: ENV!
   configsConstants: JSON
   configsCheckActivateInstallation(hostname: String!): JSON
   configsCheckPremiumService(type: String!): Boolean
   configsGetEmailTemplate(name: String): String
   configsGetValue(code:String!):JSON
   configsGetInstallationStatus(name: String!): JSON
-  configsFileUploadInfo: FileUploadServiceInfo
+  configsFileUploadInfo: FileUploadServiceInfo!
   enabledServices: JSON
 `;
 
 export const mutations = `
-  configsUpdate(configsMap: JSON!): JSON
+  configsUpdate(configsMap: JSON!): JSON!
   configsActivateInstallation(token: String!, hostname: String!): JSON
   configsManagePluginInstall(type: String!, name: String!): JSON
 `;

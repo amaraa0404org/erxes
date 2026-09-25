@@ -2,28 +2,28 @@ import { commonParams } from './commonTypeDefs';
 
 export const DepartmentTypes = `
     type Department @key(fields: "_id") @cacheControl(maxAge: 3) {
-        _id: String
+        _id: String!
         title: String
         description: String
         parentId: String
         supervisorId: String
         supervisor: User
         code: String
-        order:String
+        order:String!
         parent: Department
-        children: [Department]
-        childCount: Int
-        users: [User]
-        userCount: Int
-        userIds: [String]
+        children: [Department!]!
+        childCount: Int!
+        users: [User!]!
+        userCount: Int!
+        userIds: [String!]!
         workhours:JSON
-        status: String
+        status: String!
     }
 
     type DepartmentsListResponse {
-        list:[Department]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[Department!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
   `;
 
@@ -39,14 +39,14 @@ const commonDepartmentParams = `
 `;
 
 export const mutations = `
-    departmentsAdd(${commonDepartmentParams}): Department
+    departmentsAdd(${commonDepartmentParams}): Department!
     departmentsEdit(_id: String!,${commonDepartmentParams}): Department
-    departmentsRemove(ids: [String!]): JSON
+    departmentsRemove(ids: [String!]!): JSON!
 `;
 
 export const queries = `
-    departments(${commonParams},withoutUserFilter:Boolean): [Department]
-    departmentsMain(${commonParams},withoutUserFilter:Boolean): DepartmentsListResponse
-    departmentDetail(_id: String!): Department
-    cpDepartments(${commonParams},withoutUserFilter:Boolean): [Department]
+    departments(${commonParams},withoutUserFilter:Boolean): [Department!]!
+    departmentsMain(${commonParams},withoutUserFilter:Boolean): DepartmentsListResponse!
+    departmentDetail(_id: String!): Department!
+    cpDepartments(${commonParams},withoutUserFilter:Boolean): [Department!]!
 `;

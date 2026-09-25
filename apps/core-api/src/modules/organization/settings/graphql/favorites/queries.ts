@@ -1,16 +1,15 @@
 import { IContext } from '~/connectionResolvers';
-import { IFavorites } from '@/organization/settings/db/definitions/favorites';
 import {
   normalizeFavoritePath,
   resolveFavoritesBreadcrumbs,
 } from '@/organization/settings/graphql/favorites/utils';
+import {
+  QueryIsFavoriteArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 
-export const favoriteQueries = {
-  getFavoritesByCurrentUser: async (
-    _parent: undefined,
-    _args: undefined,
-    { models, user }: IContext,
-  ) => {
+export const favoriteQueries: QueryResolvers<IContext> = {
+  getFavoritesByCurrentUser: async (_parent, _args, { models, user }) => {
     const favorites = await models.Favorites.getFavoritesByCurrentUser({
       userId: user._id,
     });
@@ -18,11 +17,7 @@ export const favoriteQueries = {
     return resolveFavoritesBreadcrumbs({ favorites });
   },
 
-  isFavorite: async (
-    _parent: undefined,
-    { path }: Pick<IFavorites, 'path'>,
-    { models, user }: IContext,
-  ) => {
+  isFavorite: async (_parent, { path }: QueryIsFavoriteArgs, { models, user }) => {
     const favorite = await models.Favorites.getFavorite({
       path: normalizeFavoritePath(path),
       userId: user._id,

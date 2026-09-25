@@ -1,10 +1,8 @@
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-export const positionMutations = {
-  async positionsAdd(
-    _parent: undefined,
-    doc,
-    { user, models, checkPermission }: IContext,
-  ) {
+
+export const positionMutations: MutationResolvers<IContext> = {
+  async positionsAdd(_parent, doc, { user, models, checkPermission }) {
     await checkPermission('positionsManage');
 
     const position = await models.Positions.createPosition(doc, user);
@@ -12,9 +10,9 @@ export const positionMutations = {
   },
 
   async positionsEdit(
-    _parent: undefined,
+    _parent,
     { _id, ...doc },
-    { user, models, checkPermission }: IContext,
+    { user, models, checkPermission },
   ) {
     await checkPermission('positionsManage');
 
@@ -23,19 +21,15 @@ export const positionMutations = {
     return position;
   },
 
-  async positionsRemove(
-    _parent: undefined,
-    { ids },
-    { models, checkPermission }: IContext,
-  ) {
+  async positionsRemove(_parent, { ids }, { models, checkPermission }) {
     await checkPermission('positionsManage');
 
     if (!ids.length) {
       throw new Error('You must specify at least one position id to remove');
     }
 
-    const position = await models.Positions.removePositions(ids);
+    const deleteResponse = await models.Positions.removePositions(ids);
 
-    return position;
+    return { ...deleteResponse };
   },
 };

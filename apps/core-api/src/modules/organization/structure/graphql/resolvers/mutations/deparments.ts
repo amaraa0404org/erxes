@@ -1,10 +1,8 @@
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-export const deparmentMutations = {
-  async departmentsAdd(
-    _parent: undefined,
-    doc,
-    { user, models, checkPermission }: IContext,
-  ) {
+
+export const deparmentMutations: MutationResolvers<IContext> = {
+  async departmentsAdd(_parent, doc, { user, models, checkPermission }) {
     await checkPermission('departmentsManage');
 
     const department = await models.Departments.createDepartment(doc, user);
@@ -13,9 +11,9 @@ export const deparmentMutations = {
   },
 
   async departmentsEdit(
-    _parent: undefined,
+    _parent,
     { _id, ...doc },
-    { user, models, checkPermission }: IContext,
+    { user, models, checkPermission },
   ) {
     await checkPermission('departmentsManage');
 
@@ -28,17 +26,13 @@ export const deparmentMutations = {
     return department;
   },
 
-  async departmentsRemove(
-    _parent: undefined,
-    { ids },
-    { models, checkPermission }: IContext,
-  ) {
+  async departmentsRemove(_parent, { ids }, { models, checkPermission }) {
     await checkPermission('departmentsManage');
 
     if (!ids.length) {
       throw new Error('You must specify at least one department id to remove');
     }
     const deleteResponse = await models.Departments.removeDepartments(ids);
-    return deleteResponse;
+    return { ...deleteResponse };
   },
 };

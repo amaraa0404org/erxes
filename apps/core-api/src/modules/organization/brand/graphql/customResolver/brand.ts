@@ -1,9 +1,10 @@
-import { IContext } from "~/connectionResolvers";
+import { BrandResolvers } from '~/__generated__/graphql';
+import { IContext } from '~/connectionResolvers';
 
-const Brand = {
-    __resolveReference: async ({ _id }, { models }: IContext) => {
-      return models.Brands.findOne({ _id });
-    },
+const Brand: BrandResolvers<IContext> = {
+  __resolveReference: async ({ _id }, { models }) => {
+    return models.Brands.findOne({ _id });
+  },
 };
 
 export default { Brand };

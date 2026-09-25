@@ -1,34 +1,28 @@
+import { UnitResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { IUnitDocument } from '@/organization/structure/@types/structure';
 
-export default {
-  async users(unit: IUnitDocument, _args: undefined, { models }: IContext) {
+const Unit: UnitResolvers<IContext> = {
+  async users(unit, _args, { models }) {
     return models.Users.findUsers({
       _id: { $in: unit.userIds || [] },
       isActive: true,
     });
   },
 
-  async department(
-    unit: IUnitDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async department(unit, _args, { models }) {
     return models.Departments.findOne({ _id: unit.departmentId });
   },
 
-  async supervisor(
-    unit: IUnitDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
+  async supervisor(unit, _args, { models }) {
     return models.Users.findOne({ _id: unit.supervisorId, isActive: true });
   },
 
-  async userCount(unit: IUnitDocument, _args: undefined, { models }: IContext) {
+  async userCount(unit, _args, { models }) {
     return models.Users.countDocuments({
       _id: { $in: unit.userIds || [] },
       isActive: true,
     });
   },
 };
+
+export default Unit;

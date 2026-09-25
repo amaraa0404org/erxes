@@ -18,15 +18,15 @@ export const UnitTypes = `
         code: String
         description: String
         department: Department
-        users: [User]
-        userCount: Int
-        userIds: [String]
+        users: [User!]!
+        userCount: Int!
+        userIds: [String!]
     }
 
     type UnitListQueryResponse {
-        list:[Unit]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[Unit!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
 
     type CPUnitUserDetails {
@@ -37,14 +37,14 @@ export const UnitTypes = `
     }
 
     type CPUnitUser {
-        _id: String
+        _id: String!
         username: String
         email: String
         details: CPUnitUserDetails
     }
 
     type CPUnitDepartment {
-        _id: String
+        _id: String!
         title: String
         code: String
         description: String
@@ -56,20 +56,20 @@ export const UnitTypes = `
         code: String
         description: String
         department: CPUnitDepartment
-        users: [CPUnitUser]
+        users: [CPUnitUser!]!
     }
 
 `;
 export const mutations = `
-    unitsAdd(${commonUnitParams}): Unit
+    unitsAdd(${commonUnitParams}): Unit!
     unitsEdit(_id: String!, ${commonUnitParams}): Unit
-    unitsRemove(ids:[String!]): JSON
+    unitsRemove(ids:[String!]!): JSON!
 `;
 
 export const queries = `
-    units(searchValue: String): [Unit]
-    unitsMain(${commonParams}): UnitListQueryResponse
-    unitDetail(_id: String!): Unit
+    units(searchValue: String): [Unit!]!
+    unitsMain(${commonParams}): UnitListQueryResponse!
+    unitDetail(_id: String!): Unit!
 
-    cpUnits(searchValue: String): [CPUnit]
+    cpUnits(searchValue: String): [CPUnit!]!
 `;

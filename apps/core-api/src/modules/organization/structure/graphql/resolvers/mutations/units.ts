@@ -1,10 +1,8 @@
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-export const unitsMutations = {
-  async unitsAdd(
-    _parent: undefined,
-    doc,
-    { user, models, checkPermission }: IContext,
-  ) {
+
+export const unitsMutations: MutationResolvers<IContext> = {
+  async unitsAdd(_parent, doc, { user, models, checkPermission }) {
     await checkPermission('unitsManage');
 
     const unit = await models.Units.createUnit(doc, user);
@@ -12,11 +10,7 @@ export const unitsMutations = {
     return unit;
   },
 
-  async unitsEdit(
-    _parent: undefined,
-    { _id, ...doc },
-    { user, models, checkPermission }: IContext,
-  ) {
+  async unitsEdit(_parent, { _id, ...doc }, { user, models, checkPermission }) {
     await checkPermission('unitsManage');
 
     const unit = await models.Units.updateUnit(_id, doc, user);
@@ -24,11 +18,7 @@ export const unitsMutations = {
     return unit;
   },
 
-  async unitsRemove(
-    _parent: undefined,
-    { ids },
-    { models, checkPermission }: IContext,
-  ) {
+  async unitsRemove(_parent, { ids }, { models, checkPermission }) {
     await checkPermission('unitsManage');
 
     if (!ids.length) {
@@ -36,6 +26,6 @@ export const unitsMutations = {
     }
     const deleteResponse = await models.Units.removeUnits(ids);
 
-    return deleteResponse;
+    return { ...deleteResponse };
   },
 };

@@ -1,22 +1,29 @@
 import { cursorPaginate } from 'erxes-api-shared/utils';
+import { FilterQuery, SortOrder } from 'mongoose';
 import { IContext } from '~/connectionResolvers';
 import { IBrandDocument } from '../types';
+import {
+  Cursor_Direction,
+  QueryBrandDetailArgs,
+  QueryBrandsArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 
-export const brandQueries = {
+export const brandQueries: QueryResolvers<IContext> = {
   /**
    * All brands
    */
-  async allBrands(_root: undefined, _params: undefined, { models }: IContext) {
-    return await models.Brands.find().lean();
+  async allBrands(_root, _params, { models }) {
+    return await models.Brands.find();
   },
 
   /**
    * Brands list
    */
-  async brands(_root: undefined, params, { models }: IContext) {
+  async brands(_root, params: QueryBrandsArgs, { models }) {
     const { searchValue } = params;
 
-    const filter: any = {};
+    const filter: FilterQuery<IBrandDocument> = {};
 
     if (searchValue) {
       filter.name = new RegExp(`.*${params.searchValue}.*`, 'i');
@@ -25,7 +32,15 @@ export const brandQueries = {
     const { list, totalCount, pageInfo } = await cursorPaginate<IBrandDocument>(
       {
         model: models.Brands,
-        params,
+        params: {
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction:
+            params.direction === Cursor_Direction.Backward
+              ? ('backward' as const)
+              : ('forward' as const),
+          orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+        },
         query: filter,
       },
     );
@@ -36,25 +51,21 @@ export const brandQueries = {
   /**
    * Get one brand
    */
-  async brandDetail(
-    _root: undefined,
-    { _id }: { _id: string },
-    { models }: IContext,
-  ) {
+  async brandDetail(_root, { _id }: QueryBrandDetailArgs, { models }) {
     return await models.Brands.findOne({ _id });
   },
 
   /**
    * Get all brands count. We will use it in pager
    */
-  async brandsTotalCount(_root: undefined, _args, { models }: IContext) {
+  async brandsTotalCount(_root, _args, { models }) {
     return await models.Brands.countDocuments();
   },
 
   /**
    * Get last brand
    */
-  async brandsGetLast(_root: undefined, _args, { models }: IContext) {
+  async brandsGetLast(_root, _args, { models }) {
     return await models.Brands.findOne({}).sort({ createdAt: -1 });
   },
 };

@@ -4,12 +4,12 @@ export interface IUnit {
   _id: string;
   title: string;
   code: string;
-  userCount?: number;
+  userCount: number;
 }
 
 export interface IUnitsMain {
   list: IUnit[];
-  totalCount: number | undefined;
+  totalCount: number;
   totalUsersCount: number | undefined;
 }
 

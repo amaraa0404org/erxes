@@ -2,22 +2,22 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 
 export const types = `
   type Brand @key(fields: "_id") @cacheControl(maxAge: 3) {
-    _id: String
+    _id: String!
     name: String
     description: String
     code: String
     userId: String
-    createdAt: Date
+    createdAt: Date!
     emailConfig: JSON
-    memberIds: [String]
+    memberIds: [String!]
 
     cursor: String
   }
 
   type BrandListResponse {
-    list: [Brand]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [Brand!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 `;
 
@@ -27,10 +27,10 @@ const queryParams = `
 `;
 
 export const queries = `
-  allBrands: [Brand]
-  brands(${queryParams}): BrandListResponse
+  allBrands: [Brand!]!
+  brands(${queryParams}): BrandListResponse!
   brandDetail(_id: String!): Brand
-  brandsTotalCount: Int
+  brandsTotalCount: Int!
   brandsGetLast: Brand
 `;
 
@@ -41,7 +41,7 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  brandsAdd(${mutationParams}): Brand
+  brandsAdd(${mutationParams}): Brand!
   brandsEdit(_id: String!, ${mutationParams}): Brand
-  brandsRemove(_ids: [String!]): JSON
+  brandsRemove(_ids: [String!]!): JSON!
 `;
