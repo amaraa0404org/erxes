@@ -13,19 +13,19 @@ export const types = `
   }
 
   type CoreModulesGlobalSearchResult {
-    list: [GlobalSearchResultItem]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [GlobalSearchResultItem!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   type SettingsGlobalSearchResult {
-    list: [GlobalSearchResultItem]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [GlobalSearchResultItem!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 `;
 
 export const queries = `
-  coreModulesGlobalSearch(searchValue: String, module: String, limit: Int, cursor: String, direction: String, orderBy: JSON): CoreModulesGlobalSearchResult
-  settingsGlobalSearch(searchValue: String, limit: Int, cursor: String, direction: String, orderBy: JSON): SettingsGlobalSearchResult
+  coreModulesGlobalSearch(searchValue: String, module: String, limit: Int, cursor: String, direction: String, orderBy: JSON): CoreModulesGlobalSearchResult!
+  settingsGlobalSearch(searchValue: String, limit: Int, cursor: String, direction: String, orderBy: JSON): SettingsGlobalSearchResult!
 `;

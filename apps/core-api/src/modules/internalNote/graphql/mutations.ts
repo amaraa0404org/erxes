@@ -3,6 +3,11 @@ import {
   isEnabled,
   sendTRPCMessage,
 } from 'erxes-api-shared/utils';
+import {
+  MutationInternalNotesEditArgs,
+  MutationInternalNotesRemoveArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IInternalNote } from '~/modules/internalNote/types';
 
@@ -20,12 +25,12 @@ interface IInternalNoteNotifDoc {
   [key: string]: unknown;
 }
 
-export const internalNoteMutations = {
+export const internalNoteMutations: MutationResolvers<IContext> = {
   /**
    * Adds internalNote object and also adds an activity log
    */
   async internalNotesAdd(
-    _root: undefined,
+    _root,
     args: IInternalNote,
     { user, models, subdomain, checkPermission }: IContext,
   ) {
@@ -158,14 +163,19 @@ export const internalNoteMutations = {
    */
   async internalNotesEdit(
     _root,
-    { _id, ...doc }: IInternalNote & { _id: string },
+    { _id, ...doc }: MutationInternalNotesEditArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('internalNotesManage');
 
     graphqlPubsub.publish('activityLogsChanged', {});
 
-    return models.InternalNotes.updateInternalNote(_id, doc);
+    // Generated args carry GraphQL nullability; the model only writes the
+    // provided fields, so narrow at the boundary.
+    return models.InternalNotes.updateInternalNote(
+      _id,
+      doc as Partial<IInternalNote>,
+    );
   },
 
   /**
@@ -173,7 +183,7 @@ export const internalNoteMutations = {
    */
   async internalNotesRemove(
     _root,
-    { _id }: { _id: string },
+    { _id }: MutationInternalNotesRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('internalNotesManage');

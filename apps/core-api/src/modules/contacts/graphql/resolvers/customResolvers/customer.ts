@@ -1,22 +1,16 @@
-import { ICustomerDocument } from 'erxes-api-shared/core-types';
+import { ICustomerDocument, IUserDocument } from 'erxes-api-shared/core-types';
+import { CustomerResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
+const customerResolvers: CustomerResolvers<IContext> = {
   __resolveReference: async ({ _id }, { models }: IContext) => {
     const customer = await models.Customers.findOne({ _id });
     return customer;
   },
 
-  integration: (customer: ICustomerDocument) => {
-    if (!customer.integrationId) {
-      return null;
-    }
-    return { __typename: 'Integration', _id: customer.integrationId };
-  },
-
   companies: async (
     customer: ICustomerDocument,
-    _params: undefined,
+    _params,
     { models: { Companies, Conformities } }: IContext,
   ) => {
     const companyIds = await Conformities.savedConformity({
@@ -32,13 +26,20 @@ export default {
 
   owner: async (
     customer: ICustomerDocument,
-    _params: undefined,
+    _params,
     { models: { Users } }: IContext,
   ) => {
     if (!customer.ownerId) {
-      return;
+      return null;
     }
 
-    return (await Users.findOne({ _id: customer.ownerId })) || {};
+    // Historically this resolves to `{}` rather than null when the owner no
+    // longer exists, so clients always see a User-shaped object.
+    return (
+      (await Users.findOne({ _id: customer.ownerId })) ||
+      ({} as IUserDocument)
+    );
   },
 };
+
+export default customerResolvers;

@@ -1,10 +1,17 @@
-import { IContext } from '~/connectionResolvers';
 import { IApp } from 'erxes-api-shared/core-types';
+import {
+  MutationAppsAddArgs,
+  MutationAppsEditArgs,
+  MutationAppsRemoveArgs,
+  MutationAppsRevokeArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
+import { IContext } from '~/connectionResolvers';
 
-export const appMutations = {
+export const appMutations: MutationResolvers<IContext> = {
   async appsAdd(
-    _parent: undefined,
-    params: IApp,
+    _parent,
+    params: MutationAppsAddArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('appsManage');
@@ -13,18 +20,18 @@ export const appMutations = {
   },
 
   async appsEdit(
-    _parent: undefined,
-    { _id, name }: { _id: string; name: string },
+    _parent,
+    { _id, name }: MutationAppsEditArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('appsManage');
 
-    return models.Apps.updateApp(_id, { name });
+    return models.Apps.updateApp(_id, { name: name ?? undefined });
   },
 
   async appsRevoke(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: MutationAppsRevokeArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('appsManage');
@@ -33,12 +40,12 @@ export const appMutations = {
   },
 
   async appsRemove(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: MutationAppsRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('appsManage');
 
-    return models.Apps.removeApp(_id);
+    return models.Apps.removeApp(_id) as Promise<Record<string, unknown>>;
   },
 };

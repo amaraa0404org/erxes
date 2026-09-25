@@ -1,17 +1,11 @@
 import { IDeliveryReportsDocument } from '@/broadcast/@types';
 import { IContext } from '~/connectionResolvers';
+import { DeliveryReportResolvers } from '~/__generated__/graphql';
 
-export default {
-  async __resolveReference(
-    { _id }: IDeliveryReportsDocument,
-    _args: undefined,
-    { models }: IContext,
-  ) {
-    return models.DeliveryReports.findOne({ _id });
-  },
+const deliveryReportResolvers: DeliveryReportResolvers<IContext> = {
   async engage(
     { engageMessageId }: IDeliveryReportsDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) {
     return models.EngageMessages.findOne(
@@ -20,3 +14,5 @@ export default {
     );
   },
 };
+
+export default deliveryReportResolvers;

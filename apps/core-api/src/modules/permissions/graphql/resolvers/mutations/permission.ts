@@ -1,45 +1,68 @@
 import { IContext } from '~/connectionResolvers';
-import { IPermissionInput } from 'erxes-api-shared/core-types';
+import {
+  IPermissionGroupPermission,
+  IPermissionInput,
+} from 'erxes-api-shared/core-types';
+import {
+  MutationPermissionGroupAddArgs,
+  MutationPermissionGroupEditArgs,
+  MutationPermissionGroupRemoveArgs,
+  MutationResolvers,
+  MutationUserAddCustomPermissionArgs,
+  MutationUserRemoveCustomPermissionArgs,
+  MutationUsersUpdatePermissionGroupsArgs,
+  MutationUserUpdatePermissionGroupsArgs,
+  PermissionInput,
+} from '~/__generated__/graphql';
 import { generateUserUpdateActivityLogs } from '~/modules/organization/team-member/meta/activity-log';
 import { clearGroupActionsCache } from 'erxes-api-shared/core-modules';
 
-export const permissionMutations = {
+const toGroupPermission = ({
+  plugin,
+  module,
+  actions,
+  scope,
+}: PermissionInput): IPermissionGroupPermission => ({
+  plugin,
+  module,
+  actions: actions.filter((a): a is string => typeof a === 'string'),
+  scope: scope as IPermissionGroupPermission['scope'],
+});
+
+const toPermissionInput = ({
+  module,
+  actions,
+  scope,
+}: PermissionInput): IPermissionInput => ({
+  module,
+  actions: actions.filter((a): a is string => typeof a === 'string'),
+  scope: scope as IPermissionInput['scope'],
+});
+
+export const permissionMutations: MutationResolvers<IContext> = {
   async permissionGroupAdd(
-    _root: any,
-    {
-      name,
-      description,
-      permissions,
-    }: {
-      name: string;
-      description?: string;
-      permissions: IPermissionInput[];
-    },
+    _root,
+    { name, description, permissions }: MutationPermissionGroupAddArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('permissionsManage');
 
     return models.PermissionGroups.create({
       name,
-      description,
-      permissions,
+      description: description ?? undefined,
+      permissions: permissions.map(toGroupPermission),
     });
   },
 
   // Update custom permission group
   async permissionGroupEdit(
-    _root: any,
+    _root,
     {
       _id,
       name,
       description,
       permissions,
-    }: {
-      _id: string;
-      name?: string;
-      description?: string;
-      permissions?: IPermissionInput[];
-    },
+    }: MutationPermissionGroupEditArgs,
     { models, checkPermission, subdomain }: IContext,
   ) {
     await checkPermission('permissionsManage');
@@ -47,10 +70,15 @@ export const permissionMutations = {
     const group = await models.PermissionGroups.findOne({ _id });
     if (!group) throw new Error('Permission group not found');
 
-    const update: any = {};
-    if (name !== undefined) update.name = name;
-    if (description !== undefined) update.description = description;
-    if (permissions !== undefined) update.permissions = permissions;
+    const update: {
+      name?: string;
+      description?: string;
+      permissions?: IPermissionGroupPermission[];
+    } = {};
+    if (name != null) update.name = name;
+    if (description != null) update.description = description;
+    if (permissions != null)
+      update.permissions = permissions.map(toGroupPermission);
 
     await models.PermissionGroups.updateOne({ _id }, { $set: update });
 
@@ -61,8 +89,8 @@ export const permissionMutations = {
 
   // Remove custom permission group
   async permissionGroupRemove(
-    _root: any,
-    { _id }: { _id: string },
+    _root,
+    { _id }: MutationPermissionGroupRemoveArgs,
     { models, checkPermission, subdomain }: IContext,
   ) {
     await checkPermission('permissionsManage');
@@ -85,8 +113,8 @@ export const permissionMutations = {
 
   // Assign permission groups to user
   async userUpdatePermissionGroups(
-    _root: any,
-    { userId, groupIds }: { userId: string; groupIds: string[] },
+    _root,
+    { userId, groupIds }: MutationUserUpdatePermissionGroupsArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('permissionsManage');
@@ -94,7 +122,9 @@ export const permissionMutations = {
     const user = await models.Users.findOne({ _id: userId });
     if (!user) throw new Error('User not found');
 
-    await models.Users.updateUser(userId, { permissionGroupIds: groupIds });
+    await models.Users.updateUser(userId, {
+      permissionGroupIds: groupIds,
+    });
 
     await clearGroupActionsCache({ userId });
 
@@ -105,8 +135,8 @@ export const permissionMutations = {
   // Default groups (id contains ':') replace any existing group with the
   // same plugin prefix; custom groups (Mongo ObjectId, no ':') are added.
   async usersUpdatePermissionGroups(
-    _root: any,
-    { userIds, groupIds }: { userIds: string[]; groupIds: string[] },
+    _root,
+    { userIds, groupIds }: MutationUsersUpdatePermissionGroupsArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('permissionsManage');
@@ -119,7 +149,7 @@ export const permissionMutations = {
       _id: { $in: userIds },
     }).lean();
 
-    const foundIds = new Set(users.map((u: any) => u._id));
+    const foundIds = new Set(users.map((u) => u._id));
     const missing = userIds.filter((id) => !foundIds.has(id));
     if (missing.length) {
       throw new Error(`Users not found: ${missing.join(', ')}`);
@@ -148,14 +178,16 @@ export const permissionMutations = {
 
   // Add custom permission to user
   async userAddCustomPermission(
-    _root: any,
-    { userId, permission }: { userId: string; permission: IPermissionInput },
+    _root,
+    { userId, permission }: MutationUserAddCustomPermissionArgs,
     { subdomain, models, eventHandlers, checkPermission }: IContext,
   ) {
     await checkPermission('permissionsManage');
 
     const user = await models.Users.findOne({ _id: userId });
     if (!user) throw new Error('User not found');
+
+    const customPermission = toPermissionInput(permission);
 
     const { sendDbEventLog, createActivityLog } = eventHandlers('core')(
       'organization',
@@ -164,14 +196,14 @@ export const permissionMutations = {
     // Remove existing permission for same module (replace)
     await models.Users.updateOne(
       { _id: userId },
-      { $pull: { customPermissions: { module: permission.module } } },
+      { $pull: { customPermissions: { module: customPermission.module } } },
     );
 
     // Add new permission
 
     await models.Users.updateOne(
       { _id: userId },
-      { $push: { customPermissions: permission } },
+      { $push: { customPermissions: customPermission } },
     );
 
     const updatedUser = await models.Users.findOne({ _id: userId });
@@ -197,8 +229,8 @@ export const permissionMutations = {
 
   // Remove custom permission from user
   async userRemoveCustomPermission(
-    _root: any,
-    { userId, module }: { userId: string; module: string },
+    _root,
+    { userId, module }: MutationUserRemoveCustomPermissionArgs,
     { models, subdomain, eventHandlers, checkPermission }: IContext,
   ) {
     await checkPermission('permissionsManage');

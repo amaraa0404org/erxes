@@ -3,24 +3,33 @@ import {
   IImportExportContext,
   buildExportCursorQuery,
 } from 'erxes-api-shared/core-modules';
+import { ICompanyDocument } from 'erxes-api-shared/core-types';
+import { FilterQuery } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
-import { generateFilter } from '~/modules/contacts/utils';
+import {
+  ContactsFilterParams,
+  generateFilter,
+} from '~/modules/contacts/utils';
 import { buildCompanyExportRow } from './buildCompanyExportRow';
 
 export async function getCompanyExportData(
   data: GetExportData,
   { subdomain, models }: IImportExportContext<IModels>,
-): Promise<Record<string, any>[]> {
+): Promise<Record<string, unknown>[]> {
   const { cursor, limit, filters, ids, selectedFields } = data;
 
   if (!models) {
     throw new Error('Models not available in context');
   }
 
-  let query: any = {};
+  let query: FilterQuery<ICompanyDocument> = {};
 
   if (filters && Object.keys(filters).length > 0) {
-    query = await generateFilter(subdomain, filters, models);
+    query = await generateFilter<ICompanyDocument>(
+      subdomain,
+      filters as ContactsFilterParams,
+      models,
+    );
   }
 
   const { query: exportQuery, isIdsMode } = buildExportCursorQuery({

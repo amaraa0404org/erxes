@@ -8,10 +8,10 @@ export const types = `
   }
 
   type Customer @key(fields: "_id") @cacheControl(maxAge: 3) {
-    _id: String
-    state: String
-    createdAt: Date
-    updatedAt: Date
+    _id: String!
+    state: String!
+    createdAt: Date!
+    updatedAt: Date!
     avatar: String
     integrationId: String
     clientPortalId: String
@@ -20,18 +20,18 @@ export const types = `
     middleName: String
 
     birthDate: Date
-    sex: Int
+    sex: Int!
 
     email: String
     primaryEmail: String
-    emails: [String]
+    emails: [String!]
     primaryPhone: String
-    phones: [String]
+    phones: [String!]
     primaryAddress: JSON
     addresses: [JSON]
 
     phone: String
-    tagIds: [String]
+    tagIds: [String!]
     remoteAddress: String
     location: JSON
     visitorContactInfo: JSON
@@ -41,12 +41,12 @@ export const types = `
     position: String
     department: String
     leadStatus: String
-    hasAuthority: String
+    hasAuthority: String!
     description: String
-    isSubscribed: String
+    isSubscribed: String!
     code: String
-    emailValidationStatus: String
-    phoneValidationStatus: String
+    emailValidationStatus: String!
+    phoneValidationStatus: String!
     status: String
     isOnline: Boolean
     lastSeenAt: Date
@@ -54,16 +54,16 @@ export const types = `
     urlVisits: [JSON]
     owner: User
     score: Float
-    links: JSON
-    companies: [Company]
-    getTags: [Tag]
+    links: JSON!
+    companies: [Company!]!
+    getTags: [Tag!]
     cursor: String
   }
 
   type CustomersListResponse {
-    list: [Customer],
-    pageInfo: PageInfo
-    totalCount: Int,
+    list: [Customer!]!,
+    pageInfo: PageInfo!
+    totalCount: Int!,
   }
 
 `;
@@ -79,23 +79,23 @@ export const conformityQueryFields = `
 const queryParams = `
   segment: String
   type: String
-  ids: [String]
+  ids: [String!]
   excludeIds: Boolean
 
-  tagIds: [String]
-  excludeTagIds: [String]
+  tagIds: [String!]
+  excludeTagIds: [String!]
   tagWithRelated: Boolean
 
-  segmentIds: [String]
+  segmentIds: [String!]
 
-  brandIds: [String]
+  brandIds: [String!]
 
-  integrationIds: [String]
-  integrationTypes: [String]
+  integrationIds: [String!]
+  integrationTypes: [String!]
 
   clientPortalId: String
 
-  formIds: [String]
+  formIds: [String!]
 
   searchValue: String
   autoCompletion: Boolean
@@ -117,13 +117,13 @@ const queryParams = `
 `;
 
 export const queries = `
-  customers(${queryParams}): CustomersListResponse
-  customersCount(types: [CUSTOMER_RELATION_TYPE]): JSON
-  customerDetail(_id: String!): Customer
-  contactsLogs(action: String, content:JSON, contentType: String): JSON
+  customers(${queryParams}): CustomersListResponse!
+  customersCount(types: [CUSTOMER_RELATION_TYPE!]): JSON!
+  customerDetail(_id: String!): Customer!
+  contactsLogs(action: String, content:JSON, contentType: String!): JSON!
   
-  cpCustomers(${queryParams}): CustomersListResponse
-  cpCustomerDetail(_id: String!): Customer
+  cpCustomers(${queryParams}): CustomersListResponse!
+  cpCustomerDetail(_id: String!): Customer!
   `;
 
 const fields = `
@@ -132,9 +132,9 @@ const fields = `
   lastName: String
   middleName: String
   primaryEmail: String
-  emails: [String]
+  emails: [String!]
   primaryPhone: String
-  phones: [String]
+  phones: [String!]
   primaryAddress: JSON
   addresses: [JSON]
   ownerId: String
@@ -154,16 +154,16 @@ const fields = `
 `;
 
 export const mutations = `
-  customersAdd(state: String, ${fields}): Customer
+  customersAdd(state: String, ${fields}): Customer!
   customersEdit(_id: String!, ${fields}): Customer
-  customersRemove(customerIds: [String]): [String]
+  customersRemove(customerIds: [String!]!): [String!]!
 
-  customersMerge(customerIds: [String], customerFields: JSON): Customer
-  customersVerify(verificationType:String!): String
+  customersMerge(customerIds: [String!]!, customerFields: JSON): Customer
+  customersVerify(verificationType:String!): String!
 
   customersChangeState(_id: String!, value: String!): Customer
-  customersChangeVerificationStatus(customerIds: [String], type: String!, status: String!): [Customer]
-  customersChangeStateBulk(_ids: [String]!, value: String!): JSON
+  customersChangeVerificationStatus(customerIds: [String!]!, type: String!, status: String!): [Customer!]!
+  customersChangeStateBulk(_ids: [String!]!, value: String!): JSON!
 
-  cpCustomersAdd(state: String, ${fields}): Customer
+  cpCustomersAdd(state: String, ${fields}): Customer!
 `;

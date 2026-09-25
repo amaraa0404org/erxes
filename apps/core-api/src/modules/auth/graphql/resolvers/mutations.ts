@@ -8,6 +8,14 @@ import {
   updateSaasOrganization,
 } from 'erxes-api-shared/utils';
 import * as jwt from 'jsonwebtoken';
+import { CookieOptions } from 'express';
+import {
+  MutationForgotPasswordArgs,
+  MutationLoginArgs,
+  MutationLoginWithMagicLinkArgs,
+  MutationResetPasswordArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import {
   getCallbackRedirectUrl,
@@ -17,30 +25,32 @@ import {
 import { assertSaasEnvironment } from '~/utils/saas';
 import { sendEmail } from '~/utils/email';
 
-type LoginParams = {
-  email: string;
-  password: string;
-  deviceToken?: string;
-};
-
-export const authMutations = {
+export const authMutations: MutationResolvers<IContext> = {
   /*
    * Login   */
   async login(
-    _parent: undefined,
-    args: LoginParams,
+    _parent,
+    args: MutationLoginArgs,
     { req, res, requestInfo, models, subdomain }: IContext,
   ) {
     return await logHandler(
       async () => {
-        const response = await models.Users.login(args);
+        const response = await models.Users.login({
+          email: args.email,
+          password: args.password,
+          deviceToken: args.deviceToken ?? undefined,
+        });
 
         const { token } = response;
 
         const sameSite = getEnv({ name: 'SAME_SITE' });
         const DOMAIN = getEnv({ name: 'DOMAIN', subdomain });
 
-        const cookieOptions: any = { secure: requestInfo.secure };
+        const cookieOptions: Omit<CookieOptions, 'expires'> & {
+          expires?: number;
+        } = {
+          secure: requestInfo.secure,
+        };
         if (
           sameSite &&
           sameSite === 'none' &&
@@ -74,11 +84,11 @@ export const authMutations = {
    * logout
    */
   async logout(
-    _parent: undefined,
-    _args: undefined,
+    _parent,
+    _args,
     { req, res, user, requestInfo, models, subdomain }: IContext,
   ) {
-    await logHandler(
+    return await logHandler(
       async () => {
         const logout = await models.Users.logout(
           user,
@@ -101,8 +111,8 @@ export const authMutations = {
    * Send forgot password email
    */
   async forgotPassword(
-    _parent: undefined,
-    { email }: { email: string },
+    _parent,
+    { email }: MutationForgotPasswordArgs,
     { subdomain, models }: IContext,
   ) {
     const tag = '[forgot-password]';
@@ -153,7 +163,8 @@ export const authMutations = {
 
       console.log(`${tag} sendEmail returned`);
     } catch (e) {
-      console.log(`${tag} sendEmail threw: ${e.name}: ${e.message}`);
+      const message = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      console.log(`${tag} sendEmail threw: ${message}`);
       throw e;
     }
 
@@ -164,16 +175,21 @@ export const authMutations = {
    * Reset password
    */
   async resetPassword(
-    _parent: undefined,
-    args: { token: string; newPassword: string },
+    _parent,
+    args: MutationResetPasswordArgs,
     { models }: IContext,
   ) {
-    return models.Users.resetPassword(args);
+    // JSON scalar: the generated output type is Record<string, unknown>;
+    // the user document is serialized by the scalar at runtime.
+    return (await models.Users.resetPassword(args)) as unknown as Record<
+      string,
+      unknown
+    >;
   },
 
   async loginWithGoogle(
-    _parent: undefined,
-    _params: undefined,
+    _parent,
+    _params,
     { models, subdomain }: IContext,
   ) {
     assertSaasEnvironment();
@@ -208,7 +224,7 @@ export const authMutations = {
 
   async loginWithMagicLink(
     _,
-    { email }: { email: string },
+    { email }: MutationLoginWithMagicLinkArgs,
     { models, subdomain }: IContext,
   ) {
     assertSaasEnvironment();

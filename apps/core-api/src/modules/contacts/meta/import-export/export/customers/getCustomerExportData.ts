@@ -3,27 +3,32 @@ import {
   IImportExportContext,
   buildExportCursorQuery,
 } from 'erxes-api-shared/core-modules';
+import { ICustomerDocument } from 'erxes-api-shared/core-types';
+import { FilterQuery } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
-import { generateFilter } from '~/modules/contacts/utils';
+import {
+  ContactsFilterParams,
+  generateFilter,
+} from '~/modules/contacts/utils';
 import { customerSearchTokenConfig } from '@/contacts/db/definitions/customers';
 import { buildCustomerExportRow } from './buildCustomerExportRow';
 
 export async function getCustomerExportData(
   data: GetExportData,
   { subdomain, models }: IImportExportContext<IModels>,
-): Promise<Record<string, any>[]> {
+): Promise<Record<string, unknown>[]> {
   const { cursor, limit, filters, ids } = data;
 
   if (!models) {
     throw new Error('Models not available in context');
   }
 
-  let query: any = {};
+  let query: FilterQuery<ICustomerDocument> = {};
 
   if (filters && Object.keys(filters).length > 0) {
-    query = await generateFilter(
+    query = await generateFilter<ICustomerDocument>(
       subdomain,
-      filters,
+      filters as ContactsFilterParams,
       models,
       customerSearchTokenConfig,
     );

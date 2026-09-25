@@ -4,25 +4,25 @@ export const types = `
   type EngageMessage {
     _id: String!
     kind: String
-    tagIds: [String]
-    customerTagIds: [String]
-    segmentIds: [String]
-    brandIds: [String]
-    customerIds: [String]
+    tagIds: [String!]
+    customerTagIds: [String!]
+    segmentIds: [String!]
+    brandIds: [String!]
+    customerIds: [String!]
     cpId: String
     title: String
     fromEmail: String
     fromUserId: String
     method: String
     targetType: String
-    targetIds: [String]
+    targetIds: [String!]
     targetCount: Int
     isDraft: Boolean
     isLive: Boolean
     stopDate: Date
-    createdAt: Date
+    createdAt: Date!
     type: String
-    messengerReceivedCustomerIds: [String]
+    messengerReceivedCustomerIds: [String!]
     totalCustomersCount: Int
     validCustomersCount: Int
     runCount: Int
@@ -44,10 +44,10 @@ export const types = `
 
     scheduleDate: EngageScheduleDate
 
-    segments: [Segment]
-    customerTags: [Tag]
-    getTags: [Tag]
-    brands: [Brand]
+    segments: [Segment!]!
+    customerTags: [Tag!]!
+    getTags: [Tag!]!
+    brands: [Brand!]!
     fromIntegration: JSON
 
     stats: JSON
@@ -85,8 +85,8 @@ export const types = `
   }
 
   type EngageDeliveryReport {
-    list: [DeliveryReport]
-    totalCount: Int
+    list: [DeliveryReport!]!
+    totalCount: Int!
   }
 
   type AvgEmailStats {
@@ -116,8 +116,8 @@ export const types = `
     status: String
     responseData: String
     telnyxId: String
-    statusUpdates: [SmsStatus]
-    errorMessages: [String]
+    statusUpdates: [SmsStatus!]
+    errorMessages: [String!]
 
     # engage only
     engageMessageId: String
@@ -132,8 +132,8 @@ export const types = `
   }
 
   type DeliveryList {
-    list: [SmsDelivery]
-    totalCount: Int
+    list: [SmsDelivery!]!
+    totalCount: Int!
   }
 
   input EngageRecurrenceInput {
@@ -202,15 +202,15 @@ export const types = `
   }
 
   type EngageMessageListResponse {
-    list: [EngageMessage]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [EngageMessage!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   type EngageMemberListResponse {
-    list: [User]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [User!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   type BroadcastRun {
@@ -242,9 +242,9 @@ export const types = `
   }
 
   type BroadcastRecipientListResponse {
-    list: [BroadcastRecipient]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [BroadcastRecipient!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   """
@@ -297,7 +297,7 @@ export const types = `
     defaultSenderEmail: String
     alignedFrom: String
     sameAsMailConfig: Boolean
-    senders: [EmailSender]
+    senders: [EmailSender!]
   }
 `;
 
@@ -316,7 +316,7 @@ export const recipientEmailTypes = `
     status: String
     reason: String
     sentAt: Date
-    events: [BroadcastRecipientEmailEvent]
+    events: [BroadcastRecipientEmailEvent!]
   }
 `;
 
@@ -329,8 +329,8 @@ export const dryRunTypes = `
 
   type BroadcastEmailDryRun {
     sampled: Int
-    fields: [BroadcastEmailFieldCoverage]
-    unresolved: [String]
+    fields: [BroadcastEmailFieldCoverage!]
+    unresolved: [String!]
     sampleTo: String
     sampleHtml: String
   }
@@ -355,24 +355,24 @@ const queryParams = `
 export const queries = `
   broadcastEmailDryRun(_id: String!, sampleSize: Int): BroadcastEmailDryRun
   broadcastRecipientEmail(_id: String!): BroadcastRecipientEmail
-  engageMessages(${queryParams}): EngageMessageListResponse
-  engageMessagesTotalCount(${queryParams}): Int
-  engageMessageDetail(_id: String): EngageMessage
-  engageMessageCounts(name: String!, kind: String, status: String): JSON
-  engagesConfigDetail: JSON
-  engageMembers(isVerified: Boolean, ${GQL_CURSOR_PARAM_DEFS}): EngageMemberListResponse
-  engageReportsList(page: Int, perPage: Int, customerId: String, status: String, searchValue: String): EngageDeliveryReport
+  engageMessages(${queryParams}): EngageMessageListResponse!
+  engageMessagesTotalCount(${queryParams}): Int!
+  engageMessageDetail(_id: String!): EngageMessage
+  engageMessageCounts(name: String!, kind: String, status: String): JSON!
+  engagesConfigDetail: JSON!
+  engageMembers(isVerified: Boolean, searchValue: String, ${GQL_CURSOR_PARAM_DEFS}): EngageMemberListResponse!
+  engageReportsList(page: Int, perPage: Int, customerId: String, status: String, searchValue: String): EngageDeliveryReport!
   engageEmailPercentages: AvgEmailStats
-  engageSmsDeliveries(type: String!, to: String, page: Int, perPage: Int): DeliveryList
-  engageBroadcastTraces(engageMessageId: String!): [BroadcastTrace]
-  engageBroadcastRuns(engageMessageId: String!): [BroadcastRun]
-  engageBroadcastRecipients(runId: String!, status: String, searchValue: String, beginDate: Date, endDate: Date, ${GQL_CURSOR_PARAM_DEFS}): BroadcastRecipientListResponse
+  engageSmsDeliveries(type: String!, to: String, page: Int, perPage: Int): DeliveryList!
+  engageBroadcastTraces(engageMessageId: String!): [BroadcastTrace!]!
+  engageBroadcastRuns(engageMessageId: String!): [BroadcastRun!]!
+  engageBroadcastRecipients(runId: String!, status: String, searchValue: String, beginDate: Date, endDate: Date, ${GQL_CURSOR_PARAM_DEFS}): BroadcastRecipientListResponse!
   engageVerifiedEmails: [String]
-  emailSenderOptions(scope: String): EmailSenderOptions
+  emailSenderOptions(scope: String): EmailSenderOptions!
   "How often a proposed recurrence would fire, and when it next would"
-  engageSchedulePreview(recurrence: EngageRecurrenceInput!): JSON
+  engageSchedulePreview(recurrence: EngageRecurrenceInput!): JSON!
   "What went out, and what is due to, between two moments"
-  engageScheduleCalendar(from: Date!, to: Date!, ${filterParams}): [EngageCalendarEntry]
+  engageScheduleCalendar(from: Date!, to: Date!, ${filterParams}): [EngageCalendarEntry!]!
 `;
 
 const mutationParams = `
@@ -397,48 +397,48 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  engageMessageAdd(${mutationParams}): EngageMessage
+  engageMessageAdd(${mutationParams}): EngageMessage!
   engageMessageEdit(_id: String!, ${mutationParams}): EngageMessage
-  engageMessageRemove(_ids: [String]): JSON
-  engageMessageSetLive(_id: String!): EngageMessage
-  engageMessageSetPause(_id: String!): EngageMessage
-  engageMessageSetLiveManual(_id: String!): EngageMessage
-  engagesUpdateConfigs(configsMap: JSON!): JSON
+  engageMessageRemove(_ids: [String!]!): JSON!
+  engageMessageSetLive(_id: String!): EngageMessage!
+  engageMessageSetPause(_id: String!): EngageMessage!
+  engageMessageSetLiveManual(_id: String!): EngageMessage!
+  engagesUpdateConfigs(configsMap: JSON!): JSON!
   engageMessageVerifyEmail(
     email: String!
     name: String
     replyTo: String
     scope: String
-  ): String
-  engageMessageRemoveVerifiedEmail(email: String!, scope: String): String
-  engageMessageSendTestEmail(from: String!, to: String!, content: String!, contentFormat: String, title: String!): String
-  engageMessageCopy(_id: String!): EngageMessage
+  ): String!
+  engageMessageRemoveVerifiedEmail(email: String!, scope: String): String!
+  engageMessageSendTestEmail(from: String!, to: String!, content: String!, contentFormat: String, title: String!): String!
+  engageMessageCopy(_id: String!): EngageMessage!
   engageMessageSetSchedule(
     _id: String!
     dateTime: Date
     recurrence: EngageRecurrenceInput
-  ): EngageMessage
-  engageMessageCancelSchedule(_id: String!): EngageMessage
-  broadcastUpdateConfigs(configsMap: JSON!): JSON
+  ): EngageMessage!
+  engageMessageCancelSchedule(_id: String!): EngageMessage!
+  broadcastUpdateConfigs(configsMap: JSON!): JSON!
 
   engageSendMail(
     integrationId: String
     conversationId: String
     subject: String!
     body: String
-    to: [String]!
-    cc: [String]
-    bcc: [String]
+    to: [String!]!
+    cc: [String!]
+    bcc: [String!]
     from: String!
     shouldResolve: Boolean
     shouldOpen: Boolean
     headerId: String
-    replyTo: [String]
+    replyTo: [String!]
     inReplyTo: String
     threadId: String
     messageId: String
     replyToMessageId: String
-    references: [String]
+    references: [String!]
     attachments: [JSON]
     customerId: String
   ): JSON

@@ -1,7 +1,36 @@
 import { IContext } from '~/connectionResolvers';
 import { getPlugins, getPlugin } from 'erxes-api-shared/utils';
+import {
+  ICustomPermission,
+  IDefaultPermissionGroup,
+  IPermissionConfig,
+  IPermissionGroupPermission,
+  IPermissionModule,
+} from 'erxes-api-shared/core-types';
+import {
+  QueryPermissionGroupDetailArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 
-const mergePerm = (map: Map<string, any>, perm: any, plugin?: string) => {
+interface IMergedPermission {
+  plugin?: string;
+  module: string;
+  actions: string[];
+  scope: string;
+}
+
+type TPermissionLike = {
+  plugin?: string;
+  module: string;
+  actions: string[];
+  scope: string;
+};
+
+const mergePerm = (
+  map: Map<string, IMergedPermission>,
+  perm: TPermissionLike,
+  plugin?: string,
+) => {
   const existing = map.get(perm.module);
 
   if (!existing) {
@@ -22,19 +51,24 @@ const mergePerm = (map: Map<string, any>, perm: any, plugin?: string) => {
   }
 };
 
-export const permissionQueries = {
+const getPermissionsConfig = (config: {
+  meta?: Record<string, unknown>;
+}): IPermissionConfig | undefined =>
+  config.meta?.permissions as IPermissionConfig | undefined;
+
+export const permissionQueries: QueryResolvers<IContext> = {
   async permissionModules() {
-    const grouped: { plugin: string; modules: any[] }[] = [];
+    const grouped: { plugin: string; modules: IPermissionModule[] }[] = [];
     const services = await getPlugins();
 
     for (const name of services) {
       const service = await getPlugin(name);
-      const permissions = service?.config?.meta?.permissions;
+      const permissions = getPermissionsConfig(service?.config || {});
       if (!permissions?.modules) continue;
 
       const modules = permissions.modules
-        .map((module: any) => ({ ...module, plugin: name }))
-        .sort((a: any, b: any) => a.name.localeCompare(b.name));
+        .map((module) => ({ ...module, plugin: name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
       grouped.push({ plugin: name, modules });
     }
@@ -43,12 +77,12 @@ export const permissionQueries = {
   },
 
   async permissionDefaultGroups() {
-    const groups: any[] = [];
+    const groups: IDefaultPermissionGroup[] = [];
     const services = await getPlugins();
 
     for (const name of services) {
       const service = await getPlugin(name);
-      const permissions = service?.config?.meta?.permissions;
+      const permissions = getPermissionsConfig(service?.config || {});
       if (!permissions?.defaultGroups) continue;
 
       for (const group of permissions.defaultGroups) {
@@ -59,21 +93,21 @@ export const permissionQueries = {
     return groups;
   },
 
-  async permissionGroups(_root: any, _args: any, { models }: IContext) {
+  async permissionGroups(_root, _args: {}, { models }: IContext) {
     return models.PermissionGroups.find({}).sort({ name: 1 });
   },
 
   async permissionGroupDetail(
-    _root: any,
-    { id }: { id: string },
+    _root,
+    { id }: QueryPermissionGroupDetailArgs,
     { models }: IContext,
   ) {
     return models.PermissionGroups.findOne({ _id: id });
   },
 
   async currentUserPermissions(
-    _root: any,
-    _args: any,
+    _root,
+    _args: {},
     { user, models }: IContext,
   ) {
     if (!user) throw new Error('Login required');
@@ -81,11 +115,11 @@ export const permissionQueries = {
     const plugins = await getPlugins();
 
     const pluginsWithPermissions: string[] = [];
-    const allDefaultGroups: any[] = [];
+    const allDefaultGroups: IDefaultPermissionGroup[] = [];
 
     for (const pluginName of plugins) {
       const plugin = await getPlugin(pluginName);
-      const permissions = plugin?.config?.meta?.permissions;
+      const permissions = getPermissionsConfig(plugin?.config || {});
 
       if (permissions?.modules?.length || permissions?.defaultGroups?.length) {
         pluginsWithPermissions.push(pluginName);
@@ -104,7 +138,7 @@ export const permissionQueries = {
     }
 
     let groupIds = user.permissionGroupIds || [];
-    const customPermissions = user.customPermissions || [];
+    const customPermissions: ICustomPermission[] = user.customPermissions || [];
 
     if (groupIds.length === 0 && customPermissions.length === 0) {
       const viewerGroupIds = allDefaultGroups
@@ -120,7 +154,7 @@ export const permissionQueries = {
       }
     }
 
-    const permMap = new Map();
+    const permMap = new Map<string, IMergedPermission>();
 
     for (const groupId of groupIds) {
       if (groupId.includes(':')) {

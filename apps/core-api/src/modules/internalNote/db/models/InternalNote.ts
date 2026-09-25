@@ -15,7 +15,7 @@ export interface IInternalNoteModel extends Model<IInternalNoteDocument> {
   ): Promise<IInternalNoteDocument>;
   updateInternalNote(
     _id: string,
-    doc: IInternalNote,
+    doc: Partial<IInternalNote>,
   ): Promise<IInternalNoteDocument>;
   removeInternalNote(_id: string): Promise<IInternalNoteDocument>;
   removeInternalNotes(
@@ -70,7 +70,10 @@ export const loadInternalNoteClass = (
     /*
      * Update internalNote
      */
-    public static async updateInternalNote(_id: string, doc: IInternalNote) {
+    public static async updateInternalNote(
+      _id: string,
+      doc: Partial<IInternalNote>,
+    ) {
       return await models.InternalNotes.findOneAndUpdate(
         { _id },
         { $set: doc },

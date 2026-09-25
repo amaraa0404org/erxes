@@ -1,13 +1,14 @@
 import { markResolvers } from 'erxes-api-shared/utils';
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const authQueries = {
+export const authQueries: QueryResolvers<IContext> = {
   /**
    * Current user
    */
   async currentUser(
-    _parent: undefined,
-    _args: undefined,
+    _parent,
+    _args,
     { user, models }: IContext,
   ) {
     const result = user

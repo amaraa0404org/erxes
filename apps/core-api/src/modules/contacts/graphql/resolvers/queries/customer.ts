@@ -1,13 +1,32 @@
 import {
+  AnyResolver,
+  ICursorPaginateParams,
   ICustomerDocument,
-  ICustomerQueryFilterParams,
-  Resolver,
 } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import {
+  QueryContactsLogsArgs,
+  QueryCpCustomerDetailArgs,
+  QueryCpCustomersArgs,
+  QueryCustomerDetailArgs,
+  QueryCustomersArgs,
+  QueryCustomersCountArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { customersCount, generateFilter } from '~/modules/contacts/utils';
 import { customerSearchTokenConfig } from '@/contacts/db/definitions/customers';
+
+const toCursorParams = (
+  args: QueryCustomersArgs | QueryCpCustomersArgs,
+): ICursorPaginateParams => ({
+  cursor: args.cursor ?? undefined,
+  limit: args.limit ?? undefined,
+  // Nominal codegen enums; the runtime values are the literals themselves.
+  direction: args.direction as ICursorPaginateParams['direction'],
+  orderBy: args.orderBy as ICursorPaginateParams['orderBy'],
+});
 
 const logCustomersMemory = (
   stage: string,
@@ -28,20 +47,17 @@ const logCustomersMemory = (
   });
 };
 
-export const customerQueries: Record<
-  string,
-  Resolver<undefined, unknown, IContext>
-> = {
+export const customerQueries: QueryResolvers<IContext> = {
   /**
    * Customers list
    */
   async customers(
-    _parent: undefined,
-    params: ICustomerQueryFilterParams,
+    _parent,
+    params: QueryCustomersArgs,
     { models, subdomain }: IContext,
   ) {
     try {
-      const filter: FilterQuery<ICustomerDocument> = await generateFilter(
+      const filter: FilterQuery<ICustomerDocument> = await generateFilter<ICustomerDocument>(
         subdomain,
         params,
         models,
@@ -51,7 +67,7 @@ export const customerQueries: Record<
       const { list, totalCount, pageInfo } =
         await cursorPaginate<ICustomerDocument>({
           model: models.Customers,
-          params,
+          params: toCursorParams(params),
           query: filter,
         });
 
@@ -62,11 +78,11 @@ export const customerQueries: Record<
   },
 
   async cpCustomers(
-    _parent: undefined,
-    params: ICustomerQueryFilterParams,
+    _parent,
+    params: QueryCpCustomersArgs,
     { models, subdomain }: IContext,
   ) {
-    const filter: FilterQuery<ICustomerDocument> = await generateFilter(
+    const filter: FilterQuery<ICustomerDocument> = await generateFilter<ICustomerDocument>(
       subdomain,
       params,
       models,
@@ -76,7 +92,7 @@ export const customerQueries: Record<
     const { list, totalCount, pageInfo } =
       await cursorPaginate<ICustomerDocument>({
         model: models.Customers,
-        params,
+        params: toCursorParams(params),
         query: filter,
       });
 
@@ -87,62 +103,64 @@ export const customerQueries: Record<
    * Get one customer
    */
   customerDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryCustomerDetailArgs,
     { models }: IContext,
   ) {
     return models.Customers.getCustomer(_id);
   },
 
   cpCustomerDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryCpCustomerDetailArgs,
     { models }: IContext,
   ) {
     return models.Customers.getCustomer(_id);
   },
 
   async contactsLogs(
-    _parent: undefined,
-    args: { action: string; contentType: string; content: string[] },
+    _parent,
+    { action, contentType, content }: QueryContactsLogsArgs,
     { models }: IContext,
   ) {
     const { Companies, Customers } = models;
-    const { action, contentType, content } = args;
-    let result = {};
+    let result: unknown = {};
 
     const type = contentType.split(':')[1];
 
     if (action === 'merge') {
+      // `content` is a JSON list of ids; the JSON scalar maps to
+      // Record<string, unknown> in generated types, so the runtime array is
+      // narrowed back here.
+      const ids = (content ?? []) as unknown as string[];
+
       switch (type) {
         case 'company':
           result = await Companies.find({
-            _id: { $in: content },
+            _id: { $in: ids },
           }).lean();
           break;
         case 'customer':
           result = await Customers.find({
-            _id: { $in: content },
+            _id: { $in: ids },
           }).lean();
           break;
         default:
           break;
       }
-
-      return result;
     }
 
-    return result;
+    return result as Record<string, unknown>;
   },
 
   async customersCount(
-    _parent: undefined,
-    params: { types?: string[] },
+    _parent,
+    params: QueryCustomersCountArgs,
     { models, subdomain }: IContext,
   ) {
     const types = params.types || [];
 
-    const counts = {};
+    const counts: Record<string, Record<string, number>> = {};
 
     for (const type of types) {
       const contentType = type.toLowerCase();
@@ -158,10 +176,10 @@ export const customerQueries: Record<
   },
 };
 
-customerQueries.cpCustomers.wrapperConfig = {
+(customerQueries.cpCustomers as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };
 
-customerQueries.cpCustomerDetail.wrapperConfig = {
+(customerQueries.cpCustomerDetail as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

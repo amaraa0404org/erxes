@@ -1,18 +1,14 @@
 import { escapeRegExp } from 'erxes-api-shared/utils';
 import { IContext } from '~/connectionResolvers';
+import {
+  GlobalSearchResultItem,
+  QueryCoreModulesGlobalSearchArgs,
+  QueryResolvers,
+  QuerySettingsGlobalSearchArgs,
+  Scalars,
+} from '~/__generated__/graphql';
 
-type TGlobalSearchItem = {
-  id: string;
-  title: string;
-  description?: string;
-  subTitle?: string;
-  icon?: string;
-  module: string;
-  category: string;
-  path: string;
-  createdAt?: Date;
-  matchFields?: Array<{ label: string; value: string }>;
-};
+type TGlobalSearchItem = Omit<GlobalSearchResultItem, '__typename'>;
 
 const compactMatchFields = (
   fields: Array<{ label: string; value?: unknown }>,
@@ -20,6 +16,11 @@ const compactMatchFields = (
   fields.flatMap(({ label, value }) =>
     typeof value === 'string' && value.trim() ? [{ label, value }] : [],
   );
+
+// The GraphQL JSON scalar is mapped to Record<string, unknown>; matchFields is
+// an array of { label, value } pairs that must cross that scalar boundary.
+const asJSON = (value: unknown): Scalars['JSON']['output'] =>
+  value as Scalars['JSON']['output'];
 
 const getCreatedAt = (value: object): Date | undefined =>
   'createdAt' in value && value.createdAt instanceof Date
@@ -166,12 +167,31 @@ const paginateDataSources = async (
   };
 };
 
-export const globalSearchQueries = {
+const toQueryParams = (
+  args: QueryCoreModulesGlobalSearchArgs | QuerySettingsGlobalSearchArgs,
+): TQueryParams => ({
+  searchValue: args.searchValue ?? undefined,
+  module:
+    'module' in args && typeof args.module === 'string'
+      ? args.module
+      : undefined,
+  limit: args.limit ?? undefined,
+  cursor: args.cursor ?? undefined,
+  direction:
+    args.direction === 'forward' || args.direction === 'backward'
+      ? args.direction
+      : undefined,
+  // JSON scalar boundary: orderBy is an opaque { createdAt?: 1 | -1 } object
+  orderBy: args.orderBy as TQueryParams['orderBy'],
+});
+
+export const globalSearchQueries: QueryResolvers<IContext> = {
   coreModulesGlobalSearch: async (
-    _parent: undefined,
-    params: TQueryParams,
+    _parent,
+    args: QueryCoreModulesGlobalSearchArgs,
     { models }: IContext,
   ) => {
+    const params = toQueryParams(args);
     const sortDirection = params.orderBy?.createdAt === 1 ? 1 : -1;
     const rawSearch = params.searchValue?.trim() ?? '';
     const escapedSearch = escapeRegExp(rawSearch);
@@ -241,12 +261,14 @@ export const globalSearchQueries = {
               category: 'core-modules',
               path: `/contacts/customers?contactId=${doc._id}`,
               createdAt: getCreatedAt(doc),
-              matchFields: compactMatchFields([
-                { label: 'First name', value: doc.firstName },
-                { label: 'Last name', value: doc.lastName },
-                { label: 'Email', value: doc.primaryEmail },
-                { label: 'Phone', value: doc.primaryPhone },
-              ]),
+              matchFields: asJSON(
+                compactMatchFields([
+                  { label: 'First name', value: doc.firstName },
+                  { label: 'Last name', value: doc.lastName },
+                  { label: 'Email', value: doc.primaryEmail },
+                  { label: 'Phone', value: doc.primaryPhone },
+                ]),
+              ),
             };
           });
         },
@@ -269,11 +291,13 @@ export const globalSearchQueries = {
             category: 'core-modules',
             path: `/contacts/companies?companyId=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Company name', value: doc.primaryName },
-              { label: 'Email', value: doc.primaryEmail },
-              { label: 'Phone', value: doc.primaryPhone },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Company name', value: doc.primaryName },
+                { label: 'Email', value: doc.primaryEmail },
+                { label: 'Phone', value: doc.primaryPhone },
+              ]),
+            ),
           }));
         },
       },
@@ -297,12 +321,14 @@ export const globalSearchQueries = {
             category: 'core-modules',
             path: `/products?product_id=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Product name', value: doc.name },
-              { label: 'Code', value: doc.code },
-              { label: 'Short name', value: doc.shortName },
-              { label: 'Description', value: doc.description },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Product name', value: doc.name },
+                { label: 'Code', value: doc.code },
+                { label: 'Short name', value: doc.shortName },
+                { label: 'Description', value: doc.description },
+              ]),
+            ),
           }));
         },
       },
@@ -321,10 +347,11 @@ export const globalSearchQueries = {
   },
 
   settingsGlobalSearch: async (
-    _parent: undefined,
-    params: TQueryParams,
+    _parent,
+    args: QuerySettingsGlobalSearchArgs,
     { models }: IContext,
   ) => {
+    const params = toQueryParams(args);
     const rawSearch = params.searchValue?.trim() ?? '';
     const sortDirection = params.orderBy?.createdAt === 1 ? 1 : -1;
     const escapedSearch = escapeRegExp(rawSearch);
@@ -413,13 +440,15 @@ export const globalSearchQueries = {
             category: 'settings',
             path: `/settings/team/members?user_id=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Full name', value: doc.details?.fullName },
-              { label: 'Username', value: doc.username },
-              { label: 'Email', value: doc.email },
-              { label: 'Employee ID', value: doc.employeeId },
-              { label: 'Position', value: doc.details?.position },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Full name', value: doc.details?.fullName },
+                { label: 'Username', value: doc.username },
+                { label: 'Email', value: doc.email },
+                { label: 'Employee ID', value: doc.employeeId },
+                { label: 'Position', value: doc.details?.position },
+              ]),
+            ),
           }));
         },
       },
@@ -441,11 +470,13 @@ export const globalSearchQueries = {
             category: 'settings',
             path: `/settings/structures/branches?branch_id=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Branch', value: doc.title },
-              { label: 'Code', value: doc.code },
-              { label: 'Address', value: doc.address },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Branch', value: doc.title },
+                { label: 'Code', value: doc.code },
+                { label: 'Address', value: doc.address },
+              ]),
+            ),
           }));
         },
       },
@@ -467,11 +498,13 @@ export const globalSearchQueries = {
             category: 'settings',
             path: `/settings/structures/departments?department_id=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Department', value: doc.title },
-              { label: 'Code', value: doc.code },
-              { label: 'Description', value: doc.description },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Department', value: doc.title },
+                { label: 'Code', value: doc.code },
+                { label: 'Description', value: doc.description },
+              ]),
+            ),
           }));
         },
       },
@@ -493,11 +526,13 @@ export const globalSearchQueries = {
             category: 'settings',
             path: `/settings/structures/units?unit_id=${doc._id}`,
             createdAt: getCreatedAt(doc),
-            matchFields: compactMatchFields([
-              { label: 'Unit', value: doc.title },
-              { label: 'Code', value: doc.code },
-              { label: 'Description', value: doc.description },
-            ]),
+            matchFields: asJSON(
+              compactMatchFields([
+                { label: 'Unit', value: doc.title },
+                { label: 'Code', value: doc.code },
+                { label: 'Description', value: doc.description },
+              ]),
+            ),
           }));
         },
       },

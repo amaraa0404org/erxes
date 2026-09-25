@@ -1,7 +1,8 @@
 import { IBroadcastRecipientDocument } from '@/broadcast/db/models/BroadcastRecipients';
 import { IContext } from '~/connectionResolvers';
+import { BroadcastRecipientResolvers } from '~/__generated__/graphql';
 
-export default {
+const broadcastRecipientResolvers: BroadcastRecipientResolvers<IContext> = {
   /**
    * The manifest keeps only the id, so a row for someone deleted since still
    * reads — it resolves to nothing, and the row's own `missing` status is what
@@ -9,7 +10,7 @@ export default {
    */
   async customer(
     { customerId }: IBroadcastRecipientDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) {
     return models.Customers.findOne({ _id: customerId });
@@ -22,7 +23,7 @@ export default {
    */
   async execution(
     { automationId, customerId, runId }: IBroadcastRecipientDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) {
     // Rows written before the id was carried on the row still resolve.
@@ -42,8 +43,8 @@ export default {
     return models.AutomationExecutions.findOne({
       automationId: resolvedAutomationId,
       targetId: customerId,
-    })
-      .sort({ createdAt: -1 })
-      .lean();
+    }).sort({ createdAt: -1 });
   },
 };
+
+export default broadcastRecipientResolvers;

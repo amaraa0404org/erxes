@@ -10,23 +10,28 @@ export const types = `
   type SuccessResult {
     success: Boolean,
   }
+
+  type ConformityEditResult {
+    addedTypeIds: [String!]!
+    removedTypeIds: [String!]!
+  }
 `;
 
 const commonParams = `
-  mainType: String
-  mainTypeId: String
-  relType: String
-  relTypeId: String
+  mainType: String!
+  mainTypeId: String!
+  relType: String!
+  relTypeId: String!
 `;
 
 const commonParamsCreate = `
-  mainType: String
-  mainTypeId: String
-  relType: String
-  relTypeIds: [String]
+  mainType: String!
+  mainTypeId: String!
+  relType: String!
+  relTypeIds: [String!]
 `;
 
 export const mutations = `
-  conformityAdd(${commonParams}): Conformity
-  conformityEdit(${commonParamsCreate}): SuccessResult
+  conformityAdd(${commonParams}): Conformity!
+  conformityEdit(${commonParamsCreate}): ConformityEditResult!
 `;

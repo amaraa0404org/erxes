@@ -1,52 +1,67 @@
 import {
+  AnyResolver,
   ICustomer,
   ICustomerDocument,
-  Resolver,
 } from 'erxes-api-shared/core-types';
 import { getEnv } from 'erxes-api-shared/utils';
 import { syncCustomerContactToCPUsers } from '@/clientportal/services/user/contactService';
+import {
+  MutationCpCustomersAddArgs,
+  MutationCustomersAddArgs,
+  MutationCustomersChangeStateArgs,
+  MutationCustomersChangeStateBulkArgs,
+  MutationCustomersChangeVerificationStatusArgs,
+  MutationCustomersEditArgs,
+  MutationCustomersMergeArgs,
+  MutationCustomersRemoveArgs,
+  MutationCustomersVerifyArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { COC_LIFECYCLE_STATE_TYPES } from '~/modules/contacts/constants';
 
-export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
+export const customerMutations: MutationResolvers<IContext> = {
   /**
    * Create new customer also adds Customer registration log
    */
   async customersAdd(
-    _parent: undefined,
-    doc: ICustomer,
+    _parent,
+    doc: MutationCustomersAddArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsCreate');
 
-    const customer = await models.Customers.createCustomer(doc);
+    const customer = await models.Customers.createCustomer(doc as ICustomer);
 
     return customer;
   },
 
   async cpCustomersAdd(
-    _parent: undefined,
-    doc: ICustomer,
+    _parent,
+    doc: MutationCpCustomersAddArgs,
     { models, clientPortal }: IContext,
   ) {
     return await models.Customers.createCustomer({
       ...doc,
       clientPortalId: clientPortal?._id,
-    });
+    } as ICustomer);
   },
   /**
    * Updates a customer
    */
   async customersEdit(
-    _parent: undefined,
-    { _id, ...doc }: { _id: string } & ICustomer,
+    _parent,
+    { _id, ...doc }: MutationCustomersEditArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsUpdate');
 
-    const updated = await models.Customers.updateCustomer(_id, doc);
+    const updated = await models.Customers.updateCustomer(
+      _id,
+      doc as ICustomer,
+    );
 
-    await syncCustomerContactToCPUsers(models, _id, doc);
+    await syncCustomerContactToCPUsers(models, _id, doc as ICustomer);
 
     return updated;
   },
@@ -55,8 +70,8 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
    * Remove customers
    */
   async customersRemove(
-    _parent: undefined,
-    { customerIds }: { customerIds: string[] },
+    _parent,
+    { customerIds }: MutationCustomersRemoveArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsDelete');
@@ -91,8 +106,8 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
    * Change state
    */
   async customersChangeState(
-    _parent: undefined,
-    args: { _id: string; value: string },
+    _parent,
+    args: MutationCustomersChangeStateArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsUpdate');
@@ -104,21 +119,22 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
    * Merge customers
    */
   async customersMerge(
-    _parent: undefined,
-    {
-      customerIds,
-      customerFields,
-    }: { customerIds: string[]; customerFields: ICustomer },
+    _parent,
+    { customerIds, customerFields }: MutationCustomersMergeArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsMerge');
 
-    return models.Customers.mergeCustomers(customerIds, customerFields, user);
+    return models.Customers.mergeCustomers(
+      customerIds,
+      (customerFields ?? {}) as ICustomer,
+      user,
+    );
   },
 
   async customersVerify(
-    _parent: undefined,
-    { verificationType }: { verificationType: string },
+    _parent,
+    { verificationType }: MutationCustomersVerifyArgs,
     { models, subdomain, checkPermission }: IContext,
   ) {
     await checkPermission('contactsUpdate');
@@ -216,8 +232,8 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async customersChangeVerificationStatus(
-    _parent: undefined,
-    args: { customerIds: string[]; type: string; status: string },
+    _parent,
+    args: MutationCustomersChangeVerificationStatusArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsUpdate');
@@ -230,14 +246,8 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async customersChangeStateBulk(
-    _parent: undefined,
-    {
-      _ids,
-      value,
-    }: {
-      _ids: string[];
-      value: string;
-    },
+    _parent,
+    { _ids, value }: MutationCustomersChangeStateBulkArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('contactsUpdate');
@@ -249,13 +259,15 @@ export const customerMutations: Record<string, Resolver<any, any, IContext>> = {
       throw new Error('Invalid customer state');
     }
 
-    return models.Customers.updateMany(
+    // Schema declares JSON; mongoose's UpdateResult is a class, so cast at
+    // the scalar boundary.
+    return (await models.Customers.updateMany(
       { _id: { $in: _ids } },
       { $set: { state: value } },
-    );
+    )) as unknown as Record<string, unknown>;
   },
 };
 
-customerMutations.cpCustomersAdd.wrapperConfig = {
+(customerMutations.cpCustomersAdd as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

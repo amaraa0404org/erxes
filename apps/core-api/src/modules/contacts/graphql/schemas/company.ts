@@ -10,41 +10,41 @@ export const conformityQueryFields = `
 
 export const types = `
   type Company @key(fields: "_id") @cacheControl(maxAge: 3) {
-    _id:String
-    createdAt: Date
-    updatedAt: Date
+    _id: String!
+    createdAt: Date!
+    updatedAt: Date!
     avatar: String
 
     size: Int
     website: String
-    industry: [String]
+    industry: [String!]!
     parentCompanyId: String
     ownerId: String
-    mergedIds: [String]
+    mergedIds: [String!]
 
-    names: [String]
+    names: [String!]
     primaryName: String
-    emails: [String]
+    emails: [String!]
     primaryEmail: String
-    phones: [String]
+    phones: [String!]
     primaryPhone: String
     primaryAddress: JSON
     addresses: [JSON]
-    status: String
+    status: String!
     businessType: String
     description: String
-    isSubscribed: String
-    links: JSON
+    isSubscribed: String!
+    links: JSON!
     owner: User
     parentCompany: Company
 
-    tagIds: [String]
+    tagIds: [String!]
 
     trackedData: JSON
     propertiesData: JSON
 
-    customers: [Customer]
-    getTags: [Tag]
+    customers: [Customer!]!
+    getTags: [Tag!]
     code: String
     location: String
     score: Float
@@ -53,19 +53,19 @@ export const types = `
   }
 
   type CompaniesListResponse {
-    list: [Company],
-    pageInfo: PageInfo
-    totalCount: Int,
+    list: [Company!]!,
+    pageInfo: PageInfo!
+    totalCount: Int!,
   }
 `;
 
 const queryParams = `
   segment: String
 
-  tagIds: [String]
-  excludeTagIds: [String]
+  tagIds: [String!]
+  excludeTagIds: [String!]
   tagWithRelated: Boolean
-  ids: [String]
+  ids: [String!]
   excludeIds: Boolean
   searchValue: String
   autoCompletion: Boolean
@@ -80,8 +80,8 @@ const queryParams = `
 `;
 
 export const queries = `
-  companies(${queryParams}): CompaniesListResponse
-  cpCompanies(${queryParams}): CompaniesListResponse
+  companies(${queryParams}): CompaniesListResponse!
+  cpCompanies(${queryParams}): CompaniesListResponse!
   companyDetail(_id: String!): Company
 `;
 
@@ -89,20 +89,20 @@ const mutationParams = `
   avatar: String,
 
   primaryName: String,
-  names: [String]
+  names: [String!]
 
   primaryPhone: String,
-  phones: [String],
+  phones: [String!],
 
   primaryEmail: String,
-  emails: [String],
+  emails: [String!],
 
   primaryAddress: JSON,
   addresses: [JSON],
 
   size: Int,
   website: String,
-  industry: [String],
+  industry: [String!],
 
   parentCompanyId: String,
   email: String,
@@ -112,15 +112,15 @@ const mutationParams = `
   isSubscribed: String,
   links: JSON,
 
-  tagIds: [String]
+  tagIds: [String!]
   propertiesData: JSON
   code: String
   location: String
 `;
 
 export const mutations = `
-  companiesAdd(${mutationParams}): Company
+  companiesAdd(${mutationParams}): Company!
   companiesEdit(_id: String!, ${mutationParams}): Company
-  companiesRemove(companyIds: [String]): [String]
-  companiesMerge(companyIds: [String], companyFields: JSON) : Company
+  companiesRemove(companyIds: [String!]!): [String!]!
+  companiesMerge(companyIds: [String!]!, companyFields: JSON) : Company
 `;

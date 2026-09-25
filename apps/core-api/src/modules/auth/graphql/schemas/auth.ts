@@ -24,36 +24,36 @@ export const types = `
   }
 
   type OAuthClientApp {
-    _id: String
-    name: String
+    _id: String!
+    name: String!
     logo: String
     description: String
-    clientId: String
-    type: OAuthClientAppType
+    clientId: String!
+    type: OAuthClientAppType!
     accessTokenLifetime: OAuthClientAccessTokenLifetime
-    redirectUrls: [String]
-    status: OAuthClientAppStatus
+    redirectUrls: [String!]!
+    status: OAuthClientAppStatus!
     lastUsedAt: Date
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
     generatedSecret: String
   }
 `;
 
 export const queries = `
   currentUser: User
-  oauthClientApps(searchValue: String, page: Int, perPage: Int): [OAuthClientApp]
-  oauthClientAppsTotalCount(searchValue: String): Int
+  oauthClientApps(searchValue: String, page: Int, perPage: Int): [OAuthClientApp!]!
+  oauthClientAppsTotalCount(searchValue: String): Int!
   oauthClientAppDetail(_id: String!): OAuthClientApp
 `;
 
 export const mutations = `
-  login(email: String!, password: String! deviceToken: String): String
+  login(email: String!, password: String! deviceToken: String): String!
   logout: String
   forgotPassword(email: String!): String!
-  resetPassword(token: String!, newPassword: String!): JSON
-  loginWithGoogle: String
-  loginWithMagicLink(email: String!): String
+  resetPassword(token: String!, newPassword: String!): JSON!
+  loginWithGoogle: String!
+  loginWithMagicLink(email: String!): String!
   oauthClientAppsAdd(
     name: String!
     logo: String
@@ -61,7 +61,7 @@ export const mutations = `
     type: OAuthClientAppType!
     accessTokenLifetime: OAuthClientAccessTokenLifetime
     redirectUrls: [String!]
-  ): OAuthClientApp
+  ): OAuthClientApp!
   oauthClientAppsEdit(
     _id: String!
     name: String!
@@ -72,6 +72,6 @@ export const mutations = `
     redirectUrls: [String!]
   ): OAuthClientApp
   oauthClientAppsRevoke(_id: String!): OAuthClientApp
-  oauthClientAppsRemove(_id: String!): JSON
+  oauthClientAppsRemove(_id: String!): JSON!
 
  `;

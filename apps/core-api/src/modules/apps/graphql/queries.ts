@@ -1,40 +1,50 @@
+import { IApp } from 'erxes-api-shared/core-types';
+import { FilterQuery } from 'mongoose';
+import {
+  QueryAppDetailArgs,
+  QueryAppsArgs,
+  QueryAppsTotalCountArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const appQueries = {
+const buildAppsQuery = (searchValue?: string | null) => {
+  const qry: FilterQuery<IApp> = {};
+
+  if (searchValue) {
+    qry.name = new RegExp(`.*${searchValue}.*`, 'i');
+  }
+
+  return qry;
+};
+
+export const appQueries: QueryResolvers<IContext> = {
   async apps(
-    _parent: undefined,
-    { searchValue, page = 1, perPage = 20 }: any,
+    _parent,
+    { searchValue, page, perPage }: QueryAppsArgs,
     { models }: IContext,
   ) {
-    const qry: any = {};
-
-    if (searchValue) {
-      qry.name = new RegExp(`.*${searchValue}.*`, 'i');
-    }
+    const qry = buildAppsQuery(searchValue);
+    const pageNumber = page ?? 1;
+    const perPageNumber = perPage ?? 20;
 
     return models.Apps.find(qry)
-      .skip((page - 1) * perPage)
-      .limit(perPage)
+      .skip((pageNumber - 1) * perPageNumber)
+      .limit(perPageNumber)
       .sort({ createdAt: -1 });
   },
 
   async appsTotalCount(
-    _parent: undefined,
-    { searchValue }: any,
+    _parent,
+    { searchValue }: QueryAppsTotalCountArgs,
     { models }: IContext,
   ) {
-    const qry: any = {};
-
-    if (searchValue) {
-      qry.name = new RegExp(`.*${searchValue}.*`, 'i');
-    }
-
-    return models.Apps.countDocuments(qry);
+    return models.Apps.countDocuments(buildAppsQuery(searchValue));
   },
 
   async appDetail(
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryAppDetailArgs,
     { models }: IContext,
   ) {
     return models.Apps.findOne({ _id });

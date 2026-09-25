@@ -2,13 +2,14 @@ import {
   nextOccurrence,
   occurrenceCount,
   occurrencesBetween,
+  TBroadcastEvery,
   TBroadcastRecurrence,
 } from '@/broadcast/utils/recurrence';
 import {
+  IDeliveryReportsDocument,
   IEngageMessageDocument,
   IEngageQueryParams,
-  IReportQueryParams,
-  ISmsDeliveryQueryParams,
+  ISmsRequestDocument,
 } from '@/broadcast/@types';
 import { BROADCAST_APPROVAL_CONTENT_TYPES } from '@/broadcast/constants';
 import {
@@ -37,6 +38,64 @@ import { FilterQuery } from 'mongoose';
 // How many contacts one search may resolve to before it stops being a filter.
 const SEARCH_CUSTOMER_LIMIT = 1000;
 import { IContext, IModels } from '~/connectionResolvers';
+import {
+  QueryBroadcastEmailDryRunArgs,
+  QueryBroadcastRecipientEmailArgs,
+  QueryEmailSenderOptionsArgs,
+  QueryEngageBroadcastRecipientsArgs,
+  QueryEngageBroadcastRunsArgs,
+  QueryEngageBroadcastTracesArgs,
+  QueryEngageMembersArgs,
+  QueryEngageMessageCountsArgs,
+  QueryEngageMessageDetailArgs,
+  QueryEngageMessagesArgs,
+  QueryEngageMessagesTotalCountArgs,
+  QueryEngageReportsListArgs,
+  QueryEngageScheduleCalendarArgs,
+  QueryEngageSchedulePreviewArgs,
+  QueryEngageSmsDeliveriesArgs,
+  QueryResolvers,
+  Scalars,
+} from '~/__generated__/graphql';
+
+type TCursorArgs = {
+  cursor?: string | null;
+  limit?: number | null;
+  direction?: string | null;
+  cursorMode?: string | null;
+  orderBy?: Record<string, unknown> | null;
+};
+
+const toCursorParams = (args: TCursorArgs): ICursorPaginateParams => ({
+  cursor: args.cursor ?? undefined,
+  limit: args.limit ?? undefined,
+  // Nominal codegen enums; the runtime values are the literals themselves.
+  direction: args.direction as ICursorPaginateParams['direction'],
+  cursorMode: args.cursorMode as ICursorPaginateParams['cursorMode'],
+  orderBy: args.orderBy as ICursorPaginateParams['orderBy'],
+});
+
+type TEngageFilterArgs = {
+  brandId?: string | null;
+  fromUserId?: string | null;
+  kind?: string | null;
+  method?: string | null;
+  searchValue?: string | null;
+  status?: string | null;
+  tag?: string | null;
+  trigger?: string | null;
+};
+
+const toFilterParams = (args: TEngageFilterArgs): IEngageQueryParams => ({
+  kind: args.kind ?? undefined,
+  trigger: args.trigger ?? undefined,
+  status: args.status ?? undefined,
+  tag: args.tag ?? undefined,
+  method: args.method ?? undefined,
+  brandId: args.brandId ?? undefined,
+  fromUserId: args.fromUserId ?? undefined,
+  searchValue: args.searchValue ?? undefined,
+});
 
 const generateFilter = async (
   models: IModels,
@@ -175,21 +234,13 @@ const oneShotOccurrence = (
   return at >= from && at <= to ? [at] : [];
 };
 
-export const engageQueries = {
+export const engageQueries: QueryResolvers<IContext> = {
   /**
    * Group engage messages counts by kind, status, tag
    */
   async engageMessageCounts(
-    _root: undefined,
-    {
-      name,
-      kind,
-      status,
-    }: {
-      name: string;
-      kind: string;
-      status: string;
-    },
+    _root,
+    { name, kind, status }: QueryEngageMessageCountsArgs,
     { user, models }: IContext,
   ) {
     if (name === 'kind') {
@@ -197,12 +248,12 @@ export const engageQueries = {
     }
 
     if (name === 'status') {
-      return countsByStatus(models, { kind, user });
+      return countsByStatus(models, { kind: kind ?? '', user });
     }
 
     return countsByTag(models, {
-      kind,
-      status,
+      kind: kind ?? '',
+      status: status ?? '',
       user,
     });
   },
@@ -211,10 +262,14 @@ export const engageQueries = {
    * Engage messages list
    */
   async engageMessages(
-    _root: undefined,
-    params: IEngageQueryParams,
+    _root,
+    args: QueryEngageMessagesArgs,
     { user, models }: IContext,
   ) {
+    const params: IEngageQueryParams = {
+      ...toCursorParams(args),
+      ...toFilterParams(args),
+    };
     const query = await generateFilter(models, params, user);
 
     const page = await cursorPaginate<IEngageMessageDocument>({
@@ -239,10 +294,12 @@ export const engageQueries = {
 
     return {
       ...page,
-      list: page.list.map((campaign) => ({
-        ...campaign,
-        approvalLockState: stateByCampaignId.get(campaign._id),
-      })),
+      list: page.list.map((campaign) =>
+        // attach without losing the document type the schema mapper expects
+        Object.assign(campaign, {
+          approvalLockState: stateByCampaignId.get(campaign._id),
+        }),
+      ),
     };
   },
 
@@ -251,8 +308,8 @@ export const engageQueries = {
    */
   /** What one recipient was actually sent, and what became of it. */
   async broadcastRecipientEmail(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: QueryBroadcastRecipientEmailArgs,
     { models, subdomain }: IContext,
   ) {
     return getRecipientEmail({ models, subdomain, recipientId: _id });
@@ -260,21 +317,21 @@ export const engageQueries = {
 
   /** What the campaign would send, tried on a handful of its real audience. */
   async broadcastEmailDryRun(
-    _root: undefined,
-    { _id, sampleSize }: { _id: string; sampleSize?: number },
+    _root,
+    { _id, sampleSize }: QueryBroadcastEmailDryRunArgs,
     { models, subdomain }: IContext,
   ) {
     return dryRunBroadcastEmail({
       models,
       subdomain,
       engageMessageId: _id,
-      sampleSize,
+      sampleSize: sampleSize ?? undefined,
     });
   },
 
   async engageMessageDetail(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: QueryEngageMessageDetailArgs,
     { models }: IContext,
   ) {
     return models.EngageMessages.findOne({ _id });
@@ -284,21 +341,22 @@ export const engageQueries = {
    * Config detail
    */
   async engagesConfigDetail(
-    _root: undefined,
-    _args: undefined,
+    _root,
+    _args,
     { models }: IContext,
   ) {
-    return models.Configs.find({});
+    // JSON scalar boundary: the raw config documents pass through untouched.
+    return (await models.Configs.find({})) as unknown as Scalars['JSON']['output'];
   },
 
   async engageReportsList(
-    _root: undefined,
-    params: IReportQueryParams,
+    _root,
+    params: QueryEngageReportsListArgs,
     { models }: IContext,
   ) {
     const { customerId, status, searchValue } = params;
 
-    const filter: any = {};
+    const filter: FilterQuery<IDeliveryReportsDocument> = {};
 
     if (customerId) {
       filter.customerId = customerId;
@@ -312,9 +370,9 @@ export const engageQueries = {
       filter.email = { $regex: searchValue, $options: '$i' };
     }
 
-    const deliveryReports = await models.DeliveryReports.find(filter)
-      .sort({ createdAt: -1 })
-      .lean();
+    const deliveryReports = await models.DeliveryReports.find(filter).sort({
+      createdAt: -1,
+    });
 
     if (!deliveryReports) {
       return { list: [], totalCount: 0 };
@@ -322,7 +380,7 @@ export const engageQueries = {
 
     const totalCount = await models.DeliveryReports.countDocuments(filter);
 
-    const modifiedList: any[] = [];
+    const modifiedList: IDeliveryReportsDocument[] = [];
 
     const customerIds = deliveryReports.map((d) => d.customerId);
 
@@ -331,7 +389,7 @@ export const engageQueries = {
     });
 
     for (const item of deliveryReports) {
-      const modifiedItem = item;
+      const modifiedItem: IDeliveryReportsDocument = item;
 
       if (item.customerId) {
         const customer = customers.find((c) => c._id === item.customerId);
@@ -351,11 +409,11 @@ export const engageQueries = {
    * Get all messages count. We will use it in pager
    */
   async engageMessagesTotalCount(
-    _root: undefined,
-    args: IEngageQueryParams,
+    _root,
+    args: QueryEngageMessagesTotalCountArgs,
     { user, models }: IContext,
   ) {
-    const query = await generateFilter(models, args, user);
+    const query = await generateFilter(models, toFilterParams(args), user);
 
     return models.EngageMessages.find(query).countDocuments();
   },
@@ -364,11 +422,8 @@ export const engageQueries = {
    * Get all verified members
    */
   async engageMembers(
-    _root: undefined,
-    params: {
-      searchValue: string;
-      isVerified: boolean;
-    } & ICursorPaginateParams,
+    _root,
+    params: QueryEngageMembersArgs,
     { models }: IContext,
   ) {
     const { isVerified, searchValue } = params;
@@ -392,14 +447,14 @@ export const engageQueries = {
 
     return await cursorPaginate({
       model: models.Users,
-      params,
+      params: toCursorParams(params),
       query,
     });
   },
 
   async engageEmailPercentages(
-    _root: undefined,
-    _args: undefined,
+    _root,
+    _args,
     { models }: IContext,
   ) {
     try {
@@ -407,15 +462,15 @@ export const engageQueries = {
 
       return stats[0];
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
 
-      return e;
+      return null;
     }
   },
 
   async engageBroadcastTraces(
-    _root: undefined,
-    { engageMessageId }: { engageMessageId: string },
+    _root,
+    { engageMessageId }: QueryEngageBroadcastTracesArgs,
     { models }: IContext,
   ) {
     return models.BroadcastTraces.find({ engageMessageId }).sort({
@@ -424,41 +479,36 @@ export const engageQueries = {
   },
 
   async engageBroadcastRuns(
-    _root: undefined,
-    { engageMessageId }: { engageMessageId: string },
+    _root,
+    { engageMessageId }: QueryEngageBroadcastRunsArgs,
     { models }: IContext,
   ) {
-    const runs = await models.BroadcastRuns.find({ engageMessageId })
-      .sort({ runCount: -1 })
-      .lean();
+    const runs = await models.BroadcastRuns.find({ engageMessageId }).sort({
+      runCount: -1,
+    });
 
     return Promise.all(
       runs.map(async (run) => {
-        const grouped = await models.BroadcastRecipients.aggregate([
-          { $match: { runId: run._id } },
-          { $group: { _id: '$status', count: { $sum: 1 } } },
-        ]);
+        const grouped: { _id: string; count: number }[] =
+          await models.BroadcastRecipients.aggregate([
+            { $match: { runId: run._id } },
+            { $group: { _id: '$status', count: { $sum: 1 } } },
+          ]);
 
-        return {
-          ...run,
-          counts: grouped.reduce(
+        // attach without losing the document type the schema mapper expects
+        return Object.assign(run, {
+          counts: grouped.reduce<Record<string, number>>(
             (acc, { _id, count }) => ({ ...acc, [_id]: count }),
             {},
           ),
-        };
+        });
       }),
     );
   },
 
   async engageBroadcastRecipients(
-    _root: undefined,
-    params: {
-      runId: string;
-      status?: string;
-      searchValue?: string;
-      beginDate?: Date;
-      endDate?: Date;
-    } & ICursorPaginateParams,
+    _root,
+    params: QueryEngageBroadcastRecipientsArgs,
     { models, subdomain }: IContext,
   ) {
     const { runId, status, searchValue, beginDate, endDate } = params;
@@ -499,23 +549,24 @@ export const engageQueries = {
 
     return await cursorPaginate({
       model: models.BroadcastRecipients,
-      params,
+      params: toCursorParams(params),
       query,
     });
   },
 
   async engageSmsDeliveries(
-    _root: undefined,
-    params: ISmsDeliveryQueryParams,
+    _root,
+    params: QueryEngageSmsDeliveriesArgs,
     { models }: IContext,
   ) {
     const { type, to } = params;
 
     if (type !== 'campaign') {
-      return { status: 'error', message: `Invalid parameter type: "${type}"` };
+      // DeliveryList has no error channel; an invalid type answers empty.
+      return { list: [], totalCount: 0 };
     }
 
-    const filter: any = {};
+    const filter: FilterQuery<ISmsRequestDocument> = {};
 
     if (to && !(to === 'undefined' || to === 'null')) {
       filter.to = { $regex: to, $options: '$i' };
@@ -528,24 +579,28 @@ export const engageQueries = {
     return { list: data, totalCount };
   },
   async emailSenderOptions(
-    _root: undefined,
-    { scope }: { scope?: TEmailScope },
+    _root,
+    { scope }: QueryEmailSenderOptionsArgs,
     { models }: IContext,
   ) {
-    const options = await getEmailSenderOptions(models, scope);
+    const emailScope = (scope ?? undefined) as TEmailScope | undefined;
 
-    return { ...options, _scope: scope };
+    const options = await getEmailSenderOptions(models, emailScope);
+
+    return { ...options, _scope: emailScope };
   },
 
   async engageVerifiedEmails(
-    _root: undefined,
-    _args: undefined,
+    _root,
+    _args,
     { models }: IContext,
   ) {
     const users = await models.Users.find({
       isActive: true,
     });
-    const userEmails = users?.map((u) => u.email);
+    const userEmails = users
+      .map((u) => u.email)
+      .filter((email): email is string => !!email);
     const allVerifiedEmails = await getVerifiedSenderEmails(
       models,
       'broadcast',
@@ -565,25 +620,29 @@ export const engageQueries = {
    * scheduler itself reads it, rather than being written a second time.
    */
   async engageSchedulePreview(
-    _root: undefined,
-    { recurrence }: { recurrence: TBroadcastRecurrence },
+    _root,
+    { recurrence }: QueryEngageSchedulePreviewArgs,
   ) {
+    const schedule: TBroadcastRecurrence = {
+      ...recurrence,
+      every: recurrence.every as TBroadcastEvery,
+    };
     const upcoming: Date[] = [];
-    let at = nextOccurrence(recurrence, new Date());
+    let at = nextOccurrence(schedule, new Date());
 
     while (at && upcoming.length < 3) {
       upcoming.push(at);
-      at = nextOccurrence(recurrence, at);
+      at = nextOccurrence(schedule, at);
     }
 
-    return { count: occurrenceCount(recurrence), upcoming };
+    return { count: occurrenceCount(schedule), upcoming };
   },
 
   // What happened is in the runs; what is coming is worked out from the
   // schedules. Neither can be read from the other.
   async engageScheduleCalendar(
-    _root: undefined,
-    { from, to, ...params }: IEngageQueryParams & { from: Date; to: Date },
+    _root,
+    { from, to, ...params }: QueryEngageScheduleCalendarArgs,
     { models, user }: IContext,
   ) {
     const start = new Date(from);
@@ -599,7 +658,7 @@ export const engageQueries = {
       );
     }
 
-    const filter = await generateFilter(models, params, user);
+    const filter = await generateFilter(models, toFilterParams(params), user);
 
     const runs = await models.BroadcastRuns.find(
       { startedAt: { $gte: start, $lte: end } },

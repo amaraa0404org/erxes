@@ -1,26 +1,39 @@
 import {
+  AnyResolver,
   ICompanyDocument,
-  ICompanyFilterQueryParams,
-  Resolver,
+  ICursorPaginateParams,
 } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import {
+  QueryCompaniesArgs,
+  QueryCompanyDetailArgs,
+  QueryCpCompaniesArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { generateFilter } from '~/modules/contacts/utils';
 
-export const companyQueries: Record<
-  string,
-  Resolver<undefined, unknown, IContext>
-> = {
+const toCursorParams = (
+  args: QueryCompaniesArgs | QueryCpCompaniesArgs,
+): ICursorPaginateParams => ({
+  cursor: args.cursor ?? undefined,
+  limit: args.limit ?? undefined,
+  // Nominal codegen enums; the runtime values are the literals themselves.
+  direction: args.direction as ICursorPaginateParams['direction'],
+  orderBy: args.orderBy as ICursorPaginateParams['orderBy'],
+});
+
+export const companyQueries: QueryResolvers<IContext> = {
   /**
    * Get companies
    */
   companies: async (
-    _parent: undefined,
-    params: ICompanyFilterQueryParams,
+    _parent,
+    params: QueryCompaniesArgs,
     { models, subdomain }: IContext,
   ) => {
-    const filter: FilterQuery<ICompanyDocument> = await generateFilter(
+    const filter: FilterQuery<ICompanyDocument> = await generateFilter<ICompanyDocument>(
       subdomain,
       params,
       models,
@@ -29,7 +42,7 @@ export const companyQueries: Record<
     const { list, totalCount, pageInfo } =
       await cursorPaginate<ICompanyDocument>({
         model: models.Companies,
-        params,
+        params: toCursorParams(params),
         query: filter,
       });
 
@@ -37,11 +50,11 @@ export const companyQueries: Record<
   },
 
   cpCompanies: async (
-    _parent: undefined,
-    params: ICompanyFilterQueryParams,
+    _parent,
+    params: QueryCpCompaniesArgs,
     { models, subdomain }: IContext,
   ) => {
-    const filter: FilterQuery<ICompanyDocument> = await generateFilter(
+    const filter: FilterQuery<ICompanyDocument> = await generateFilter<ICompanyDocument>(
       subdomain,
       params,
       models,
@@ -50,7 +63,7 @@ export const companyQueries: Record<
     const { list, totalCount, pageInfo } =
       await cursorPaginate<ICompanyDocument>({
         model: models.Companies,
-        params,
+        params: toCursorParams(params),
         query: filter,
       });
 
@@ -61,14 +74,14 @@ export const companyQueries: Record<
    * Get one company
    */
   companyDetail: async (
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryCompanyDetailArgs,
     { models }: IContext,
   ) => {
     return await models.Companies.findOne({ $or: [{ _id }, { code: _id }] });
   },
 };
 
-companyQueries.cpCompanies.wrapperConfig = {
+(companyQueries.cpCompanies as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

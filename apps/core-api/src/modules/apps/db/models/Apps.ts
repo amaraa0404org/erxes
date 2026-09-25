@@ -9,9 +9,9 @@ import { redis } from 'erxes-api-shared/utils';
 export interface IAppModel extends Model<IAppDocument> {
   getApp(_id: string): Promise<IAppDocument>;
   createApp(doc: IApp): Promise<IAppDocument>;
-  updateApp(_id: string, doc: IApp): Promise<IAppDocument>;
+  updateApp(_id: string, doc: Partial<IApp>): Promise<IAppDocument>;
   revokeApp(_id: string): Promise<IAppDocument>;
-  removeApp(_id: string): Promise<any>;
+  removeApp(_id: string): Promise<unknown>;
 }
 
 export const loadAppClass = (
@@ -48,7 +48,7 @@ export const loadAppClass = (
       return app;
     }
 
-    public static async updateApp(_id: string, doc: IApp) {
+    public static async updateApp(_id: string, doc: Partial<IApp>) {
       const app = await models.Apps.getApp(_id);
 
       await models.Apps.updateOne({ _id }, { $set: doc });

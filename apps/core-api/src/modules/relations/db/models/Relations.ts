@@ -46,9 +46,13 @@ export interface IRelationModel extends Model<IRelationDocument> {
   getRelationsByEntities: ({
     contentType,
     contentId,
+    contentTypes,
+    contentIds,
   }: {
-    contentType: string;
-    contentId: string;
+    contentType?: string;
+    contentId?: string;
+    contentTypes?: string[];
+    contentIds?: string[];
   }) => Promise<IRelationDocument[]>;
   filterRelations: ({
     contentType,
@@ -255,13 +259,21 @@ export const loadRelationClass = (
     public static async getRelationsByEntities({
       contentType,
       contentId,
+      contentTypes,
+      contentIds,
     }: {
-      contentType: string;
-      contentId: string;
+      contentType?: string;
+      contentId?: string;
+      contentTypes?: string[];
+      contentIds?: string[];
     }) {
       return await models.Relations.find({
-        'entities.contentType': { $in: [contentType] },
-        'entities.contentId': { $in: [contentId] },
+        'entities.contentType': {
+          $in: contentTypes ?? (contentType ? [contentType] : []),
+        },
+        'entities.contentId': {
+          $in: contentIds ?? (contentId ? [contentId] : []),
+        },
       }).lean();
     }
 

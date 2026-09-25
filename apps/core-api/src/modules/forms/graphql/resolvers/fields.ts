@@ -1,4 +1,5 @@
 import { IContext } from '~/connectionResolvers';
+import { QueryFieldsCombinedByContentTypeArgs } from '~/__generated__/graphql';
 import { fieldsCombinedByContentType } from '../../utils';
 
 interface IFieldsDefaultColumns {
@@ -12,7 +13,7 @@ export interface IFieldsQuery {
   isDefinedByErxes?: boolean;
   searchable?: boolean;
   isVisibleToCreate?: boolean;
-  groupId?: any;
+  groupId?: string | { $in: string[] };
 }
 
 const fieldQueries = {
@@ -75,7 +76,7 @@ const fieldQueries = {
    * Fields list
    */
   async fields(
-    _root,
+    _root: undefined,
     {
       contentType,
       contentTypeId,
@@ -160,11 +161,20 @@ const fieldQueries = {
    * Generates all field choices base on given kind.
    */
   async fieldsCombinedByContentType(
-    _root,
-    args,
+    _root: undefined,
+    args: QueryFieldsCombinedByContentTypeArgs,
     { models, subdomain }: IContext,
   ) {
-    return fieldsCombinedByContentType(models, subdomain, args);
+    return fieldsCombinedByContentType(models, subdomain, {
+      contentType: args.contentType,
+      usageType: args.usageType ?? undefined,
+      excludedNames: args.excludedNames?.filter(
+        (name): name is string => typeof name === 'string',
+      ),
+      segmentId: args.segmentId ?? undefined,
+      config: args.config ?? undefined,
+      onlyDates: args.onlyDates ?? undefined,
+    });
   },
 
   /**
@@ -190,7 +200,11 @@ const fieldQueries = {
   //     return [];
   //   },
 
-  async fieldsGetDetail(_root, { _id, code }, { models }: IContext) {
+  async fieldsGetDetail(
+    _root: undefined,
+    { _id, code }: { _id?: string; code?: string },
+    { models }: IContext,
+  ) {
     let field = await models.Fields.findOne({ code });
 
     if (!field) {
@@ -201,7 +215,7 @@ const fieldQueries = {
   },
 
   async fieldsGetRelations(
-    _root,
+    _root: undefined,
     {
       contentType,
       isVisibleToCreate,
@@ -217,7 +231,7 @@ const fieldQueries = {
   },
 
   async fieldByCode(
-    _root,
+    _root: undefined,
     { contentType, code }: { contentType: string; code: string },
     { models }: IContext,
   ) {
@@ -230,7 +244,7 @@ const fieldsGroupQueries = {
    * Fields group list
    */
   async fieldsGroups(
-    _root,
+    _root: undefined,
     {
       contentType,
       isDefinedByErxes,
@@ -240,7 +254,7 @@ const fieldsGroupQueries = {
       contentType: string;
       isDefinedByErxes: boolean;
       codes: string[];
-      config;
+      config?: Record<string, unknown>;
     },
     { commonQuerySelector, models, subdomain }: IContext,
   ) {
@@ -278,17 +292,14 @@ const fieldsGroupQueries = {
   },
 
   async getSystemFieldsGroup(
-    _root,
+    _root: undefined,
     { contentType }: { contentType: string },
     { models }: IContext,
   ) {
-    const query: any = {};
-
-    // querying by content type
-    query.contentType = contentType;
-    query.isDefinedByErxes = true;
-
-    return models.FieldsGroups.findOne(query);
+    return models.FieldsGroups.findOne({
+      contentType,
+      isDefinedByErxes: true,
+    });
   },
 };
 

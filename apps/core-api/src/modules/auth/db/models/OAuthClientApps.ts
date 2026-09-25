@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
 import type {
   OAuthClientAccessTokenLifetime,
@@ -55,10 +55,15 @@ const hashSecret = (secret: string): string => {
 
 export interface IOAuthClientAppModel extends Model<IOAuthClientAppDocument> {
   getOAuthClientApp(_id: string): Promise<IOAuthClientAppDocument>;
-  createOAuthClientApp(doc: OAuthClientAppDoc): Promise<any>;
-  updateOAuthClientApp(_id: string, doc: OAuthClientAppDoc): Promise<any>;
+  createOAuthClientApp(
+    doc: OAuthClientAppDoc,
+  ): Promise<IOAuthClientAppDocument & { generatedSecret?: string }>;
+  updateOAuthClientApp(
+    _id: string,
+    doc: OAuthClientAppDoc,
+  ): Promise<IOAuthClientAppDocument & { generatedSecret?: string }>;
   revokeOAuthClientApp(_id: string): Promise<IOAuthClientAppDocument>;
-  removeOAuthClientApp(_id: string): Promise<any>;
+  removeOAuthClientApp(_id: string): Promise<DeleteResult>;
 }
 
 export const loadOAuthClientAppClass = (
@@ -81,7 +86,9 @@ export const loadOAuthClientAppClass = (
       const redirectUrls = normalizeRedirectUrls(doc.redirectUrls);
       const secret = doc.type === 'confidential' ? generateSecret() : undefined;
 
-      const createWithUniqueId = async (attempt = 0): Promise<any> => {
+      const createWithUniqueId = async (
+        attempt = 0,
+      ): Promise<IOAuthClientAppDocument> => {
         if (attempt >= 5) {
           throw new Error('Could not generate unique client id');
         }
@@ -103,7 +110,7 @@ export const loadOAuthClientAppClass = (
             secretHash: secret ? hashSecret(secret) : undefined,
             status: 'active',
           });
-        } catch (e: any) {
+        } catch (e) {
           if (e?.code === 11000 && e?.keyPattern?.clientId) {
             return createWithUniqueId(attempt + 1);
           }
@@ -151,7 +158,10 @@ export const loadOAuthClientAppClass = (
         );
       }
 
-      const updateOperation: Record<string, any> = {
+      const updateOperation: {
+        $set: OAuthClientAppDoc & { secretHash?: string };
+        $unset?: Record<string, 1>;
+      } = {
         $set: updateDoc,
       };
 

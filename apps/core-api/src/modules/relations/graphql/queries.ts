@@ -1,15 +1,21 @@
-import { Resolver } from 'erxes-api-shared/core-types';
-import { IModels } from '~/connectionResolvers';
+import { AnyResolver } from 'erxes-api-shared/core-types';
+import {
+  QueryCpGetRelationsByEntityArgs,
+  QueryGetRelationsByEntitiesArgs,
+  QueryGetRelationsByEntityArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { IContext } from '~/connectionResolvers';
 
-export const relationsQueries: Record<string, Resolver<any, any, any>> = {
+export const relationsQueries: QueryResolvers<IContext> = {
   getRelationsByEntity: async (
-    _parent: undefined,
+    _parent,
     {
       contentType,
       contentId,
       relatedContentType,
-    }: { contentType: string; contentId: string; relatedContentType: string },
-    { models }: { models: IModels },
+    }: QueryGetRelationsByEntityArgs,
+    { models }: IContext,
   ) => {
     return models.Relations.getRelationsByEntity({
       contentType,
@@ -18,21 +24,24 @@ export const relationsQueries: Record<string, Resolver<any, any, any>> = {
     });
   },
   getRelationsByEntities: async (
-    _parent: undefined,
-    { contentType, contentId }: { contentType: string; contentId: string },
-    { models }: { models: IModels },
+    _parent,
+    { contentTypes, contentIds }: QueryGetRelationsByEntitiesArgs,
+    { models }: IContext,
   ) => {
-    return models.Relations.getRelationsByEntities({ contentType, contentId });
+    return models.Relations.getRelationsByEntities({
+      contentTypes,
+      contentIds,
+    });
   },
 
   cpGetRelationsByEntity: async (
-    _parent: undefined,
+    _parent,
     {
       contentType,
       contentId,
       relatedContentType,
-    }: { contentType: string; contentId: string; relatedContentType: string },
-    { models }: { models: IModels },
+    }: QueryCpGetRelationsByEntityArgs,
+    { models }: IContext,
   ) => {
     return models.Relations.getRelationsByEntity({
       contentType,
@@ -42,6 +51,6 @@ export const relationsQueries: Record<string, Resolver<any, any, any>> = {
   },
 };
 
-relationsQueries.cpGetRelationsByEntity.wrapperConfig = {
+(relationsQueries.cpGetRelationsByEntity as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

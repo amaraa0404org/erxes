@@ -2,7 +2,7 @@ export const types = `
   input PermissionInput {
     plugin: String!
     module: String!
-    actions: [String]!
+    actions: [String!]!
     scope: String!
   }
 
@@ -23,23 +23,23 @@ export const types = `
   type PermissionModule {
     name: String!
     description: String
-    scopes: [PermissionScopeDescription]
-    plugin: String! 
+    scopes: [PermissionScopeDescription!]
+    plugin: String!
     scopeField: String
-    ownerFields: [String]
-    actions: [PermissionAction]!
+    ownerFields: [String!]
+    actions: [PermissionAction!]!
     always: Boolean
   }
 
   type PermissionModulesByPlugin {
     plugin: String!
-    modules: [PermissionModule]!
+    modules: [PermissionModule!]!
   }
 
   type PermissionGroupPermission {
     plugin: String!
     module: String!
-    actions: [String]!
+    actions: [String!]!
     scope: String!
   }
 
@@ -48,67 +48,67 @@ export const types = `
     name: String!
     description: String
     plugin: String!
-    permissions: [PermissionGroupPermission]!
-    members: [User]
+    permissions: [PermissionGroupPermission!]!
+    members: [User!]!
   }
 
   type PermissionGroup {
     _id: String!
     name: String!
     description: String
-    permissions: [PermissionGroupPermission]!
-    members: [User]
-    createdAt: Date
-    updatedAt: Date
+    permissions: [PermissionGroupPermission!]!
+    members: [User!]!
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type UserPermission {
     plugin: String
     module: String!
-    actions: [String]!
+    actions: [String!]!
     scope: String!
   }
 
   type CurrentUserPermissionsResult {
-    permissions: [UserPermission]!
-    pluginsWithPermissions: [String]!
+    permissions: [UserPermission!]!
+    pluginsWithPermissions: [String!]!
   }
 
   type CustomPermission {
     plugin: String!
     module: String!
-    actions: [String]!
+    actions: [String!]!
     scope: String!
   }
 
 `;
 
 export const queries = `
-  permissionModules: [PermissionModulesByPlugin]
-  permissionDefaultGroups: [DefaultPermissionGroup]
-  permissionGroups: [PermissionGroup]
+  permissionModules: [PermissionModulesByPlugin!]!
+  permissionDefaultGroups: [DefaultPermissionGroup!]!
+  permissionGroups: [PermissionGroup!]!
   permissionGroupDetail(id: String!): PermissionGroup
-  currentUserPermissions: CurrentUserPermissionsResult
+  currentUserPermissions: CurrentUserPermissionsResult!
 `;
 
 export const mutations = `
   permissionGroupAdd(
     name: String!
     description: String
-    permissions: [PermissionInput]!
-  ): PermissionGroup
+    permissions: [PermissionInput!]!
+  ): PermissionGroup!
 
   permissionGroupEdit(
     _id: String!
     name: String
     description: String
-    permissions: [PermissionInput]
+    permissions: [PermissionInput!]
   ): PermissionGroup
 
-  permissionGroupRemove(_id: String!): JSON
+  permissionGroupRemove(_id: String!): JSON!
 
-  userUpdatePermissionGroups(userId: String!, groupIds: [String]!): User
-  usersUpdatePermissionGroups(userIds: [String]!, groupIds: [String]!): JSON
+  userUpdatePermissionGroups(userId: String!, groupIds: [String!]!): User
+  usersUpdatePermissionGroups(userIds: [String!]!, groupIds: [String!]!): JSON!
   userAddCustomPermission(userId: String!, permission: PermissionInput!): User
   userRemoveCustomPermission(userId: String!, module: String!): User
 

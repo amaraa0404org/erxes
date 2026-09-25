@@ -22,20 +22,20 @@ export const types = `
 `;
 
 export const queries = `
-    getRelationsByEntity(contentType: String!, contentId: String!, relatedContentType: String!): [Relation!]
-    getRelationsByEntities(contentTypes: [String!]!, contentIds: [String!]!): [Relation!]
-    cpGetRelationsByEntity(contentType: String!, contentId: String!, relatedContentType: String!): [Relation!]
+    getRelationsByEntity(contentType: String!, contentId: String!, relatedContentType: String!): [Relation!]!
+    getRelationsByEntities(contentTypes: [String!]!, contentIds: [String!]!): [Relation!]!
+    cpGetRelationsByEntity(contentType: String!, contentId: String!, relatedContentType: String!): [Relation!]!
 `;
 
 export const mutations = `
     createRelation(relation: RelationInput!): Relation!
     updateRelation(id: String!, relation: RelationInput!): Relation!
     deleteRelation(id: String!): String!
-    createMultipleRelations(relations: [RelationInput!]!): JSON
+    createMultipleRelations(relations: [RelationInput!]!): JSON!
     manageRelations(
-        contentType: String!, contentId: String!, relatedContentType: String!, relatedContentIds: [String]
-    ): [Relation!]
+        contentType: String!, contentId: String!, relatedContentType: String!, relatedContentIds: [String!]
+    ): [Relation!]!
     cpManageRelations(
-        contentType: String!, contentId: String!, relatedContentType: String!, relatedContentIds: [String]
-    ): [Relation!]
+        contentType: String!, contentId: String!, relatedContentType: String!, relatedContentIds: [String!]
+    ): [Relation!]!
 `;

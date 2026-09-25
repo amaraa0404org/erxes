@@ -1,85 +1,92 @@
-import { IRelation, Resolver } from 'erxes-api-shared/core-types';
-import { IModels } from '~/connectionResolvers';
+import { AnyResolver, IRelation } from 'erxes-api-shared/core-types';
+import {
+  MutationCpManageRelationsArgs,
+  MutationCreateMultipleRelationsArgs,
+  MutationCreateRelationArgs,
+  MutationDeleteRelationArgs,
+  MutationManageRelationsArgs,
+  MutationResolvers,
+  MutationUpdateRelationArgs,
+} from '~/__generated__/graphql';
+import { IContext } from '~/connectionResolvers';
 
-export const relationsMutations: Record<string, Resolver<any, any, any>> = {
+export const relationsMutations: MutationResolvers<IContext> = {
   createRelation: async (
-    _parent: undefined,
-    { relation }: { relation: IRelation },
-    { models }: { models: IModels },
+    _parent,
+    { relation }: MutationCreateRelationArgs,
+    { models }: IContext,
   ) => {
     return models.Relations.createRelation({ relation });
   },
   createMultipleRelations: async (
-    _parent: undefined,
-    { relations }: { relations: IRelation[] },
-    { models }: { models: IModels },
+    _parent,
+    { relations }: MutationCreateMultipleRelationsArgs,
+    { models }: IContext,
   ) => {
-    return models.Relations.createMultipleRelations({ relations });
+    const docs = await models.Relations.createMultipleRelations({ relations });
+
+    // Declared as JSON in the schema; the generated JSON output type is
+    // Record<string, unknown> but the runtime scalar also serializes arrays.
+    return docs as unknown as Record<string, unknown>;
   },
 
   updateRelation: async (
-    _parent: undefined,
-    { id, relation }: { id: string; relation: IRelation },
-    { models }: { models: IModels },
+    _parent,
+    { id, relation }: MutationUpdateRelationArgs,
+    { models }: IContext,
   ) => {
     return models.Relations.updateRelation({ _id: id, doc: relation });
   },
 
   deleteRelation: async (
-    _parent: undefined,
-    { id }: { id: string },
-    { models }: { models: IModels },
+    _parent,
+    { id }: MutationDeleteRelationArgs,
+    { models }: IContext,
   ) => {
-    return models.Relations.deleteRelation({ _id: id });
+    const deleted = await models.Relations.deleteRelation({ _id: id });
+
+    // The schema declares String!, so the DeleteResult reaches clients
+    // stringified through the String scalar exactly as before.
+    return deleted as unknown as string;
   },
 
   manageRelations: async (
-    _parent: undefined,
+    _parent,
     {
       contentType,
       contentId,
       relatedContentType,
       relatedContentIds,
-    }: {
-      contentType: string;
-      contentId: string;
-      relatedContentType: string;
-      relatedContentIds: string[];
-    },
-    { models }: { models: IModels },
+    }: MutationManageRelationsArgs,
+    { models }: IContext,
   ) => {
     return await models.Relations.manageRelations({
       contentType,
       contentId,
       relatedContentType,
-      relatedContentIds,
+      relatedContentIds: relatedContentIds || [],
     });
   },
 
   cpManageRelations: async (
-    _parent: undefined,
+    _parent,
     {
       contentType,
       contentId,
       relatedContentType,
       relatedContentIds,
-    }: {
-      contentType: string;
-      contentId: string;
-      relatedContentType: string;
-      relatedContentIds: string[];
-    },
-    { models }: { models: IModels },
+    }: MutationCpManageRelationsArgs,
+    { models }: IContext,
   ) => {
     return await models.Relations.manageRelations({
       contentType,
       contentId,
       relatedContentType,
-      relatedContentIds,
+      relatedContentIds: relatedContentIds || [],
     });
   },
 };
 
-relationsMutations.cpManageRelations.wrapperConfig = {
+(relationsMutations.cpManageRelations as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

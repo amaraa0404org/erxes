@@ -4,15 +4,39 @@ import {
   ISearchTokenConfig,
   sendTRPCMessage,
 } from 'erxes-api-shared/utils';
+import { AnyBulkWriteOperation, FilterQuery } from 'mongoose';
 import { IModels } from '~/connectionResolvers';
 import { CONTACT_STATUSES } from './constants';
 
-export const generateFilter = async (
+/**
+ * Filter params accepted by `generateFilter`. A superset of the generated
+ * GraphQL query args for customer/company lists, so resolver args can be
+ * passed through directly.
+ */
+export type ContactsFilterParams = {
+  searchValue?: string | null;
+  tagIds?: string[] | null;
+  excludeTagIds?: string[] | null;
+  tagWithRelated?: boolean | null;
+  type?: string | null;
+  dateFilters?: string | null;
+  propertiesData?: string | null;
+  brandIds?: string[] | null;
+  integrationIds?: string[] | null;
+  integrationTypes?: string[] | null;
+  status?: string | null;
+  ids?: string[] | null;
+  excludeIds?: boolean | null;
+  segmentIds?: string[] | null;
+  clientPortalId?: string | null;
+};
+
+export const generateFilter = async <T>(
   subdomain: string,
-  params: any,
+  params: ContactsFilterParams,
   models: IModels,
   searchConfig?: ISearchTokenConfig,
-) => {
+): Promise<FilterQuery<T>> => {
   const {
     searchValue,
     tagIds,
@@ -31,7 +55,9 @@ export const generateFilter = async (
     clientPortalId,
   } = params;
 
-  const filter: any = {
+  // Built dynamically from many optional params; cast to FilterQuery<T> at
+  // the boundary.
+  const filter: Record<string, unknown> = {
     status: { $ne: CONTACT_STATUSES.deleted },
   };
 
@@ -40,7 +66,9 @@ export const generateFilter = async (
   }
 
   if (status) {
-    filter.status = { $eq: CONTACT_STATUSES[status] };
+    filter.status = {
+      $eq: CONTACT_STATUSES[status as keyof typeof CONTACT_STATUSES],
+    };
   }
 
   if (searchValue) {
@@ -70,12 +98,14 @@ export const generateFilter = async (
     const cpUsers = await models.CPUser.find({ clientPortalId }).distinct('erxesCustomerId');
 
     filter['_id'] = {
-      $in: [...new Set([...cpUsers, ...(filter['_id'] || [])])]
+      $in: [
+        ...new Set([...cpUsers, ...((filter['_id'] as unknown[]) || [])]),
+      ],
     };
   }
 
   if (brandIds || integrationIds || integrationTypes) {
-    const relatedIntegrationIdSet = new Set();
+    const relatedIntegrationIdSet = new Set<string>();
 
     if (brandIds) {
       const integrations = await findIntegrations(subdomain, {
@@ -145,15 +175,17 @@ export const generateFilter = async (
         const { gte, lte } = (value || {}) as { gte?: string; lte?: string };
 
         if (gte || lte) {
-          filter[key] = {};
+          const condition: Record<string, string> = {};
 
           if (gte) {
-            filter[key]['$gte'] = gte;
+            condition['$gte'] = gte;
           }
 
           if (lte) {
-            filter[key]['$lte'] = lte;
+            condition['$lte'] = lte;
           }
+
+          filter[key] = condition;
         }
       }
     } catch (err) {
@@ -165,18 +197,21 @@ export const generateFilter = async (
     const propertyConditions = buildPropertyFilter(propertiesData);
 
     if (propertyConditions.length) {
-      filter['$and'] = [...(filter['$and'] || []), ...propertyConditions];
+      filter['$and'] = [
+        ...((filter['$and'] as unknown[]) || []),
+        ...propertyConditions,
+      ];
     }
   }
 
-  return filter;
+  return filter as FilterQuery<T>;
 };
 
 export const createOrUpdate = async ({
   collection,
   data: { rows, doNotReplaceExistingValues },
 }) => {
-  const operations: any = [];
+  const operations: AnyBulkWriteOperation[] = [];
 
   for (const row of rows) {
     const { selector, doc, customFieldsData } = row;
@@ -250,7 +285,7 @@ export const customersCount = async ({
   subdomain: string;
   type: string;
 }) => {
-  const counts = {};
+  const counts: Record<string, number> = {};
 
   switch (type) {
     case 'tag': {

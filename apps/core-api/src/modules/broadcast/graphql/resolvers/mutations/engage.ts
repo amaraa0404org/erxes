@@ -1,4 +1,4 @@
-import { IEngageMessage } from '@/broadcast/@types';
+import { TCampaignInput } from '@/broadcast/db/models/Engages';
 import { BROADCAST_APPROVAL_CONTENT_TYPES } from '@/broadcast/constants';
 import {
   getEditorAttributeUtil,
@@ -9,19 +9,49 @@ import {
   getBroadcastCacheKey,
   getBroadcastEmailConfig,
 } from '@/broadcast/utils/outboundEmail';
-import { TBroadcastRecurrence } from '@/broadcast/utils/recurrence';
+import {
+  TBroadcastEvery,
+  TBroadcastRecurrence,
+} from '@/broadcast/utils/recurrence';
 import { scheduledAt } from '@/broadcast/utils/schedule';
 import {
   recordPlaceholderResolver,
   renderEmailContent,
   TEmailContentFormat,
 } from 'erxes-api-shared/core-modules';
-import { deliverEmail, ISingleSenderInput } from 'erxes-api-shared/utils';
+import { deliverEmail } from 'erxes-api-shared/utils';
 import { IContext } from '~/connectionResolvers';
 import { documentResolver } from '~/modules/documents/replacePlaceholders';
 import { TEmailScope } from '~/utils/email/scope';
 import { createDeliveryLogPort } from '~/utils/email/ports';
 import { removeVerifiedSender, verifySender } from '~/utils/email/senders';
+import {
+  EngageRecurrenceInput,
+  MutationBroadcastUpdateConfigsArgs,
+  MutationEngageMessageAddArgs,
+  MutationEngageMessageCancelScheduleArgs,
+  MutationEngageMessageCopyArgs,
+  MutationEngageMessageEditArgs,
+  MutationEngageMessageRemoveArgs,
+  MutationEngageMessageRemoveVerifiedEmailArgs,
+  MutationEngageMessageSendTestEmailArgs,
+  MutationEngageMessageSetLiveArgs,
+  MutationEngageMessageSetLiveManualArgs,
+  MutationEngageMessageSetPauseArgs,
+  MutationEngageMessageSetScheduleArgs,
+  MutationEngageMessageVerifyEmailArgs,
+  MutationEngageSendMailArgs,
+  MutationResolvers,
+  Scalars,
+} from '~/__generated__/graphql';
+
+// GraphQL exposes `every` as a plain string; the scheduler works in the union.
+const toRecurrence = (
+  recurrence: EngageRecurrenceInput | null | undefined,
+): TBroadcastRecurrence | undefined =>
+  recurrence
+    ? { ...recurrence, every: recurrence.every as TBroadcastEvery }
+    : undefined;
 
 // Whoever locks a campaign says who keeps access; no owner is named here, so
 // its author cannot let themselves through a lock meant to hold them.
@@ -37,20 +67,25 @@ const assertCampaignAccess = async (
     action,
   });
 
-export const engageMutations = {
+export const engageMutations: MutationResolvers<IContext> = {
   async engageMessageAdd(
     _root,
-    doc: IEngageMessage,
+    doc: MutationEngageMessageAddArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastCreate');
 
-    return models.EngageMessages.createCampaign(doc, user._id);
+    // The mutation params are all optional in the schema; the model validates
+    // the required fields the same way it did before typing.
+    return models.EngageMessages.createCampaign(
+      doc as unknown as TCampaignInput,
+      user._id,
+    );
   },
 
   async engageMessageEdit(
     _root,
-    { _id, ...doc }: { _id: string } & IEngageMessage,
+    { _id, ...doc }: MutationEngageMessageEditArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -59,12 +94,16 @@ export const engageMutations = {
     // should be told that, not handed a list of fields to fix first.
     await assertCampaignAccess({ models, user }, { _id }, 'edit');
 
-    return models.EngageMessages.editCampaign(_id, doc, user._id);
+    return models.EngageMessages.editCampaign(
+      _id,
+      doc as unknown as TCampaignInput,
+      user._id,
+    );
   },
 
   async engageMessageRemove(
-    _root: undefined,
-    { _ids }: { _ids: string[] },
+    _root,
+    { _ids }: MutationEngageMessageRemoveArgs,
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastDelete');
@@ -75,12 +114,15 @@ export const engageMutations = {
       await assertCampaignAccess({ models, user }, { _id }, 'edit');
     }
 
-    return models.EngageMessages.removeCampaigns(_ids);
+    // JSON scalar boundary: the raw delete result is passed through.
+    return (await models.EngageMessages.removeCampaigns(
+      _ids,
+    )) as Scalars['JSON']['output'];
   },
 
   async engageMessageSetLive(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: MutationEngageMessageSetLiveArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -108,12 +150,8 @@ export const engageMutations = {
    * form the campaign was built in.
    */
   async engageMessageSetSchedule(
-    _root: undefined,
-    {
-      _id,
-      dateTime,
-      recurrence,
-    }: { _id: string; dateTime?: Date; recurrence?: TBroadcastRecurrence },
+    _root,
+    { _id, dateTime, recurrence }: MutationEngageMessageSetScheduleArgs,
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -122,7 +160,10 @@ export const engageMutations = {
     // watching when the alarm goes off.
     await assertCampaignAccess({ models, user }, { _id }, 'live');
 
-    return models.EngageMessages.schedule(_id, { dateTime, recurrence });
+    return models.EngageMessages.schedule(_id, {
+      dateTime: dateTime ?? undefined,
+      recurrence: toRecurrence(recurrence),
+    });
   },
 
   /**
@@ -132,8 +173,8 @@ export const engageMutations = {
    * for, and a campaign with no schedule no longer matches it.
    */
   async engageMessageCancelSchedule(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: MutationEngageMessageCancelScheduleArgs,
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -144,8 +185,8 @@ export const engageMutations = {
   },
 
   async engageMessageSetPause(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: MutationEngageMessageSetPauseArgs,
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -156,8 +197,8 @@ export const engageMutations = {
   },
 
   async engageMessageSetLiveManual(
-    _root: undefined,
-    { _id }: { _id: string },
+    _root,
+    { _id }: MutationEngageMessageSetLiveManualArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -169,7 +210,7 @@ export const engageMutations = {
 
   async broadcastUpdateConfigs(
     _root,
-    { configsMap },
+    { configsMap }: MutationBroadcastUpdateConfigsArgs,
     { user, models, subdomain, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastConfigsManage');
@@ -183,11 +224,20 @@ export const engageMutations = {
    * Engage message verify email
    */
   async engageMessageVerifyEmail(
-    _root: undefined,
-    { scope, ...input }: ISingleSenderInput & { scope?: TEmailScope },
+    _root,
+    { scope, ...input }: MutationEngageMessageVerifyEmailArgs,
     { models, subdomain }: IContext,
   ) {
-    const response = await verifySender(models, subdomain, input, scope);
+    const response = await verifySender(
+      models,
+      subdomain,
+      {
+        email: input.email,
+        name: input.name ?? undefined,
+        replyTo: input.replyTo ?? undefined,
+      },
+      (scope ?? undefined) as TEmailScope | undefined,
+    );
 
     return JSON.stringify(response);
   },
@@ -196,27 +246,27 @@ export const engageMutations = {
    * Engage message remove verified email
    */
   async engageMessageRemoveVerifiedEmail(
-    _root: undefined,
-    { email, scope }: { email: string; scope?: TEmailScope },
+    _root,
+    { email, scope }: MutationEngageMessageRemoveVerifiedEmailArgs,
     { models }: IContext,
   ) {
-    await removeVerifiedSender(models, email, scope);
+    await removeVerifiedSender(
+      models,
+      email,
+      (scope ?? undefined) as TEmailScope | undefined,
+    );
 
     return JSON.stringify({ email });
   },
 
   async engageMessageSendTestEmail(
-    _root: undefined,
-    args: {
-      from: string;
-      to: string;
-      content: string;
-      contentFormat?: TEmailContentFormat;
-      title: string;
-    },
+    _root,
+    args: MutationEngageMessageSendTestEmailArgs,
     { subdomain, models }: IContext,
   ) {
-    const { content, contentFormat, from, to, title } = args;
+    const { content, from, to, title } = args;
+    const contentFormat =
+      (args.contentFormat ?? undefined) as TEmailContentFormat | undefined;
 
     if (!(content && from && to && title)) {
       throw new Error(
@@ -275,13 +325,13 @@ export const engageMutations = {
     } catch (e) {
       console.log(e);
 
-      return e;
+      throw e;
     }
   },
 
   async engageMessageCopy(
-    _root: undefined,
-    { _id }: { _id },
+    _root,
+    { _id }: MutationEngageMessageCopyArgs,
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastCreate');
@@ -296,25 +346,23 @@ export const engageMutations = {
    * Send mail
    */
   async engageSendMail(
-    _root: undefined,
-    args: any,
+    _root,
+    args: MutationEngageSendMailArgs,
     { user, models, subdomain }: IContext,
   ) {
     const { body, customerId, ...doc } = args;
 
     const customerQuery = customerId
       ? { _id: customerId }
-      : { primaryEmail: doc.to };
+      : { primaryEmail: { $in: doc.to } };
 
     const customer = await models.Customers.findOne(customerQuery);
-
-    doc.body = body || '';
 
     try {
       await sendEngageEmail(subdomain, models, {
         fromEmail: doc.from || '',
         email: {
-          content: doc.body,
+          content: body || '',
           subject: doc.subject,
           attachments: doc.attachments,
           sender: doc.from || '',
@@ -331,8 +379,6 @@ export const engageMutations = {
       throw e;
     }
 
-    doc.userId = user._id;
-
-    return;
+    return null;
   },
 };

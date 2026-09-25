@@ -1,11 +1,22 @@
 import { sendTRPCMessage } from 'erxes-api-shared/utils';
+import {
+  ModifiedNote,
+  QueryInternalNoteDetailArgs,
+  QueryInternalNotesArgs,
+  QueryInternalNotesAsLogsArgs,
+  QueryInternalNotesByActionArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { IInternalNoteParams } from '~/modules/internalNote/types';
+import {
+  IInternalNoteDocument,
+  IInternalNoteParams,
+} from '~/modules/internalNote/types';
 
-export const internalNoteQueries = {
+export const internalNoteQueries: QueryResolvers<IContext> = {
   internalNoteDetail: async (
-    _parent: undefined,
-    { _id }: { _id: string },
+    _parent,
+    { _id }: QueryInternalNoteDetailArgs,
     { models }: IContext,
   ) => {
     return await models.InternalNotes.getInternalNote(_id);
@@ -15,11 +26,8 @@ export const internalNoteQueries = {
    * InternalNotes list
    */
   async internalNotes(
-    _parent: undefined,
-    {
-      contentType,
-      contentTypeId,
-    }: { contentType: string; contentTypeId: string },
+    _parent,
+    { contentType, contentTypeId }: QueryInternalNotesArgs,
     { models }: IContext,
   ) {
     const filter: { contentType: string; contentTypeId?: string } = {
@@ -38,10 +46,17 @@ export const internalNoteQueries = {
   },
 
   async internalNotesByAction(
-    _parent: undefined,
-    { contentType, pipelineId, page = 1, perPage = 10 }: IInternalNoteParams,
+    _parent,
+    {
+      contentType,
+      pipelineId,
+      page: pageArg,
+      perPage: perPageArg,
+    }: QueryInternalNotesByActionArgs,
     { models, subdomain }: IContext,
   ) {
+    const page = pageArg ?? 1;
+    const perPage = perPageArg ?? 10;
     const [pluginName, moduleName] = contentType.split(':');
 
     const contentIds = await sendTRPCMessage<string[]>({
@@ -61,7 +76,7 @@ export const internalNoteQueries = {
 
     const filter = { contentTypeId: { $in: contentIds } };
 
-    const list: any[] = [];
+    const list: ModifiedNote[] = [];
 
     const internalNotes = await models.InternalNotes.find(filter)
       .sort({
@@ -89,8 +104,8 @@ export const internalNoteQueries = {
   },
 
   async internalNotesAsLogs(
-    _parent: undefined,
-    { contentTypeId }: { contentTypeId: string },
+    _parent,
+    { contentTypeId }: QueryInternalNotesAsLogsArgs,
     { models }: IContext,
   ) {
     const notes = await models.InternalNotes.find({ contentTypeId })
