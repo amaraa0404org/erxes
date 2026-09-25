@@ -14,10 +14,13 @@ import {
 } from 'erxes-api-shared/core-modules';
 import { ExpectedError } from 'erxes-api-shared/utils';
 import { PipelineStage } from 'mongoose';
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { DOCUMENT_APPROVAL_CONTENT_TYPE } from '~/modules/documents/types';
 import { applyApprovedChange } from '~/modules/approval/applyApprovedChange';
 import { ensureApprovalRequestIndexes } from '~/modules/approval/db/ensureIndexes';
+import { IApprovalLockDocument } from '../../db/definitions/approvalLocks';
+import { IApprovalRequestDocument } from '../../db/definitions/approvalRequests';
 
 const unique = (ids: string[]) => [...new Set(ids.filter(Boolean))];
 
@@ -158,9 +161,9 @@ const createChangeRequest = async (
   });
 };
 
-export const approvalMutations = {
+export const approvalMutations: MutationResolvers<IContext> = {
   async approvalLockCreate(
-    _root: undefined,
+    _root: unknown,
     { input }: { input: ApprovalLockCreateResolverInput },
     { models, user, checkPermission }: IContext,
   ) {
@@ -177,7 +180,7 @@ export const approvalMutations = {
       ownerId = document.createdUserId;
     }
 
-    return models.ApprovalLocks.createLock({
+    const lock = await models.ApprovalLocks.createLock({
       contentType: input.contentType,
       contentId: input.contentTypeId,
       ownerIdSnapshot: ownerId,
@@ -186,10 +189,12 @@ export const approvalMutations = {
       approverScope: input.scope || APPROVAL_APPROVER_SCOPES.LOCKER_ONLY,
       approvalMode: input.mode || APPROVAL_MODES.FIRST_WINS,
     });
+
+    return lock as IApprovalLockDocument;
   },
 
   async approvalLockRelease(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user, checkPermission }: IContext,
   ) {
@@ -204,13 +209,15 @@ export const approvalMutations = {
       );
     }
 
-    return models.ApprovalLocks.releaseLock(_id, {
+    const released = await models.ApprovalLocks.releaseLock(_id, {
       releasedBy: user._id,
     });
+
+    return released as IApprovalLockDocument;
   },
 
   async approvalLockForceRelease(
-    _root: undefined,
+    _root: unknown,
     { _id, reason }: { _id: string; reason: string },
     { models, user, checkPermission }: IContext,
   ) {
@@ -223,14 +230,16 @@ export const approvalMutations = {
       );
     }
 
-    return models.ApprovalLocks.releaseLock(_id, {
+    const released = await models.ApprovalLocks.releaseLock(_id, {
       releasedBy: user._id,
       releaseReason: reason,
     });
+
+    return released as IApprovalLockDocument;
   },
 
   async approvalRequestCreate(
-    _root: undefined,
+    _root: unknown,
     { input }: { input: ApprovalRequestCreateInput },
     { models, user, subdomain }: IContext,
   ) {
@@ -239,7 +248,14 @@ export const approvalMutations = {
     // Naming a change makes this a change request: it is not about a lock, so
     // it names its own approvers and ends by the change being carried out.
     if (input.change) {
-      return createChangeRequest(models, subdomain, user, input);
+      const request = await createChangeRequest(
+        models,
+        subdomain,
+        user,
+        input,
+      );
+
+      return request as IApprovalRequestDocument;
     }
 
     const state = await models.ApprovalLocks.getState({
@@ -263,7 +279,7 @@ export const approvalMutations = {
     });
 
     if (pending) {
-      return pending;
+      return pending as IApprovalRequestDocument;
     }
 
     const requiredApproverIds = models.ApprovalRequests.getRequiredApproverIds(
@@ -292,14 +308,19 @@ export const approvalMutations = {
       },
     });
 
-    return models.ApprovalRequests.resolveRequest(request._id, {
-      status: request.status,
-      notificationIds,
-    });
+    const resolved = await models.ApprovalRequests.resolveRequest(
+      request._id,
+      {
+        status: request.status,
+        notificationIds,
+      },
+    );
+
+    return resolved as IApprovalRequestDocument;
   },
 
   async approvalRequestApprove(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user, subdomain }: IContext,
   ) {
@@ -358,23 +379,25 @@ export const approvalMutations = {
         }
 
         if (finalRequest.change) {
-          return await applyApprovedChange(
+          const applied = await applyApprovedChange(
             models,
             subdomain,
             finalRequest,
             user._id,
           );
+
+          return applied as IApprovalRequestDocument;
         }
       }
 
-      return finalRequest;
+      return finalRequest as IApprovalRequestDocument;
     }
 
-    return updatedRequest;
+    return updatedRequest as IApprovalRequestDocument;
   },
 
   async approvalRequestReject(
-    _root: undefined,
+    _root: unknown,
     { _id, reason }: { _id: string; reason?: string },
     { models, user }: IContext,
   ) {
@@ -408,11 +431,11 @@ export const approvalMutations = {
       );
     }
 
-    return rejected;
+    return rejected as IApprovalRequestDocument;
   },
 
   async approvalRequestCancel(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user }: IContext,
   ) {
@@ -441,6 +464,6 @@ export const approvalMutations = {
       );
     }
 
-    return cancelled;
+    return cancelled as IApprovalRequestDocument;
   },
 };

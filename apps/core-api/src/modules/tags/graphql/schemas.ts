@@ -2,26 +2,26 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 
 export const types = `
   type Tag @key(fields: "_id") @cacheControl(maxAge: 3) {
-    _id: String
-    name: String
+    _id: String!
+    name: String!
     colorCode: String
     parentId: String
-    relatedIds: [String]
-    isGroup: Boolean
+    relatedIds: [String!]
+    isGroup: Boolean!
     description: String
     type: String
-    
+
     order: String
-    objectCount: Int
+    objectCount: Int!
     totalObjectCount: Int
-    
-    createdAt: Date
+
+    createdAt: Date!
   }
 
   type TagsListResponse {
-    list: [Tag]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [Tag!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 `;
 
@@ -52,13 +52,13 @@ const cpQueryParams = `
 `;
 
 export const queries = `
-  tagsGetTypes: JSON
-  tags(${queryParams}): TagsListResponse
-  tagsMain(type: String, excludeWorkspaceTags: Boolean): [Tag]
-  tagDetail(_id: String!): Tag
-  tagsQueryCount(type: String, searchValue: String): Int
+  tagsGetTypes: JSON!
+  tags(${queryParams}): TagsListResponse!
+  tagsMain(type: String, excludeWorkspaceTags: Boolean): [Tag!]!
+  tagDetail(_id: String!): Tag!
+  tagsQueryCount(type: String, searchValue: String): Int!
 
-  cpTags(${cpQueryParams}): [Tag]
+  cpTags(${cpQueryParams}): [Tag!]!
 `;
 
 const mutationParams = `
@@ -70,11 +70,11 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  tagsAdd(name: String!, ${mutationParams}): Tag
+  tagsAdd(name: String!, ${mutationParams}): Tag!
   tagsEdit(_id: String!, name: String, ${mutationParams}): Tag
   tagsTag(type: String!, targetIds: [String!]!, tagIds: [String!]!): JSON
   cpTagsTag(type: String!, targetIds: [String!]!, tagIds: [String!]!): JSON
-  tagsRemove(_id: String!): JSON
+  tagsRemove(_id: String!): JSON!
 
-  cpTagsAdd(name: String!, ${mutationParams}): Tag
+  cpTagsAdd(name: String!, ${mutationParams}): Tag!
 `;

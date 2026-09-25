@@ -5,9 +5,9 @@ import {
 
 export const types = `
     type FieldGroup {
-        _id: String
-        name: String
-        code: String
+        _id: String!
+        name: String!
+        code: String!
         description: String
         contentType: String
         order: Float
@@ -18,9 +18,9 @@ export const types = `
     }
 
     type FieldGroupListResponse {
-        list: [FieldGroup]
-        pageInfo: PageInfo
-        totalCount: Int
+        list: [FieldGroup!]!
+        pageInfo: PageInfo!
+        totalCount: Int!
     }
 
     input FieldGroupParams {
@@ -44,8 +44,8 @@ export const types = `
 `;
 
 export const queries = `
-    fieldGroups(params: FieldGroupParams): FieldGroupListResponse
-    cpFieldGroups(params: CpFieldGroupParams): [FieldGroup]
+    fieldGroups(params: FieldGroupParams): FieldGroupListResponse!
+    cpFieldGroups(params: CpFieldGroupParams): [FieldGroup!]!
 `;
 
 const mutationParams = `
@@ -58,8 +58,8 @@ const mutationParams = `
 `;
 
 export const mutations = `
-    fieldGroupAdd(${mutationParams}): FieldGroup
+    fieldGroupAdd(${mutationParams}): FieldGroup!
     fieldGroupEdit(_id: String!, order: Float, ${mutationParams}): FieldGroup
-    fieldGroupsUpdateOrder(orders: [FieldGroupOrderItem!]!): [FieldGroup]
+    fieldGroupsUpdateOrder(orders: [FieldGroupOrderItem!]!): [FieldGroup!]!
     fieldGroupRemove(_id: String!): FieldGroup
 `;

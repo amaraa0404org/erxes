@@ -1,8 +1,10 @@
-import { IEmailAddressDocument } from 'erxes-api-shared/core-modules';
+import { EmailAddressResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
-  lane(root: IEmailAddressDocument, _args: undefined, { models }: IContext) {
+const emailAddressResolvers: EmailAddressResolvers<IContext> = {
+  lane(root, _args, { models }) {
     return models.EmailAddresses.laneOf(root);
   },
 };
+
+export default emailAddressResolvers;

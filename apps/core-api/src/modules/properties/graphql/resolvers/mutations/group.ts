@@ -1,28 +1,41 @@
 import { IOrderInput } from 'erxes-api-shared/core-types';
+import {
+  MutationFieldGroupAddArgs,
+  MutationFieldGroupEditArgs,
+  MutationResolvers,
+  RequireFields,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IFieldGroup } from '~/modules/properties/@types';
 
-export const groupMutations = {
+export const groupMutations: MutationResolvers<IContext> = {
   fieldGroupAdd: async (
-    _root: any,
-    doc: IFieldGroup,
+    _root,
+    doc: MutationFieldGroupAddArgs,
     { models, user, checkPermission }: IContext,
   ) => {
     await checkPermission('fieldGroupsManage');
 
-    return await models.FieldsGroups.createGroup(doc, user);
+    return await models.FieldsGroups.createGroup(
+      doc as unknown as IFieldGroup,
+      user,
+    );
   },
   fieldGroupEdit: async (
-    _root: any,
-    { _id, ...doc }: { _id: string } & IFieldGroup,
+    _root,
+    { _id, ...doc }: RequireFields<MutationFieldGroupEditArgs, '_id'>,
     { models, user, checkPermission }: IContext,
   ) => {
     await checkPermission('fieldGroupsManage');
 
-    return await models.FieldsGroups.updateGroup(_id, doc, user);
+    return await models.FieldsGroups.updateGroup(
+      _id,
+      doc as unknown as IFieldGroup,
+      user,
+    );
   },
   fieldGroupsUpdateOrder: async (
-    _root: any,
+    _root,
     { orders }: { orders: IOrderInput[] },
     { models, checkPermission }: IContext,
   ) => {
@@ -31,7 +44,7 @@ export const groupMutations = {
     return await models.FieldsGroups.updateOrder(orders);
   },
   fieldGroupRemove: async (
-    _root: any,
+    _root,
     { _id }: { _id: string },
     { models, checkPermission }: IContext,
   ) => {

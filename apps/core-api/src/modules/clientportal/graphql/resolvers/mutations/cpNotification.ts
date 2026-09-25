@@ -1,30 +1,21 @@
-import { Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
+import {
+  MutationClientPortalSendNotificationArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
+import { FilterQuery } from 'mongoose';
 import { IContext } from '~/connectionResolvers';
 import { notificationService } from '@/clientportal/services';
+import { ICPNotificationDocument } from '@/clientportal/types/cpNotification';
 
-interface CPNotificationSendInput {
-  title: string;
-  message: string;
-  type?: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  kind?: 'SYSTEM' | 'USER';
-}
-
-export const cpNotificationMutations: Record<
-  string,
-  Resolver<any, any, IContext>
-> = {
+export const cpNotificationMutations: MutationResolvers<IContext> = {
   async clientPortalSendNotification(
     _root: unknown,
     {
       cpUserId,
       clientPortalId,
       input,
-    }: {
-      cpUserId: string;
-      clientPortalId: string;
-      input: CPNotificationSendInput;
-    },
+    }: MutationClientPortalSendNotificationArgs,
     { models, subdomain }: IContext,
   ) {
     const clientPortal = await models.ClientPortal.findOne({
@@ -97,7 +88,7 @@ export const cpNotificationMutations: Record<
       throw new Error('User is not logged in');
     }
 
-    const query: any = {
+    const query: FilterQuery<ICPNotificationDocument> = {
       cpUserId: cpUser._id,
       isRead: false,
     };
@@ -114,9 +105,13 @@ export const cpNotificationMutations: Record<
   },
 };
 
-cpNotificationMutations.clientPortalMarkNotificationAsRead.wrapperConfig = {
+(
+  cpNotificationMutations.clientPortalMarkNotificationAsRead as AnyResolver
+).wrapperConfig = {
   forClientPortal: true,
 };
-cpNotificationMutations.clientPortalMarkAllNotificationsAsRead.wrapperConfig = {
+(
+  cpNotificationMutations.clientPortalMarkAllNotificationsAsRead as AnyResolver
+).wrapperConfig = {
   forClientPortal: true,
 };

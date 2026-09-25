@@ -45,28 +45,28 @@ const listParams = `
 `;
 
 const queries = `
-  automationsMain(${listParams}): AutomationsListResponse
-  automations(${queryParams}): [Automation]
-  automationDetail(_id: String!): Automation
+  automationsMain(${listParams}): AutomationsListResponse!
+  automations(${queryParams}): [Automation!]!
+  automationDetail(_id: String!): Automation!
   cpAutomationDetail(_id: String!): Automation
-  automationHistories(${GQL_CURSOR_PARAM_DEFS},${historiesParams}): AutomationHistories
-  automationHistoriesTotalCount(${historiesParams}):Int
-  automationStats(automationId: String!, beginDate: Date, endDate: Date): AutomationStats
-  automationExecutionCounts(automationIds: [String!]!): [AutomationStatsCount]
-  automationsTotalCount(status: String): automationsTotalCountResponse
-  automationConstants: JSON
-  automationSetPropertyTargets(sourceType: String!): JSON
+  automationHistories(${GQL_CURSOR_PARAM_DEFS},${historiesParams}): AutomationHistories!
+  automationHistoriesTotalCount(${historiesParams}):Int!
+  automationStats(automationId: String!, beginDate: Date, endDate: Date): AutomationStats!
+  automationExecutionCounts(automationIds: [String!]!): [AutomationStatsCount!]!
+  automationsTotalCount(status: String): automationsTotalCountResponse!
+  automationConstants: JSON!
+  automationSetPropertyTargets(sourceType: String!): JSON!
   automationNodeOutput(nodeType: String!): JSON
-  automationReferenceFields(type: String!, field: String!): JSON
-  automationBotsConstants:JSON
-  automationsAiAgents(kind:String):JSON
-  automationsAiAgentTotalCounts:JSON
+  automationReferenceFields(type: String!, field: String!): JSON!
+  automationBotsConstants:JSON!
+  automationsAiAgents(kind:String):JSON!
+  automationsAiAgentTotalCounts:JSON!
   automationsAiAgentDetail(_id:String):JSON
   automationsAiAgentHealth(agentId: String!): AiAgentHealth!
-  automationsAiAgentKnowledgeSourceStatuses(agentId: String!): JSON
-  getAutomationWebhookEndpoint(_id:String!,waitEventActionId:String):String
-  getAutomationExecutionDetail(executionId: String!): AutomationHistory
-  automationWorkflowTemplates(searchValue: String): [AutomationWorkflowTemplate]
+  automationsAiAgentKnowledgeSourceStatuses(agentId: String!): JSON!
+  getAutomationWebhookEndpoint(_id:String!,waitEventActionId:String):String!
+  getAutomationExecutionDetail(executionId: String!): AutomationHistory!
+  automationWorkflowTemplates(searchValue: String): [AutomationWorkflowTemplate!]!
 `;
 
 export default queries;

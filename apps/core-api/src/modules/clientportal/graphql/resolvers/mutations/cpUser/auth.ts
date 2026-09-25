@@ -1,5 +1,10 @@
+import {
+  MutationClientPortalUserRegisterArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
-import { Resolver } from 'erxes-api-shared/core-types';
+import { ICPUserDocument } from '@/clientportal/types/cpUser';
+import { IPropertyField } from 'erxes-api-shared/core-types';
 import {
   cpUserService,
   jwtManager,
@@ -15,7 +20,6 @@ import {
 import { getSocialUserProfile } from '@/clientportal/services/helpers/socialAuth';
 import { AuthenticationError } from '@/clientportal/services/errorHandler';
 import type {
-  RegisterParams,
   VerifyParams,
   LoginCredentialsParams,
   ForgotPasswordParams,
@@ -37,13 +41,27 @@ import {
 } from '@/clientportal/meta/activity-log';
 import { getTokiConnection } from '~/modules/clientportal/utils';
 
-export const authMutations: Record<string, Resolver<any, any, IContext>> = {
+export const authMutations: MutationResolvers<IContext> = {
   async clientPortalUserRegister(
     _root: unknown,
-    params: RegisterParams,
+    params: MutationClientPortalUserRegisterArgs,
     { models, subdomain, clientPortal }: IContext,
   ) {
-    return cpUserService.registerUser(subdomain, clientPortal, params, models);
+    return cpUserService.registerUser(
+      subdomain,
+      clientPortal,
+      {
+        email: params.email ?? undefined,
+        phone: params.phone ?? undefined,
+        username: params.username ?? undefined,
+        firstName: params.firstName ?? undefined,
+        lastName: params.lastName ?? undefined,
+        password: params.password ?? undefined,
+        userType: params.userType ?? undefined,
+        propertiesData: params.propertiesData as IPropertyField | undefined,
+      },
+      models,
+    );
   },
 
   async clientPortalUserVerify(
@@ -63,7 +81,10 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     const tokens = jwtManager.setAuthCookie(res, user, clientPortal);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { ...user.toObject(), ...tokens };
+      return {
+        ...user.toObject(),
+        ...tokens,
+      } as unknown as ICPUserDocument;
     }
 
     return user;
@@ -87,10 +108,13 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     await createCPUserActivityLog(models, subdomain, payload, user);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { success: true, ...tokens };
+      return { success: true, ...tokens } as unknown as Record<
+        string,
+        unknown
+      >;
     }
 
-    return 'Success';
+    return 'Success' as unknown as Record<string, unknown>;
   },
 
   async clientPortalLogout(
@@ -152,9 +176,12 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     const tokens = jwtManager.setAuthCookie(res, user, clientPortal);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { success: true, ...tokens };
+      return { success: true, ...tokens } as unknown as Record<
+        string,
+        unknown
+      >;
     }
-    return 'Password reset successful';
+    return 'Password reset successful' as unknown as Record<string, unknown>;
   },
 
   async clientPortalUserRequestOTP(
@@ -178,9 +205,12 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     await createCPUserActivityLog(models, subdomain, payload, user);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { success: true, ...tokens };
+      return { success: true, ...tokens } as unknown as Record<
+        string,
+        unknown
+      >;
     }
-    return 'Success';
+    return 'Success' as unknown as Record<string, unknown>;
   },
 
   async clientPortalUserRegisterWithSocial(
@@ -198,7 +228,10 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     const tokens = jwtManager.setAuthCookie(res, user, clientPortal);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { ...user.toObject(), ...tokens };
+      return {
+        ...user.toObject(),
+        ...tokens,
+      } as unknown as ICPUserDocument;
     }
     return user;
   },
@@ -214,7 +247,7 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
     await createCPUserActivityLog(models, subdomain, payload, user);
 
     if (tokens?.token && tokens?.refreshToken) {
-      return { success: true, ...tokens };
+      return { success: true, ...tokens } as unknown as string;
     }
     return 'Success';
   },
@@ -233,12 +266,10 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
   },
   async clientPortalUserLoginWithToki(
     _root: unknown,
-    { token },
+    { token }: { token: string },
     { models, subdomain, clientPortal, res }: IContext,
   ) {
-    console.log(JSON.stringify({ token, clientPortal }));
     const user = await loginWithToki(token, clientPortal, models);
-    console.log('toki user:', JSON.stringify(user || {}));
 
     const tokens = jwtManager.setAuthCookie(res, user, clientPortal);
 
@@ -250,12 +281,16 @@ export const authMutations: Record<string, Resolver<any, any, IContext>> = {
       return {
         success: true,
         ...tokens,
-      };
+      } as unknown as Record<string, unknown>;
     }
 
-    return 'Success';
+    return 'Success' as unknown as Record<string, unknown>;
   },
-  async checkTokiUserLegalAge(_root, { token }, { clientPortal }: IContext) {
+  async checkTokiUserLegalAge(
+    _root,
+    { token }: { token: string },
+    { clientPortal }: IContext,
+  ) {
     const { apiUrl, apiKey } = getTokiConnection(clientPortal);
     const response = await fetch(
       `${apiUrl}/third-party-service/v1/shoppy/user`,

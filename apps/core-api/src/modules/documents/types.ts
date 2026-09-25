@@ -1,7 +1,3 @@
-import {
-  ICursorPaginateParams,
-  IListParams,
-} from 'erxes-api-shared/core-types';
 import { Document } from 'mongoose';
 
 export interface IDocument {
@@ -19,14 +15,27 @@ export interface IDocumentDocument extends IDocument, Document {
   createdUserId: string;
 }
 
-export interface IDocumentFilterQueryParams
-  extends IListParams, ICursorPaginateParams {
-  limit: number;
-  contentType: string;
-  subType?: string;
-  userIds?: string[];
-  dateFilters?: string;
-  tagIds?: string[];
+/**
+ * Mirrors the generated `QueryDocumentsArgs`/`QueryDocumentsTotalCountArgs`
+ * shape: every filter field may arrive as null because the schema marks them
+ * nullable.
+ */
+export interface IDocumentFilterQueryParams {
+  searchValue?: string | null;
+  sortField?: string | null;
+  sortDirection?: number | null;
+  limit?: number | null;
+  cursor?: string | null;
+  direction?: 'forward' | 'backward' | null;
+  cursorMode?: 'inclusive' | 'exclusive' | null;
+  orderBy?: Record<string, unknown> | null;
+  sortMode?: string | null;
+  aggregationPipeline?: (Record<string, unknown> | null)[] | null;
+  contentType?: string | null;
+  subType?: string | null;
+  userIds?: (string | null)[] | null;
+  dateFilters?: string | null;
+  tagIds?: (string | null)[] | null;
 }
 
 export type DocumentAccessUser = {

@@ -1,19 +1,17 @@
 import { IActivityLogDocument } from 'erxes-api-shared/core-modules';
-import { ICursorPaginateParams } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import {
+  QueryActivityLogsArgs,
+  QueryResolvers,
+  RequireFields,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export interface IActivityLogQueryParams extends ICursorPaginateParams {
-  targetType?: string;
-  targetId: string;
-  action?: string;
-  variant?: 'forward' | 'backward';
-  activityType?: string;
-  excludeActivityType?: string;
-  dateFrom?: Date | string;
-  dateTo?: Date | string;
-}
+export type IActivityLogQueryParams = RequireFields<
+  QueryActivityLogsArgs,
+  'targetId'
+>;
 
 const generateFilters = (params: IActivityLogQueryParams) => {
   const filter: FilterQuery<IActivityLogDocument> = {};
@@ -52,9 +50,9 @@ const generateFilters = (params: IActivityLogQueryParams) => {
   return filter;
 };
 
-export const activityLogQueries = {
+export const activityLogQueries: QueryResolvers<IContext> = {
   async activityLogs(
-    _root: undefined,
+    _root: unknown,
     args: IActivityLogQueryParams,
     { models }: IContext,
   ) {
@@ -65,8 +63,8 @@ export const activityLogQueries = {
       await cursorPaginate<IActivityLogDocument>({
         model: models.ActivityLogs,
         params: {
-          ...args,
           limit,
+          cursor: args.cursor ?? undefined,
           direction: variant,
           orderBy: { createdAt: variant === 'backward' ? 1 : -1 },
         },

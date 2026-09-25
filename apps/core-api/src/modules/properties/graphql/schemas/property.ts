@@ -1,10 +1,10 @@
 export const types = `
   type PropertyType {
-    contentType: String
+    contentType: String!
     description: String
   }
 `;
 
 export const queries = `
-  propertyTypes: JSON
+  propertyTypes: JSON!
 `;

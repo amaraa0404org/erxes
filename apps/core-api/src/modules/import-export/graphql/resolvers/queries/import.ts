@@ -10,13 +10,20 @@ import {
   readFileStreamFromStorage,
   sendCoreModuleProducer,
 } from 'erxes-api-shared/utils';
+import { FilterQuery } from 'mongoose';
+import {
+  QueryActiveImportsArgs,
+  QueryImportHistoriesArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
+import { IImportDocument } from '~/modules/import-export/db/models/Imports';
 import { getRequiredImportExportPermissions } from '~/modules/import-export/utils/getRequiredPermissions';
 import { validateImportConfig } from '~/modules/import-export/utils/validateConfig';
 
 const PREVIEW_SAMPLE_ROWS = 5;
 
-const mapImportWithMetrics = (importDoc: any) => {
+const mapImportWithMetrics = (importDoc: IImportDocument) => {
   const progress =
     importDoc.totalRows > 0
       ? Math.round((importDoc.processedRows / importDoc.totalRows) * 100)
@@ -44,7 +51,7 @@ const mapImportWithMetrics = (importDoc: any) => {
   };
 };
 
-const toPreviewField = (header: any) => ({
+const toPreviewField = (header: ImportHeaderDefinition) => ({
   key: header.key,
   label: header.label,
   type: header.type || 'system',
@@ -103,14 +110,14 @@ const loadImportFields = async ({
   });
 };
 
-export const importQueries = {
+export const importQueries: QueryResolvers<IContext> = {
   /**
    * Read the uploaded file's header row and a few sample rows, then line them
    * up against the module's import fields. Nothing is written: this is what
    * the mapping step shows before the user commits to the import.
    */
   async importColumnPreview(
-    _root: undefined,
+    _root: unknown,
     {
       entityType,
       fileKey,
@@ -172,7 +179,7 @@ export const importQueries = {
    * is what someone reads while filling the spreadsheet in.
    */
   async importFields(
-    _root: undefined,
+    _root: unknown,
     { entityType }: { entityType: string },
     { subdomain, checkPermission }: IContext,
   ) {
@@ -186,7 +193,7 @@ export const importQueries = {
   },
 
   async importProgress(
-    _root: undefined,
+    _root: unknown,
     { importId }: { importId: string },
     { models, user }: IContext,
   ) {
@@ -200,16 +207,16 @@ export const importQueries = {
       throw new Error('Unauthorized');
     }
 
-    return mapImportWithMetrics(importDoc);
+    return mapImportWithMetrics(importDoc) as unknown as IImportDocument;
   },
 
   async activeImports(
-    _root: undefined,
-    { entityType }: { entityType?: string },
+    _root: unknown,
+    { entityType }: Partial<QueryActiveImportsArgs>,
     { models, user }: IContext,
   ) {
     // the popover is the caller's own workspace, not a workspace-wide feed
-    const query: any = { userId: user._id };
+    const query: FilterQuery<IImportDocument> = { userId: user._id };
 
     if (entityType) {
       query.entityType = entityType;
@@ -220,28 +227,20 @@ export const importQueries = {
       .limit(3)
       .lean();
 
-    return imports.map(mapImportWithMetrics);
+    return imports.map(mapImportWithMetrics) as unknown as IImportDocument[];
   },
 
   async importHistories(
-    _root: undefined,
-    args: {
-      entityType?: string;
-      entityTypes?: string[];
-      status?: string;
-      limit?: number;
-      cursor?: string;
-      direction?: 'forward' | 'backward';
-      cursorMode?: string;
-    },
+    _root: unknown,
+    args: Partial<QueryImportHistoriesArgs>,
     { models, subdomain, user }: IContext,
   ) {
-    const { entityType, entityTypes, status, ...cursorArgs } = args;
+    const { entityType, entityTypes, status } = args;
     const normalizedEntityTypes = Array.from(
       new Set([entityType, ...(entityTypes || [])].filter(Boolean) as string[]),
     );
 
-    const query: any = {
+    const query: FilterQuery<IImportDocument> = {
       subdomain,
       userId: user._id,
     };
@@ -255,20 +254,23 @@ export const importQueries = {
     }
 
     if (status) {
-      query.status = status;
+      query.status = status as IImportDocument['status'];
     }
 
-    const { list, totalCount, pageInfo } = await cursorPaginate<any>({
-      model: models.Imports as any,
-      params: {
-        ...cursorArgs,
-        orderBy: { createdAt: -1 },
-      },
-      query,
-    });
+    const { list, totalCount, pageInfo } =
+      await cursorPaginate<IImportDocument>({
+        model: models.Imports,
+        params: {
+          limit: args.limit ?? undefined,
+          cursor: args.cursor ?? undefined,
+          direction: args.direction ?? undefined,
+          orderBy: { createdAt: -1 },
+        },
+        query,
+      });
 
     return {
-      list: list.map(mapImportWithMetrics),
+      list: list.map(mapImportWithMetrics) as unknown as IImportDocument[],
       totalCount,
       pageInfo,
     };

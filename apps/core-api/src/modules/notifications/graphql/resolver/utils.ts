@@ -1,17 +1,24 @@
-export const generateNotificationsFilter = (params: {
-  status: 'unread' | 'read' | 'all';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  type: 'low' | 'medium' | 'high' | 'urgent';
-  fromDate: string;
-  endDate: string;
-  module: string;
-  fromUserId: string;
-  ids: string[];
-}) => {
-  const { status = '', priority, type, ids = [] } = params || {};
-  const filter: any = {};
+import { INotificationDocument } from 'erxes-api-shared/core-modules';
+import { FilterQuery } from 'mongoose';
 
-  if (ids.length) {
+type TNotificationFilterParams = {
+  ids?: Array<string | null> | null;
+  status?: string | null;
+  priority?: string | null;
+  type?: string | null;
+  fromDate?: string | null;
+  endDate?: string | null;
+  module?: string | null;
+  fromUserId?: string | null;
+};
+
+export const generateNotificationsFilter = (
+  params: TNotificationFilterParams = {},
+): FilterQuery<INotificationDocument> => {
+  const { status = '', priority, type, ids = [] } = params || {};
+  const filter: Record<string, unknown> = {};
+
+  if (ids?.length) {
     filter._id = { $nin: ids };
   }
 
@@ -36,7 +43,10 @@ export const generateNotificationsFilter = (params: {
   }
 
   if (params?.endDate) {
-    filter.createdAt = { ...(filter.createdAt || {}), $lte: params.endDate };
+    filter.createdAt = {
+      ...(filter.createdAt as Record<string, unknown>),
+      $lte: params.endDate,
+    };
   }
 
   if (params?.fromUserId) {
@@ -47,5 +57,5 @@ export const generateNotificationsFilter = (params: {
     filter.contentType = 'core:approval';
   }
 
-  return filter;
+  return filter as FilterQuery<INotificationDocument>;
 };

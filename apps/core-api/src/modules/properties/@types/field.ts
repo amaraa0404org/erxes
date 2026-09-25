@@ -57,5 +57,5 @@ export interface IFieldParams extends IListParams {
   icon?: string;
 }
 
-export interface IFieldCursorParams extends ICursorPaginateParams {}
-export interface IFieldOffsetParams extends IOffsetPaginateParams {}
+export type IFieldCursorParams = ICursorPaginateParams;
+export type IFieldOffsetParams = IOffsetPaginateParams;

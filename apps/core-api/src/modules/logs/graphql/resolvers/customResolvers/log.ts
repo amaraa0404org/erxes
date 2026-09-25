@@ -1,11 +1,12 @@
 import { ILogDocument } from 'erxes-api-shared/core-types';
+import { LogResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
+const logResolvers: LogResolvers<IContext> = {
   __resolveReference({ _id }: ILogDocument, { models }: IContext) {
     return models.Logs.findOne({ _id });
   },
-  async user({ userId }: ILogDocument, {}, { models }: IContext) {
+  async user({ userId }: ILogDocument, _args: unknown, { models }: IContext) {
     return await models.Users.findOne({ _id: userId });
   },
   /**
@@ -25,3 +26,5 @@ export default {
     );
   },
 };
+
+export default logResolvers;

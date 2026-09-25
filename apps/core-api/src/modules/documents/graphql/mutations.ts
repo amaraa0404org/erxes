@@ -1,12 +1,13 @@
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IDocument } from '../types';
 
-export const documentMutations = {
+export const documentMutations: MutationResolvers<IContext> = {
   /**
    * Save document configuration
    */
   documentsSave: async (
-    _parent: undefined,
+    _parent: unknown,
     params: { _id?: string } & IDocument,
     { user, models, checkPermission }: IContext,
   ) => {
@@ -22,7 +23,7 @@ export const documentMutations = {
   },
 
   documentsRemove: async (
-    _parent: undefined,
+    _parent: unknown,
     { _id }: { _id: string },
     { models, user, checkPermission }: IContext,
   ) => {
@@ -34,6 +35,11 @@ export const documentMutations = {
       action: 'delete',
     });
 
-    return await models.Documents.findOneAndDelete({ _id: document._id });
+    const result = await models.Documents.findOneAndDelete({
+      _id: document._id,
+    });
+
+    // JSON scalar output is typed Record<string, unknown> in codegen.
+    return result as unknown as Record<string, unknown>;
   },
 };

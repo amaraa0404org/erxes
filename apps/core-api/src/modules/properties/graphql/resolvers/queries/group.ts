@@ -1,16 +1,19 @@
-import {
-  IFieldGroup,
-  IFieldGroupCursorParams,
-  IFieldGroupDocument,
-  IFieldGroupOffsetParams,
-  IFieldGroupParams,
-} from '@/properties/@types';
-import { Resolver } from 'erxes-api-shared/core-types';
+import { IFieldGroup, IFieldGroupDocument } from '@/properties/@types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import { cursorPaginate, defaultPaginate } from 'erxes-api-shared/utils';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  QueryCpFieldGroupsArgs,
+  QueryFieldGroupsArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-const generateFilter = async (params: Partial<IFieldGroupParams>) => {
+const generateFilter = async (params: {
+  contentType?: string | null;
+  contentTypeId?: string | null;
+  codes?: (string | null)[] | null;
+}) => {
   const { contentType, contentTypeId, codes } = params;
 
   const filter: FilterQuery<IFieldGroup> = {
@@ -22,47 +25,56 @@ const generateFilter = async (params: Partial<IFieldGroupParams>) => {
   }
 
   if (codes && codes.length > 0) {
-    filter.code = { $in: codes };
+    filter.code = { $in: codes as string[] };
   }
 
   return filter;
 };
 
-export const groupQueries: Record<string, Resolver<any, any, IContext>> = {
+export const groupQueries: QueryResolvers<IContext> = {
   fieldGroups: async (
-    _: undefined,
-    { params }: { params: IFieldGroupCursorParams },
+    _: unknown,
+    { params }: Partial<QueryFieldGroupsArgs>,
     { models }: IContext,
   ) => {
-    const filter = await generateFilter(params);
-
-    if (!params.orderBy) {
-      params.orderBy = { order: 1 };
-    }
+    const filter = await generateFilter(params ?? {});
 
     return await cursorPaginate<IFieldGroupDocument>({
       model: models.FieldsGroups,
-      params,
+      params: {
+        limit: params?.limit ?? undefined,
+        cursor: params?.cursor ?? undefined,
+        direction: params?.direction ?? undefined,
+        orderBy:
+          (params?.orderBy as Record<string, SortOrder> | null | undefined) ||
+          { order: 1 },
+      },
       query: filter,
     });
   },
 
   cpFieldGroups: async (
-    _: undefined,
-    { params }: { params: IFieldGroupOffsetParams },
+    _: unknown,
+    { params }: Partial<QueryCpFieldGroupsArgs>,
     { models }: IContext,
   ) => {
-    const { sortField = 'code', sortDirection = 1 } = params || {};
+    const sortField = params?.sortField ?? 'code';
+    const sortDirection = (params?.sortDirection ?? 1) as SortOrder;
 
-    const filter = await generateFilter(params);
+    const filter = await generateFilter(params ?? {});
 
     return await defaultPaginate(
-      models.FieldsGroups.find(filter).sort({ [sortField]: sortDirection }),
-      params,
+      models.FieldsGroups.find(filter).sort({
+        [sortField]: sortDirection,
+      }),
+      {
+        page: params?.page ?? undefined,
+        perPage: params?.perPage ?? undefined,
+      },
     );
   },
 };
 
-groupQueries.cpFieldGroups.wrapperConfig = {
+(groupQueries.cpFieldGroups as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

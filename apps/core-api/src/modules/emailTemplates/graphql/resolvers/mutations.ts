@@ -1,11 +1,12 @@
 import { IEmailTemplate } from 'erxes-api-shared/core-types';
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
 type TEmailTemplateInput = Omit<IEmailTemplate, 'createdBy'>;
 
-export const emailTemplateMutations = {
+export const emailTemplateMutations: MutationResolvers<IContext> = {
   async emailTemplateAdd(
-    _root: undefined,
+    _root: unknown,
     doc: TEmailTemplateInput,
     { user, models, checkPermission }: IContext,
   ) {
@@ -18,7 +19,7 @@ export const emailTemplateMutations = {
   },
 
   async emailTemplateEdit(
-    _root: undefined,
+    _root: unknown,
     { _id, ...doc }: TEmailTemplateInput & { _id: string },
     { models, checkPermission }: IContext,
   ) {
@@ -28,7 +29,7 @@ export const emailTemplateMutations = {
   },
 
   async emailTemplateRemove(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, checkPermission }: IContext,
   ) {

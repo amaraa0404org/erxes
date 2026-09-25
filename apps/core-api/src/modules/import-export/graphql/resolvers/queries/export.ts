@@ -5,9 +5,18 @@ import {
   splitType,
   TImportExportProducers,
 } from 'erxes-api-shared/core-modules';
+import { FilterQuery } from 'mongoose';
+import {
+  QueryActiveExportsArgs,
+  QueryExportHistoriesArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { validateExportConfig } from '~/modules/import-export/utils/validateConfig';
+import { IExportDocument } from '~/modules/import-export/db/models/Exports';
 
-const mapExportWithMetrics = (exportDoc: any) => {
+const mapExportWithMetrics = (
+  exportDoc: IExportDocument & { estimatedSecondsRemaining?: number },
+) => {
   const progress =
     exportDoc.totalRows > 0
       ? Math.round((exportDoc.processedRows / exportDoc.totalRows) * 100)
@@ -28,7 +37,7 @@ const mapExportWithMetrics = (exportDoc: any) => {
   );
 
   const estimatedSecondsRemaining =
-    (exportDoc as any).estimatedSecondsRemaining ||
+    exportDoc.estimatedSecondsRemaining ||
     (rowsPerSecond > 0 ? Math.round(remainingRows / rowsPerSecond) : 0);
 
   return {
@@ -40,9 +49,9 @@ const mapExportWithMetrics = (exportDoc: any) => {
   };
 };
 
-export const exportQueries = {
+export const exportQueries: QueryResolvers<IContext> = {
   async exportProgress(
-    _root: undefined,
+    _root: unknown,
     { exportId }: { exportId: string },
     { models, user }: IContext,
   ) {
@@ -60,11 +69,11 @@ export const exportQueries = {
   },
 
   async activeExports(
-    _root: undefined,
-    { entityType }: { entityType?: string },
+    _root: unknown,
+    { entityType }: Partial<QueryActiveExportsArgs>,
     { models, subdomain, user }: IContext,
   ) {
-    const query: any = {
+    const query: FilterQuery<IExportDocument> = {
       subdomain,
       userId: user._id,
     };
@@ -79,28 +88,20 @@ export const exportQueries = {
       .limit(3)
       .lean();
 
-    return exports.map(mapExportWithMetrics);
+    return exports.map(mapExportWithMetrics) as unknown as IExportDocument[];
   },
 
   async exportHistories(
-    _root: undefined,
-    args: {
-      entityType?: string;
-      entityTypes?: string[];
-      status?: string;
-      limit?: number;
-      cursor?: string;
-      direction?: 'forward' | 'backward';
-      cursorMode?: string;
-    },
+    _root: unknown,
+    args: Partial<QueryExportHistoriesArgs>,
     { models, subdomain, user }: IContext,
   ) {
-    const { entityType, entityTypes, status, ...cursorArgs } = args;
+    const { entityType, entityTypes, status } = args;
     const normalizedEntityTypes = Array.from(
       new Set([entityType, ...(entityTypes || [])].filter(Boolean) as string[]),
     );
 
-    const query: any = {
+    const query: FilterQuery<IExportDocument> = {
       subdomain,
       userId: user._id,
     };
@@ -114,28 +115,34 @@ export const exportQueries = {
     }
 
     if (status) {
-      query.status = status;
+      query.status = status as IExportDocument['status'];
     }
 
-    const { list, totalCount, pageInfo } = await cursorPaginate<any>({
-      model: models.Exports as any,
-      params: {
-        ...cursorArgs,
-        orderBy: { createdAt: -1 },
-      },
-      query,
-    });
+    const { list, totalCount, pageInfo } =
+      await cursorPaginate<IExportDocument>({
+        model: models.Exports,
+        params: {
+          limit: args.limit ?? undefined,
+          cursor: args.cursor ?? undefined,
+          direction: args.direction ?? undefined,
+          orderBy: { createdAt: -1 },
+        },
+        query,
+      });
 
     return {
-      list: list.map(mapExportWithMetrics),
+      list: list.map(mapExportWithMetrics) as unknown as IExportDocument[],
       totalCount,
       pageInfo,
     };
   },
 
   async exportHeaders(
-    _root: undefined,
-    { entityType, filters }: { entityType: string; filters?: Record<string, any> },
+    _root: unknown,
+    {
+      entityType,
+      filters,
+    }: { entityType: string; filters?: Record<string, unknown> },
     { subdomain }: IContext,
   ) {
     const [pluginName, moduleName, collectionName] = splitType(entityType);

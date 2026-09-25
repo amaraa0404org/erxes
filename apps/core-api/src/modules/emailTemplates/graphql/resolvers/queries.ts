@@ -3,19 +3,20 @@ import {
   renderEmailContent,
   TEmailContentFormat,
 } from 'erxes-api-shared/core-modules';
-import {
-  ICursorPaginateParams,
-  IEmailTemplateDocument,
-} from 'erxes-api-shared/core-types';
+import { IEmailTemplateDocument } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  QueryEmailTemplatesArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { documentResolver } from '~/modules/documents/replacePlaceholders';
 
-export const emailTemplateQueries = {
+export const emailTemplateQueries: QueryResolvers<IContext> = {
   async emailTemplates(
-    _root: undefined,
-    params: { searchValue?: string } & ICursorPaginateParams,
+    _root: unknown,
+    params: Partial<QueryEmailTemplatesArgs>,
     { models }: IContext,
   ) {
     const { searchValue } = params;
@@ -33,8 +34,12 @@ export const emailTemplateQueries = {
       await cursorPaginate<IEmailTemplateDocument>({
         model: models.EmailTemplates,
         params: {
-          ...params,
-          orderBy: params.orderBy || { createdAt: -1 },
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
+          orderBy:
+            (params.orderBy as Record<string, SortOrder> | null | undefined) ||
+            { createdAt: -1 },
         },
         query: filter,
       });
@@ -44,7 +49,7 @@ export const emailTemplateQueries = {
 
   /** What the written email turns into, whichever editor wrote it. */
   async emailContentPreview(
-    _root: undefined,
+    _root: unknown,
     {
       replacerId,
       ...email
@@ -75,7 +80,7 @@ export const emailTemplateQueries = {
   },
 
   async emailTemplateDetail(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models }: IContext,
   ) {

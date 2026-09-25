@@ -1,11 +1,12 @@
 import { sendTRPCMessage } from 'erxes-api-shared/utils';
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { templates } from '~/meta/templates';
 import { ITemplate } from '../../@types';
 
-const templateMutations = {
+const templateMutations: MutationResolvers<IContext> = {
   templateAdd: async (
-    _root: undefined,
+    _root: unknown,
     doc: ITemplate,
     { user, models }: IContext,
   ) => {
@@ -13,7 +14,7 @@ const templateMutations = {
   },
 
   templateEdit: async (
-    _root: undefined,
+    _root: unknown,
     { _id, ...doc }: ITemplate & { _id: string },
     { user, models }: IContext,
   ) => {
@@ -21,15 +22,18 @@ const templateMutations = {
   },
 
   templateRemove: async (
-    _root: undefined,
+    _root: unknown,
     { _ids }: { _ids: string[] },
     { models }: IContext,
   ) => {
-    return await models.Template.removeTemplates(_ids);
+    const result = await models.Template.removeTemplates(_ids);
+
+    // JSON scalar output is typed Record<string, unknown> in codegen.
+    return result as unknown as Record<string, unknown>;
   },
 
   templateUse: async (
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { user, subdomain, models }: IContext,
   ) => {
@@ -37,7 +41,7 @@ const templateMutations = {
 
     const { contentType = '' } = template || {};
 
-    const [pluginName, moduleName, collectionName] = contentType?.split(':');
+    const [pluginName, moduleName, collectionName] = contentType.split(':');
 
     if (!pluginName || !moduleName) {
       throw new Error('Invalid template document');
@@ -47,18 +51,21 @@ const templateMutations = {
       const { modules } = templates || {}
 
       try {
-        return await modules[moduleName][collectionName].setContent({
+        const result = await modules[moduleName][collectionName].setContent({
           template,
           models,
           user
-        }) || null;
+        });
+
+        // JSON scalar output is typed Record<string, unknown> in codegen.
+        return (result ?? null) as unknown as Record<string, unknown>;
       } catch (error) {
         throw new Error(error);
       }
     }
 
     try {
-      return await sendTRPCMessage<string>({
+      const result = await sendTRPCMessage<unknown>({
         subdomain,
         pluginName,
         method: 'mutation',
@@ -70,6 +77,8 @@ const templateMutations = {
         },
         defaultValue: '',
       });
+
+      return result as Record<string, unknown>;
     } catch (error) {
       throw new Error(error);
     }

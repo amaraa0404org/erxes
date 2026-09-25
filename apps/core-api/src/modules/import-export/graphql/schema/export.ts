@@ -1,21 +1,21 @@
 export const types = `
   type Export {
-    _id: String
-    entityType: String
-    pluginName: String
-    moduleName: String
-    collectionName: String
-    fileName: String
-    status: String
-    totalRows: Int
-    processedRows: Int
+    _id: String!
+    entityType: String!
+    pluginName: String!
+    moduleName: String!
+    collectionName: String!
+    fileName: String!
+    status: String!
+    totalRows: Int!
+    processedRows: Int!
     fileKey: String
     filters: JSON
-    ids: [String]
+    ids: [String!]!
     startedAt: Date
     completedAt: Date
-    userId: String
-    subdomain: String
+    userId: String!
+    subdomain: String!
     progress: Int
     elapsedSeconds: Int
     rowsPerSecond: Int
@@ -23,28 +23,28 @@ export const types = `
     errorMessage: String
     lastCursor: String
     jobId: String
-    createdAt: Date
-    updatedAt: Date
-    selectedFields:[String]
+    createdAt: Date!
+    updatedAt: Date!
+    selectedFields: [String!]!
   }
 
   type ExportHeader {
-    label: String
-    key: String
+    label: String!
+    key: String!
     isDefault: Boolean
     type: String
   }
 
   type ExportHistoryList {
-    list: [Export]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [Export!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 `;
 
 export const queries = `
-  exportProgress(exportId: String!): Export
-  activeExports(entityType: String): [Export]
+  exportProgress(exportId: String!): Export!
+  activeExports(entityType: String): [Export!]!
   exportHistories(
     entityType: String
     entityTypes: [String]
@@ -53,8 +53,8 @@ export const queries = `
     cursor: String
     direction: CURSOR_DIRECTION
     cursorMode: CURSOR_MODE
-  ): ExportHistoryList
-  exportHeaders(entityType: String!, filters: JSON): [ExportHeader]
+  ): ExportHistoryList!
+  exportHeaders(entityType: String!, filters: JSON): [ExportHeader!]!
 `;
 
 export const mutations = `
@@ -63,7 +63,7 @@ export const mutations = `
     filters: JSON
     ids: [String]
     selectedFields: [String]
-  ): Export
-  exportCancel(exportId: String!): Export
-  exportRetry(exportId: String!): Export
+  ): Export!
+  exportCancel(exportId: String!): Export!
+  exportRetry(exportId: String!): Export!
 `;

@@ -1,5 +1,9 @@
 import { nanoid } from 'nanoid';
 import { sendWorkerQueue } from 'erxes-api-shared/utils';
+import {
+  MutationImportStartArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import {
   splitType,
@@ -8,6 +12,7 @@ import {
 } from 'erxes-api-shared/core-modules';
 import { validateImportConfig } from '~/modules/import-export/utils/validateConfig';
 import { getRequiredImportExportPermissions } from '~/modules/import-export/utils/getRequiredPermissions';
+import { IImportDocument } from '~/modules/import-export/db/models/Imports';
 
 async function getJobIdFromQueue(
   subdomain: string,
@@ -22,20 +27,10 @@ async function getJobIdFromQueue(
   return job ? String(job.id) : null;
 }
 
-export const importMutations = {
+export const importMutations: MutationResolvers<IContext> = {
   async importStart(
-    _root: undefined,
-    {
-      entityType,
-      fileKey,
-      fileName,
-      columnMapping,
-    }: {
-      entityType: string;
-      fileKey: string;
-      fileName: string;
-      columnMapping?: ImportColumnMapping[];
-    },
+    _root: unknown,
+    { entityType, fileKey, fileName, columnMapping }: MutationImportStartArgs,
     { models, subdomain, user, checkPermission }: IContext,
   ) {
     const [pluginName, moduleName, collectionName] = splitType(entityType);
@@ -61,7 +56,7 @@ export const importMutations = {
     // column carries no key and must not reach the worker.
     const resolvedMapping = (columnMapping || []).filter(
       (column) => column?.key,
-    );
+    ) as ImportColumnMapping[];
 
     const importDoc = await models.Imports.create({
       _id: nanoid(),
@@ -100,11 +95,11 @@ export const importMutations = {
       { $set: { jobId: String(job.id) } },
     );
 
-    return { ...importDoc, jobId: String(job.id) };
+    return { ...importDoc, jobId: String(job.id) } as unknown as IImportDocument;
   },
 
   async importCancel(
-    _root: undefined,
+    _root: unknown,
     { importId }: { importId: string },
     { models, subdomain, user, checkPermission }: IContext,
   ) {
@@ -176,11 +171,13 @@ export const importMutations = {
       status: 'cancelled',
     });
 
-    return models.Imports.getImport(importId);
+    return models.Imports.getImport(
+      importId,
+    ) as Promise<IImportDocument>;
   },
 
   async importRetry(
-    _root: undefined,
+    _root: unknown,
     { importId }: { importId: string },
     { models, subdomain, user, checkPermission }: IContext,
   ) {
@@ -238,11 +235,13 @@ export const importMutations = {
       },
     );
 
-    return models.Imports.getImport(importId);
+    return models.Imports.getImport(
+      importId,
+    ) as Promise<IImportDocument>;
   },
 
   async importResume(
-    _root: undefined,
+    _root: unknown,
     { importId }: { importId: string },
     { models, subdomain, user, checkPermission }: IContext,
   ) {
@@ -299,6 +298,8 @@ export const importMutations = {
       },
     );
 
-    return models.Imports.getImport(importId);
+    return models.Imports.getImport(
+      importId,
+    ) as Promise<IImportDocument>;
   },
 };

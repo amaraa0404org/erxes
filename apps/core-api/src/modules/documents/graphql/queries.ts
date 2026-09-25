@@ -4,7 +4,8 @@ import {
   getPlugins,
   sendTRPCMessage,
 } from 'erxes-api-shared/utils';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { documents } from '~/meta/documents';
 import {
@@ -32,7 +33,7 @@ const generateFilter = (params: IDocumentFilterQueryParams) => {
   const filter: FilterQuery<IDocumentDocument> = {};
 
   if (tagIds?.length) {
-    filter.tagIds = { $in: tagIds };
+    filter.tagIds = { $in: tagIds as string[] };
   }
 
   if (contentType) {
@@ -52,7 +53,7 @@ const generateFilter = (params: IDocumentFilterQueryParams) => {
   }
 
   if (userIds?.length) {
-    filter.createdUserId = { $in: userIds };
+    filter.createdUserId = { $in: userIds as string[] };
   }
 
   if (dateFilters) {
@@ -85,9 +86,9 @@ const generateFilter = (params: IDocumentFilterQueryParams) => {
   return filter;
 };
 
-export const documentQueries = {
+export const documentQueries: QueryResolvers<IContext> = {
   documents: async (
-    _parent: undefined,
+    _parent: unknown,
     params: IDocumentFilterQueryParams,
     { models, user, checkPermission }: IContext,
   ) => {
@@ -112,7 +113,12 @@ export const documentQueries = {
     const { list, pageInfo, totalCount } =
       await cursorPaginate<IDocumentDocument>({
         model: models.Documents,
-        params,
+        params: {
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
+          orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+        },
         query: filter,
       });
 
@@ -127,34 +133,38 @@ export const documentQueries = {
     });
     const statesById = new Map(states.map((state) => [state.contentId, state]));
 
+    const rows = await Promise.all(
+      list.map(async (document) => {
+        const approvalLockState =
+          statesById.get(document._id) ||
+          (await models.ApprovalLocks.getState({
+            user,
+            contentType: DOCUMENT_APPROVAL_CONTENT_TYPE,
+            contentId: document._id,
+            ownerId: document.createdUserId,
+            action: 'view',
+          }));
+        return {
+          ...document,
+          // Keep locked records discoverable without exposing their templates.
+          content: approvalLockState?.hasAccess ? document.content : null,
+          replacer: approvalLockState?.hasAccess ? document.replacer : null,
+          approvalLockState,
+        };
+      }),
+    );
+
+    // The rows are lean documents carrying the plain-object lock state; the
+    // generated mapper types model them as Mongoose documents.
     return {
-      list: await Promise.all(
-        list.map(async (document) => {
-          const approvalLockState =
-            statesById.get(document._id) ||
-            (await models.ApprovalLocks.getState({
-              user,
-              contentType: DOCUMENT_APPROVAL_CONTENT_TYPE,
-              contentId: document._id,
-              ownerId: document.createdUserId,
-              action: 'view',
-            }));
-          return {
-            ...document,
-            // Keep locked records discoverable without exposing their templates.
-            content: approvalLockState?.hasAccess ? document.content : null,
-            replacer: approvalLockState?.hasAccess ? document.replacer : null,
-            approvalLockState,
-          };
-        }),
-      ),
+      list: rows as unknown as IDocumentDocument[],
       pageInfo,
       totalCount,
     };
   },
 
   documentsDetail: async (
-    _parent: undefined,
+    _parent: unknown,
     { _id }: { _id: string },
     { models, user, checkPermission }: IContext,
   ) => {
@@ -175,9 +185,16 @@ export const documentQueries = {
       const service = await getPlugin(serviceName);
       const meta = service.config.meta || {};
       if (meta?.documents) {
-        const types = meta.documents.types || [];
+        const documentTypes =
+          (meta.documents as {
+            types?: Array<{
+              label: string;
+              contentType: string;
+              subTypes?: string[];
+            }>;
+          }).types || [];
 
-        for (const type of types) {
+        for (const type of documentTypes) {
           fieldTypes.push({
             label: type.label,
             contentType: type.contentType,
@@ -191,7 +208,7 @@ export const documentQueries = {
   },
 
   documentsGetEditorAttributes: async (
-    _parent: undefined,
+    _parent: unknown,
     { contentType }: { contentType: string },
     { models, subdomain }: IContext,
   ) => {
@@ -223,7 +240,7 @@ export const documentQueries = {
   },
 
   documentsTotalCount: async (
-    _parent: undefined,
+    _parent: unknown,
     params: IDocumentFilterQueryParams,
     { models, checkPermission }: IContext,
   ) => {
@@ -234,7 +251,7 @@ export const documentQueries = {
   },
 
   documentsProcess: async (
-    _parent: undefined,
+    _parent: unknown,
     { _id, replacerIds, config }: Omit<DocumentProcessInput, 'user'>,
     { models, user, checkPermission }: IContext,
   ) => {

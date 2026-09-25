@@ -3,7 +3,6 @@ import {
   IEmailDeliveryDocument,
   INotificationDocument,
 } from 'erxes-api-shared/core-modules';
-import { ICursorPaginateParams } from 'erxes-api-shared/core-types';
 import {
   cursorPaginate,
   escapeRegExp,
@@ -11,26 +10,35 @@ import {
   getPlugins,
   normalizeEmail,
 } from 'erxes-api-shared/utils';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  NotificationSettings,
+  QueryEmailAddressesArgs,
+  QueryEmailDeliveriesArgs,
+  QueryNotificationsArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { CORE_NOTIFICATION_MODULES } from '~/modules/notifications/constants';
 import { generateNotificationsFilter } from '~/modules/notifications/graphql/resolver/utils';
 import { TEmailLane } from 'erxes-api-shared/core-modules';
 import { getStatus } from '~/utils/email/ramp';
 
-const generateOrderByNotifications = (orderBy?: any) => {
-  const sort: any = { isRead: 1, createdAt: -1 };
+const generateOrderByNotifications = (
+  orderBy?: Record<string, unknown> | null,
+): Record<string, SortOrder> => {
+  const sort: Record<string, SortOrder> = { isRead: 1, createdAt: -1 };
 
   if (orderBy?.createdAt === 1) {
     sort.createdAt = 1;
   }
 
   if (orderBy?.priority) {
-    sort.priorityLevel = orderBy.priority;
+    sort.priorityLevel = orderBy.priority as SortOrder;
   }
 
   if (orderBy?.readAt) {
-    sort.readAt = orderBy?.readAt;
+    sort.readAt = orderBy?.readAt as SortOrder;
   }
 
   return sort;
@@ -41,17 +49,10 @@ const generateActiveNotificationsFilter =
     $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
   });
 
-export const notificationQueries = {
+export const notificationQueries: QueryResolvers<IContext> = {
   async emailDeliveries(
-    _root: undefined,
-    params: {
-      status?: string;
-      source?: string;
-      provider?: string;
-      searchValue?: string;
-      createdAtFrom?: Date;
-      createdAtTo?: Date;
-    } & ICursorPaginateParams,
+    _root: unknown,
+    params: Partial<QueryEmailDeliveriesArgs>,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('broadcastUpdate');
@@ -92,15 +93,28 @@ export const notificationQueries = {
       query.$or = [{ toEmails: pattern }, { subject: pattern }];
     }
 
-    return await cursorPaginate({
+    const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.EmailDeliveries,
-      params: { ...params, orderBy: { createdAt: -1 } },
+      params: {
+        limit: params.limit ?? undefined,
+        cursor: params.cursor ?? undefined,
+        direction: params.direction ?? undefined,
+        orderBy: { createdAt: -1 },
+      },
       query,
     });
+
+    // The deliveries model and the generated EmailDelivery mapper are two
+    // interface shapes describing the same collection.
+    return {
+      list: list as unknown as IEmailDeliveryDocument[],
+      totalCount,
+      pageInfo,
+    };
   },
 
   async emailDeliveryDetail(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, checkPermission }: IContext,
   ) {
@@ -140,8 +154,8 @@ export const notificationQueries = {
   },
 
   async notifications(
-    _root: undefined,
-    params: any,
+    _root: unknown,
+    params: QueryNotificationsArgs,
     { models, user }: IContext,
   ) {
     const filter = generateNotificationsFilter(params);
@@ -162,6 +176,9 @@ export const notificationQueries = {
         model: models.Notifications,
         params: {
           ...params,
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
           orderBy: generateOrderByNotifications(params?.orderBy),
         },
         query: {
@@ -179,7 +196,7 @@ export const notificationQueries = {
   },
 
   async notificationDetail(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models }: IContext,
   ) {
@@ -191,8 +208,8 @@ export const notificationQueries = {
   },
 
   async unreadNotificationsCount(
-    _root: undefined,
-    _args: undefined,
+    _root: unknown,
+    _args,
     { models, user }: IContext,
   ) {
     return await models.Notifications.countDocuments({
@@ -203,21 +220,20 @@ export const notificationQueries = {
   },
 
   async notificationSettings(
-    _root: undefined,
-    _args: undefined,
+    _root: unknown,
+    _args,
     { models, user }: IContext,
   ) {
-    return models.NotificationSettings.findOne({ userId: user._id }).lean();
+    const settings = await models.NotificationSettings.findOne({
+      userId: user._id,
+    }).lean();
+
+    return settings as unknown as NotificationSettings | null;
   },
 
   async emailAddresses(
-    _root: undefined,
-    params: {
-      lane?: TEmailLane;
-      suppressionReason?: string;
-      searchValue?: string;
-      emails?: string[];
-    } & ICursorPaginateParams,
+    _root: unknown,
+    params: Partial<QueryEmailAddressesArgs>,
     { models }: IContext,
   ) {
     const { lane, suppressionReason, searchValue, emails } = params;
@@ -226,11 +242,16 @@ export const notificationQueries = {
     const emailConditions: FilterQuery<IEmailAddressDocument>[] = [];
 
     if (emails?.length) {
-      emailConditions.push({ email: { $in: emails.map(normalizeEmail) } });
+      emailConditions.push({
+        email: { $in: (emails as string[]).map(normalizeEmail) },
+      });
     }
 
     if (lane) {
-      Object.assign(query, models.EmailAddresses.laneFilter(lane));
+      Object.assign(
+        query,
+        models.EmailAddresses.laneFilter(lane as TEmailLane),
+      );
     }
 
     if (suppressionReason) {
@@ -250,7 +271,12 @@ export const notificationQueries = {
     const { list, totalCount, pageInfo } =
       await cursorPaginate<IEmailAddressDocument>({
         model: models.EmailAddresses,
-        params,
+        params: {
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
+          orderBy: params.orderBy as Record<string, SortOrder> | undefined,
+        },
         query,
       });
 
@@ -258,8 +284,8 @@ export const notificationQueries = {
   },
 
   async emailRampStatus(
-    _root: undefined,
-    _args: undefined,
+    _root: unknown,
+    _args,
     { models }: IContext,
   ) {
     return await getStatus(models);

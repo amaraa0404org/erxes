@@ -1,20 +1,24 @@
 import {
+  IAutomation,
   IAutomationDocument,
   IAutomationExecutionDocument,
   splitType,
 } from 'erxes-api-shared/core-modules';
-import {
-  ICursorPaginateParams,
-} from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import {
   cursorPaginate,
   getEnv,
   getPlugin,
   getPlugins,
   sendWorkerMessage,
-  markResolvers,
 } from 'erxes-api-shared/utils';
-import { SortOrder } from 'mongoose';
+import { FilterQuery } from 'mongoose';
+import {
+  AutomationsTotalCountResponse,
+  QueryAutomationsMainArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { IAutomationWorkflowTemplate } from '../../db/models/AutomationWorkflowTemplates';
 import { IContext, IModels } from '~/connectionResolvers';
 import { AUTOMATION_APPROVAL_CONTENT_TYPES } from '../../constants';
 import { sanitizeAiAgent, sanitizeAiAgents } from '../../utils/aiAgent';
@@ -28,25 +32,7 @@ import {
   getAutomationSetPropertyTargets,
 } from './utils/queriesUtils';
 
-export interface IListArgs extends ICursorPaginateParams {
-  status: string;
-  searchValue: string;
-  ids?: string;
-  page?: number;
-  perPage?: number;
-  sortField: string;
-  sortDirection: number;
-  tagIds: string[];
-  excludeIds: string[];
-  triggerTypes: string[];
-  createdByIds: string[];
-  updatedByIds: string[];
-  createdAtFrom: Date;
-  createdAtTo: Date;
-  updatedAtFrom: Date;
-  updatedAtTo: Date;
-  actionTypes: string[];
-}
+export type IListArgs = Partial<QueryAutomationsMainArgs>;
 
 export interface IStatsParams {
   automationId: string;
@@ -63,6 +49,10 @@ export interface IHistoriesParams {
   triggerType?: string;
   beginDate?: Date;
   endDate?: Date;
+  targetId?: string;
+  targetIds?: string[];
+  ids?: string[];
+  triggerTypes?: string[];
   // Set to list a workflow child executions; omitted = root executions only
   parentExecutionId?: string;
   failedActionIds?: string[];
@@ -166,7 +156,7 @@ const getAiAgentUsage = async (
   }, {} as Record<string, TAiAgentUsage>);
 };
 
-export const automationQueries = {
+export const automationQueries: QueryResolvers<IContext> = {
   /**
    * Automations list
    */
@@ -186,7 +176,9 @@ export const automationQueries = {
       await cursorPaginate<IAutomationDocument>({
         model: models.Automations,
         params: {
-          ...params,
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
           orderBy: {
             createdAt: -1,
           },
@@ -241,7 +233,7 @@ export const automationQueries = {
     params: IHistoriesParams,
     { models }: IContext,
   ) {
-    const filter: any = generateAutomationHistoriesFilter(params);
+    const filter = generateAutomationHistoriesFilter(params);
     const { list, totalCount, pageInfo } =
       await cursorPaginate<IAutomationExecutionDocument>({
         model: models.AutomationExecutions,
@@ -264,7 +256,7 @@ export const automationQueries = {
     params: IHistoriesParams,
     { models }: IContext,
   ) {
-    const filter: any = generateAutomationHistoriesFilter(params);
+    const filter = generateAutomationHistoriesFilter(params);
 
     return await models.AutomationExecutions.find(filter).countDocuments();
   },
@@ -293,16 +285,22 @@ export const automationQueries = {
 
   async automationsTotalCount(
     _root,
-    { status }: { status: string },
+    { status }: { status?: string | null },
     { models }: IContext,
   ) {
-    const filter: any = { ownedBy: { $exists: false } };
+    const filter: FilterQuery<IAutomation> = {
+      ownedBy: { $exists: false },
+    };
 
     if (status) {
-      filter.status = status;
+      filter.status = status as IAutomation['status'];
     }
 
-    return models.Automations.find(filter).countDocuments();
+    // Historic contract: the count number is returned into an object-shaped
+    // response type whose fields stay null.
+    return models.Automations.find(filter)
+      .countDocuments()
+      .then((count) => count as unknown as AutomationsTotalCountResponse);
   },
 
   async automationConstants() {
@@ -314,9 +312,9 @@ export const automationQueries = {
     { sourceType }: { sourceType: string },
   ) {
     const [pluginName, moduleName, collectionName] = splitType(sourceType);
-    return await getAutomationSetPropertyTargets(
+    return (await getAutomationSetPropertyTargets(
       `${pluginName}:${moduleName}.${collectionName}`,
-    );
+    )) as unknown as Record<string, unknown>;
   },
 
   async automationNodeOutput(_root, { nodeType }: { nodeType: string }) {
@@ -338,11 +336,11 @@ export const automationQueries = {
     { type, field }: { type: string; field: string },
     { models }: IContext,
   ) {
-    return await getAutomationReferenceFields({
+    return (await getAutomationReferenceFields({
       field,
       models,
       type,
-    });
+    })) as unknown as Record<string, unknown>;
   },
 
   async getAutomationWebhookEndpoint(
@@ -385,7 +383,7 @@ export const automationQueries = {
 
   async automationBotsConstants() {
     const plugins = await getPlugins();
-    const botsConstants: any[] = [];
+    const botsConstants: Record<string, unknown>[] = [];
 
     for (const pluginName of plugins) {
       const plugin = await getPlugin(pluginName);
@@ -396,7 +394,7 @@ export const automationQueries = {
       }
     }
 
-    return botsConstants;
+    return botsConstants as unknown as Record<string, unknown>;
   },
 
   async automationsAiAgents(
@@ -420,7 +418,7 @@ export const automationQueries = {
 
     const usageByAgentId = await getAiAgentUsage(models, agentIds);
 
-    return sanitizeAiAgents(agents as any[]).map((agent) => ({
+    return sanitizeAiAgents(agents).map((agent) => ({
       ...agent,
       approvalLockState: lockStateByAgentId.get(agent._id.toString()),
       usage: usageByAgentId[agent._id.toString()] || {
@@ -428,7 +426,7 @@ export const automationQueries = {
         active: 0,
         automations: [],
       },
-    }));
+    })) as unknown as Record<string, unknown>;
   },
 
   async automationsAiAgentTotalCounts(_root, _args, { models }: IContext) {
@@ -467,7 +465,10 @@ export const automationQueries = {
     }
 
     if (!agent) {
-      return sanitizeAiAgent(agent);
+      return sanitizeAiAgent(agent) as unknown as Record<
+        string,
+        unknown
+      > | null;
     }
 
     const usageByAgentId = await getAiAgentUsage(models, [
@@ -481,7 +482,7 @@ export const automationQueries = {
         active: 0,
         automations: [],
       },
-    };
+    } as unknown as Record<string, unknown> | null;
   },
 
   async automationsAiAgentHealth(
@@ -529,7 +530,7 @@ export const automationQueries = {
         timeout: 10000,
       });
     } catch {
-      return [];
+      return [] as unknown as Record<string, unknown>;
     }
   },
 
@@ -538,10 +539,10 @@ export const automationQueries = {
    */
   async automationWorkflowTemplates(
     _root,
-    { searchValue }: { searchValue?: string },
+    { searchValue }: { searchValue?: string | null },
     { models }: IContext,
   ) {
-    const filter: any = {};
+    const filter: FilterQuery<IAutomationWorkflowTemplate> = {};
 
     if (searchValue) {
       filter.$or = [
@@ -556,6 +557,6 @@ export const automationQueries = {
   },
 };
 
-Object.assign(automationQueries.cpAutomationDetail, {
-  wrapperConfig: { forClientPortal: true },
-});
+(automationQueries.cpAutomationDetail as AnyResolver).wrapperConfig = {
+  forClientPortal: true,
+};

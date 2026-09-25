@@ -1,29 +1,21 @@
-import { ApprovalRequest } from 'erxes-api-shared/core-modules';
+import { ApprovalRequestResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const approvalCustomResolvers = {
+export const approvalCustomResolvers: {
+  ApprovalRequest: ApprovalRequestResolvers<IContext>;
+} = {
   ApprovalRequest: {
-    async requester(
-      { requesterId }: ApprovalRequest,
-      _args: unknown,
-      { models }: IContext,
-    ) {
+    async requester({ requesterId }, _args, { models }) {
       return models.Users.findOne({ _id: requesterId });
     },
 
-    async requiredApprovers(
-      { requiredApproverIds }: ApprovalRequest,
-      _args: unknown,
-      { models }: IContext,
-    ) {
-      return models.Users.find({ _id: { $in: requiredApproverIds || [] } });
+    async requiredApprovers({ requiredApproverIds }, _args, { models }) {
+      return models.Users.find({
+        _id: { $in: requiredApproverIds || [] },
+      });
     },
 
-    async content(
-      { contentType, contentId }: ApprovalRequest,
-      _args: unknown,
-      _context: IContext,
-    ) {
+    async content({ contentType, contentId }) {
       return {
         contentType,
         contentId,

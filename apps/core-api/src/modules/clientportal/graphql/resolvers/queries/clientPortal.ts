@@ -1,15 +1,16 @@
 import { IClientPortalDocument } from '@/clientportal/types/clientPortal';
-import { ICursorPaginateParams, Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import { cursorPaginate } from 'erxes-api-shared/utils';
+import {
+  QueryGetClientPortalsArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const clientPortalQueries: Record<
-  string,
-  Resolver<any, any, IContext>
-> = {
+export const clientPortalQueries: QueryResolvers<IContext> = {
   async getClientPortals(
     _root: unknown,
-    params: ICursorPaginateParams,
+    params: QueryGetClientPortalsArgs,
     { models }: IContext,
   ) {
     const { list, totalCount, pageInfo } =
@@ -33,11 +34,7 @@ export const clientPortalQueries: Record<
     return models.ClientPortal.findOne({ _id });
   },
 
-  async getCPExamplePosts(
-    _root: unknown,
-    _args: unknown,
-    { clientPortal, cpUser }: IContext,
-  ) {
+  async getCPExamplePosts() {
     const posts = [
       {
         id: '1',
@@ -49,6 +46,6 @@ export const clientPortalQueries: Record<
   },
 };
 
-clientPortalQueries.getCPExamplePosts.wrapperConfig = {
+(clientPortalQueries.getCPExamplePosts as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

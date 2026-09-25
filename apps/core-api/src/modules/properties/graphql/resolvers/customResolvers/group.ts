@@ -1,8 +1,9 @@
+import { FieldGroupResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IFieldGroupDocument } from '~/modules/properties/@types';
 
-export default {
-  async __resolveReference({ _id }: { _id: string }, { models }: IContext) {
+const fieldGroupResolvers: FieldGroupResolvers<IContext> = {
+  async __resolveReference({ _id }, { models }) {
     return models.FieldsGroups.findOne({ _id });
   },
 
@@ -22,3 +23,5 @@ export default {
     return { __typename: 'User', _id: updatedBy };
   },
 };
+
+export default fieldGroupResolvers;

@@ -1,30 +1,36 @@
+import { IAutomation } from 'erxes-api-shared/core-modules';
 import {
-  AUTOMATION_STATUSES,
-  IAutomation,
-} from 'erxes-api-shared/core-modules';
+  MutationAutomationWorkflowTemplatesAddArgs,
+  MutationAutomationWorkflowTemplatesEditArgs,
+  MutationAutomationsAddArgs,
+  MutationAutomationsEditArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { AUTOMATION_APPROVAL_CONTENT_TYPES } from '../../constants';
-import { sanitizeAiAgent } from '../../utils/aiAgent';
+import {
+  IAutomationWorkflowTemplate,
+} from '../../db/models/AutomationWorkflowTemplates';
+import { TAutomationEdit } from '../../db/models/Automations';
+import { sanitizeAiAgent, TAiAgentMutationDoc } from '../../utils/aiAgent';
 
-export interface IAutomationsEdit extends IAutomation {
-  _id: string;
-  acknowledgeDuplicate?: boolean;
-}
-
-export const automationMutations = {
+export const automationMutations: MutationResolvers<IContext> = {
   async automationsAdd(
     _root,
-    doc: IAutomation,
+    doc: MutationAutomationsAddArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('automationsCreate');
 
-    return models.Automations.createAutomation(doc, user._id);
+    return models.Automations.createAutomation(
+      doc as IAutomation,
+      user._id,
+    );
   },
 
   async automationsEdit(
     _root,
-    { _id, ...doc }: IAutomationsEdit,
+    { _id, ...doc }: MutationAutomationsEditArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('automationsUpdate');
@@ -43,7 +49,11 @@ export const automationMutations = {
       action: 'edit',
     });
 
-    return models.Automations.editAutomation(_id, doc, user._id);
+    return models.Automations.editAutomation(
+      _id,
+      doc as TAutomationEdit,
+      user._id,
+    );
   },
 
   async automationsDuplicate(
@@ -62,7 +72,10 @@ export const automationMutations = {
 
   async archiveAutomations(
     _root,
-    { automationIds, isRestore },
+    {
+      automationIds,
+      isRestore,
+    }: { automationIds: string[]; isRestore?: boolean | null },
     { models, user, checkPermission }: IContext,
   ) {
     await checkPermission('automationsUpdate');
@@ -82,7 +95,10 @@ export const automationMutations = {
       });
     }
 
-    return models.Automations.archiveAutomations(automationIds, isRestore);
+    return models.Automations.archiveAutomations(
+      automationIds,
+      isRestore as boolean,
+    );
   },
   async automationsRemove(
     _root,
@@ -116,7 +132,9 @@ export const automationMutations = {
   ) {
     await checkPermission('automationsAiAgentAdd');
 
-    return sanitizeAiAgent(await models.AiAgents.createAgent(doc));
+    return sanitizeAiAgent(
+      await models.AiAgents.createAgent(doc as TAiAgentMutationDoc),
+    ) as unknown as Record<string, unknown>;
   },
   async automationsAiAgentEdit(
     _root,
@@ -132,7 +150,9 @@ export const automationMutations = {
       action: 'edit',
     });
 
-    return sanitizeAiAgent(await models.AiAgents.editAgent(_id, doc));
+    return sanitizeAiAgent(
+      await models.AiAgents.editAgent(_id, doc as TAiAgentMutationDoc),
+    ) as unknown as Record<string, unknown>;
   },
 
   async automationsAiAgentRemove(
@@ -173,19 +193,13 @@ export const automationMutations = {
    */
   async automationWorkflowTemplatesAdd(
     _root,
-    doc: {
-      name: string;
-      description?: string;
-      entryActionId?: string;
-      actions: Record<string, any>[];
-      inputs?: Record<string, string>;
-    },
+    doc: MutationAutomationWorkflowTemplatesAddArgs,
     { user, models, checkPermission }: IContext,
   ) {
     await checkPermission('automationsCreate');
 
     return models.AutomationWorkflowTemplates.createWorkflowTemplate({
-      ...doc,
+      ...(doc as unknown as IAutomationWorkflowTemplate),
       createdBy: user._id,
     });
   },
@@ -196,22 +210,15 @@ export const automationMutations = {
    */
   async automationWorkflowTemplatesEdit(
     _root,
-    {
-      _id,
-      ...doc
-    }: {
-      _id: string;
-      name?: string;
-      description?: string;
-      entryActionId?: string;
-      actions?: Record<string, any>[];
-      inputs?: Record<string, string>;
-    },
+    { _id, ...doc }: MutationAutomationWorkflowTemplatesEditArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('automationsUpdate');
 
-    return models.AutomationWorkflowTemplates.updateWorkflowTemplate(_id, doc);
+    return models.AutomationWorkflowTemplates.updateWorkflowTemplate(
+      _id,
+      doc as Partial<IAutomationWorkflowTemplate>,
+    );
   },
 
   /**

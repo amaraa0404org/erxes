@@ -1,7 +1,8 @@
 import { ICPUserDocument } from '@/clientportal/types/cpUser';
+import { CpUserResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
+const cpUserResolvers: CpUserResolvers<IContext> = {
   isVerified: (user: ICPUserDocument) => user?.isVerified ?? false,
   isPhoneVerified: (user: ICPUserDocument) => user?.isPhoneVerified ?? false,
   isEmailVerified: (user: ICPUserDocument) => user?.isEmailVerified ?? false,
@@ -47,3 +48,5 @@ export default {
     return customer?.propertiesData || company?.propertiesData || {};
   },
 };
+
+export default cpUserResolvers;

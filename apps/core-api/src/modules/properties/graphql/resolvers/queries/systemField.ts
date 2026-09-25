@@ -1,11 +1,15 @@
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
+import { ISystemFieldSettingDocument } from '~/modules/properties/@types';
 
-export const systemFieldQueries = {
+export const systemFieldQueries: QueryResolvers<IContext> = {
   propertySystemFields: async (
-    _root: undefined,
+    _root: unknown,
     { contentType }: { contentType: string },
     { models }: IContext,
   ) => {
-    return models.SystemFieldSettings.getSystemFields(contentType);
+    return (await models.SystemFieldSettings.getSystemFields(
+      contentType,
+    )) as unknown as ISystemFieldSettingDocument[];
   },
 };

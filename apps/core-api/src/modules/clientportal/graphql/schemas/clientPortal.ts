@@ -8,18 +8,18 @@ export const types = `
 
   type OTPEmailConfig {
     emailSubject: String
-    messageTemplate: String
-    codeLength: Int
-    duration: Int
+    messageTemplate: String!
+    codeLength: Int!
+    duration: Int!
     enableEmailVerification: Boolean
     enablePasswordlessLogin: Boolean
   }
 
   type OTPSMSConfig {
-    messageTemplate: String
-    codeLength: Int
-    smsProvider: String
-    duration: Int
+    messageTemplate: String!
+    codeLength: Int!
+    smsProvider: String!
+    duration: Int!
     enablePhoneVerification: Boolean
     enablePasswordlessLogin: Boolean
   }
@@ -30,7 +30,7 @@ export const types = `
   }
 
   type MultiFactorConfig {
-    isEnabled: Boolean
+    isEnabled: Boolean!
     email: OTPEmailConfig
     sms: OTPSMSConfig
   }
@@ -50,9 +50,9 @@ export const types = `
   }
 
   type ResetPasswordConfig {
-    mode: String
-    emailSubject: String
-    emailContent: String
+    mode: String!
+    emailSubject: String!
+    emailContent: String!
   }
 
   type SMSProvidersConfig {
@@ -88,9 +88,9 @@ export const types = `
   }
 
   type ManualVerificationConfig {
-    userIds: [String]
-    verifyCustomer: Boolean
-    verifyCompany: Boolean
+    userIds: [String!]!
+    verifyCustomer: Boolean!
+    verifyCompany: Boolean!
   }
 
   type PasswordVerificationConfig {
@@ -103,16 +103,16 @@ export const types = `
 
   type SocialpayConfig {
     enableSocialpay: Boolean
-    publicKey: String
-    certId: String
+    publicKey: String!
+    certId: String!
   }
 
   type TokiConfig {
     enableToki: Boolean
-    merchantId: String
-    apiKey: String
-    username: String
-    password: String
+    merchantId: String!
+    apiKey: String!
+    username: String!
+    password: String!
     production: Boolean
   }
 
@@ -161,14 +161,14 @@ type ClientPortal {
     testUser: TestUser
     firebaseConfig: FirebaseConfig
 
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type ClientPortalListResponse {
-    list: [ClientPortal]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [ClientPortal!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   input OTPEmailConfigInput {
@@ -332,27 +332,27 @@ type ClientPortal {
   } 
 
   type CPExamplePost {
-    id: String
-    title: String
-    content: String
+    id: String!
+    title: String!
+    content: String!
   }
 
 `;
 
 export const queries = `
-  getClientPortals(filter: IClientPortalFilter): ClientPortalListResponse
+  getClientPortals(filter: IClientPortalFilter): ClientPortalListResponse!
   getClientPortal(_id: String): ClientPortal
-  getCPExamplePosts: [CPExamplePost]
+  getCPExamplePosts: [CPExamplePost!]!
 `;
 
 export const mutations = `
   clientPortalAdd (
     name: String!
-  ): ClientPortal
+  ): ClientPortal!
   clientPortalUpdate (
     _id: String!
     clientPortal: ClientPortalConfigInput
   ): ClientPortal
-  clientPortalChangeToken (_id: String!): String
+  clientPortalChangeToken (_id: String!): String!
   clientPortalDelete (_id: String!): JSON
 `;

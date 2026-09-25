@@ -1,6 +1,11 @@
 import { ILogContentTypeConfig } from 'erxes-api-shared/core-modules';
 import { ILogDocument } from 'erxes-api-shared/core-types';
 import { cursorPaginate, getPlugin, getPlugins } from 'erxes-api-shared/utils';
+import {
+  QueryLogsMainListArgs,
+  QueryResolvers,
+  ResolversTypes,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { sanitizeLogValue } from '../../sanitize';
 
@@ -17,9 +22,10 @@ const operatorMap = {
   endsWith: '$regex',
 };
 
-const generateOperator = (operator) => operatorMap[operator] || '$eq';
+const generateOperator = (operator: string) =>
+  operatorMap[operator as keyof typeof operatorMap] || '$eq';
 
-const getCollectionTypeFromContentType = (contentType?: string) => {
+const getCollectionTypeFromContentType = (contentType?: string | null) => {
   if (!contentType) {
     return '';
   }
@@ -33,17 +39,7 @@ type PayloadFilterInput = {
   value?: unknown;
 };
 
-type LogsQueryParams = {
-  status?: string;
-  source?: string;
-  action?: string;
-  contentType?: string;
-  documentId?: string;
-  userIds?: string[];
-  createdAtFrom?: string | Date;
-  createdAtTo?: string | Date;
-  filters?: Record<string, PayloadFilterInput>;
-};
+type LogsQueryParams = Partial<QueryLogsMainListArgs>;
 
 type LogsQueryFilter = Record<string, unknown> & {
   $or?: Array<Record<string, unknown>>;
@@ -103,7 +99,9 @@ const generatePayloadFilters = (params: LogsQueryParams) => {
   const filter: Record<string, unknown> = {};
 
   if (Object.keys(params?.filters || {})?.length) {
-    for (const [field, filterConfig] of Object.entries(params?.filters || {})) {
+    for (const [field, filterConfig] of Object.entries(
+      (params?.filters || {}) as Record<string, PayloadFilterInput>,
+    )) {
       if (!filterConfig) {
         continue;
       }
@@ -153,7 +151,7 @@ const generateBuiltInFilters = (params: LogsQueryParams) => {
   }
 
   if (params.userIds?.length) {
-    filter.userId = { $in: params.userIds };
+    filter.userId = { $in: params.userIds as string[] };
   }
 
   if (params.createdAtFrom || params.createdAtTo) {
@@ -171,7 +169,7 @@ const generateBuiltInFilters = (params: LogsQueryParams) => {
   return filter;
 };
 
-const generateFilters = (params) => ({
+const generateFilters = (params: LogsQueryParams) => ({
   ...generateBuiltInFilters(params),
   ...generatePayloadFilters(params),
 });
@@ -190,7 +188,7 @@ const sortByContentType = (
     `${b.pluginName}:${b.moduleName}.${b.collectionName}`,
   );
 
-export const logQueries = {
+export const logQueries: QueryResolvers<IContext> = {
   async logsGetContentTypes(
     _root: unknown,
     _args: unknown,
@@ -252,7 +250,9 @@ export const logQueries = {
     const { list, totalCount, pageInfo } = await cursorPaginate<ILogDocument>({
       model: models.Logs,
       params: {
-        ...args,
+        limit: args.limit ?? undefined,
+        cursor: args.cursor ?? undefined,
+        direction: args.direction ?? undefined,
         orderBy: { createdAt: -1 },
       },
       query: filter,
@@ -284,7 +284,7 @@ export const logQueries = {
       exposeEmail: detail.source === 'auth',
     };
 
-    return {
+    const result = {
       ...detail,
       payload: sanitizeLogValue(
         detail.payload,
@@ -293,5 +293,9 @@ export const logQueries = {
       ),
       prevObject: sanitizeLogValue(detail.prevObject),
     };
+
+    // The sanitized detail is a lean plain object; the generated mapper types
+    // model Log rows as Mongoose documents.
+    return result as unknown as ResolversTypes['Log'];
   },
 };

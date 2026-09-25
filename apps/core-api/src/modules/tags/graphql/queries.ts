@@ -1,12 +1,17 @@
 import { ITagFilterQueryParams } from '@/tags/@types/tag';
-import { ITagDocument, Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver, ITagDocument } from 'erxes-api-shared/core-types';
 import {
   cursorPaginate,
   escapeRegExp,
   getPlugin,
   getPlugins,
 } from 'erxes-api-shared/utils';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
+import {
+  QueryTagsMainArgs,
+  QueryTagsQueryCountArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { IContext, IModels } from '~/connectionResolvers';
 
 const generateFilter = async ({
@@ -16,7 +21,7 @@ const generateFilter = async ({
 }: {
   params: ITagFilterQueryParams;
   models: IModels;
-  commonQuerySelector?: any;
+  commonQuerySelector?: FilterQuery<ITagDocument>;
 }) => {
   const {
     searchValue,
@@ -64,7 +69,7 @@ const generateFilter = async ({
   }
 
   if (ids?.length) {
-    filter._id = { [excludeIds ? '$nin' : '$in']: ids };
+    filter._id = { [excludeIds ? '$nin' : '$in']: ids as string[] };
   }
 
   if (isGroup) {
@@ -95,13 +100,16 @@ const generateFilter = async ({
   return filter;
 };
 
-export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
+export const tagQueries: QueryResolvers<IContext> = {
   /**
    * Get tags types
    */
   async tagsGetTypes() {
     const services = await getPlugins();
-    const types = {};
+    const types: Record<
+      string,
+      Array<{ description: string; contentType: string }>
+    > = {};
 
     for (const serviceName of services) {
       const fieldTypes: Array<{ description: string; contentType: string }> =
@@ -110,9 +118,10 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
       const service = await getPlugin(serviceName);
       const meta = service.config.meta || {};
       if (meta?.tags) {
-        const types = meta.tags.types || [];
+        const tagTypes = (meta.tags as { types?: Array<{ type: string; description: string }> })
+          .types || [];
 
-        for (const type of types) {
+        for (const type of tagTypes) {
           fieldTypes.push({
             description: type.description,
             contentType: `${serviceName}:${type.type}`,
@@ -131,7 +140,7 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
    * Get tags
    */
   async tags(
-    _parent: undefined,
+    _parent: unknown,
     params: ITagFilterQueryParams,
     { models, commonQuerySelector }: IContext,
   ) {
@@ -144,8 +153,13 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
     const { list, totalCount, pageInfo } = await cursorPaginate({
       model: models.Tags,
       params: {
-        orderBy: { order: 1 },
-        ...params,
+        limit: params.limit ?? undefined,
+        cursor: params.cursor ?? undefined,
+        direction: params.direction ?? undefined,
+        orderBy:
+          (params.orderBy as Record<string, SortOrder> | null | undefined) || {
+            order: 1,
+          },
       },
       query: filter,
     });
@@ -154,8 +168,8 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async tagsMain(
-    _parent: undefined,
-    { type }: { type: string },
+    _parent: unknown,
+    { type }: Partial<QueryTagsMainArgs>,
     { models }: IContext,
   ) {
     const filter: FilterQuery<ITagDocument> = {
@@ -170,17 +184,11 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async tagsQueryCount(
-    _parent: undefined,
-    {
-      type,
-      searchValue,
-    }: {
-      type: string;
-      searchValue?: string;
-    },
+    _parent: unknown,
+    { type, searchValue }: Partial<QueryTagsQueryCountArgs>,
     { models, commonQuerySelector }: IContext,
   ) {
-    const selector: any = { ...commonQuerySelector };
+    const selector: FilterQuery<ITagDocument> = { ...commonQuerySelector };
 
     if (type) {
       selector.type = type;
@@ -194,7 +202,7 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async tagDetail(
-    _parent: undefined,
+    _parent: unknown,
     { _id }: { _id: string },
     { models }: IContext,
   ) {
@@ -202,7 +210,7 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 
   async cpTags(
-    _parent: undefined,
+    _parent: unknown,
     params: ITagFilterQueryParams,
     { models }: IContext,
   ) {
@@ -217,9 +225,9 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
 
     const filter: FilterQuery<ITagDocument> = {};
 
-    let contentType = type;
-
     if (type) {
+      let contentType: string = type;
+
       const [_pluginName, _moduleName, instanceId] = type.split(':');
 
       if (!instanceId && params.instanceId) {
@@ -238,7 +246,9 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
     }
 
     if (ids?.length) {
-      filter._id = excludeIds ? { $nin: ids } : { $in: ids };
+      filter._id = excludeIds
+        ? { $nin: ids as string[] }
+        : { $in: ids as string[] };
     }
 
     if (isGroup) {
@@ -253,6 +263,6 @@ export const tagQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 };
 
-tagQueries.cpTags.wrapperConfig = {
+(tagQueries.cpTags as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

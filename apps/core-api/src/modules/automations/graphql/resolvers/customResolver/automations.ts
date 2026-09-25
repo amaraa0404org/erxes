@@ -2,10 +2,14 @@ import {
   ApprovalLockState,
   IAutomationDoc,
 } from 'erxes-api-shared/core-modules';
+import {
+  AutomationResolvers,
+  ResolversTypes,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { AUTOMATION_APPROVAL_CONTENT_TYPES } from '../../../constants';
 
-export default {
+const automationResolvers: AutomationResolvers<IContext> = {
   async createdUser(
     { createdBy }: IAutomationDoc,
     _args: unknown,
@@ -62,7 +66,7 @@ export default {
     { models, user }: IContext,
   ) {
     if (automation.approvalLockState) {
-      return automation.approvalLockState;
+      return automation.approvalLockState as ResolversTypes['ApprovalLockState'];
     }
 
     return models.ApprovalLocks.getState({
@@ -71,7 +75,9 @@ export default {
       contentId: automation._id,
       ownerId: automation.createdBy,
       action: action || 'view',
-    });
+    }) as Promise<ResolversTypes['ApprovalLockState']>;
   },
 };
+
+export default automationResolvers;
 

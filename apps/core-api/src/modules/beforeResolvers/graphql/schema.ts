@@ -1,3 +1,3 @@
 export const queries = `
-  beforeResolverAvailable(resolver: String!, args: JSON): JSON
+  beforeResolverAvailable(resolver: String!, args: JSON): JSON!
 `;

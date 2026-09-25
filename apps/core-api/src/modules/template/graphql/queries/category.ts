@@ -1,14 +1,15 @@
 import { cursorPaginate, getPlugin, getPlugins } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import {
   ITemplateCategoryDocument,
   ITemplateCategoryParams,
 } from '../../@types';
 
-const categoryQueries = {
+const categoryQueries: QueryResolvers<IContext> = {
   templateCategories: async (
-    _root: undefined,
+    _root: unknown,
     params: ITemplateCategoryParams,
     { models }: IContext,
   ) => {
@@ -24,11 +25,11 @@ const categoryQueries = {
     }
 
     if (types?.length) {
-      filter.contentType = { $in: types };
+      filter.contentType = { $in: types as string[] };
     }
 
     if (parentIds?.length) {
-      filter.parentId = { $in: parentIds };
+      filter.parentId = { $in: parentIds as string[] };
     }
 
     if (createdBy) {
@@ -66,7 +67,9 @@ const categoryQueries = {
     return await cursorPaginate({
       model: models.TemplateCategory,
       params: {
-        ...params,
+        limit: params?.limit ?? undefined,
+        cursor: params?.cursor ?? undefined,
+        direction: params?.direction ?? undefined,
         orderBy: {
           createdAt: -1,
           _id: -1,
@@ -77,7 +80,7 @@ const categoryQueries = {
   },
 
   templateCategory: async (
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models }: IContext,
   ) => {
@@ -86,20 +89,31 @@ const categoryQueries = {
 
   templatesGetTypes: async () => {
     const plugins = await getPlugins();
-    const fieldTypes: Array<{ label: string; description: string; type: string }> = [];
+    const fieldTypes: Array<{
+      label: string;
+      description: string;
+      type: string;
+    }> = [];
 
     for (const plugin of plugins) {
       const service = await getPlugin(plugin);
       const meta = service?.config?.meta || {};
 
-      const templates = meta?.templates;
+      const templates = meta?.templates as
+        | {
+            modules?: Record<
+              string,
+              Record<string, { label?: string; description?: string }>
+            >;
+          }
+        | undefined;
 
       if (!templates?.modules) {
         continue;
       }
 
       for (const [moduleName, handler] of Object.entries(templates.modules)) {
-        for (const [typeName, template] of Object.entries(handler as Record<string, any>)) {
+        for (const [typeName, template] of Object.entries(handler)) {
           fieldTypes.push({
             label: template.label || typeName,
             description: template.description || typeName,
@@ -109,7 +123,9 @@ const categoryQueries = {
       }
     }
 
-    return fieldTypes;
+    // JSON scalar output is typed Record<string, unknown> in codegen; the
+    // runtime serializes any JSON value, including arrays.
+    return fieldTypes as unknown as Record<string, unknown>;
   },
 };
 

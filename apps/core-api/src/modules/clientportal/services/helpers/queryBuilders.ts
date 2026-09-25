@@ -63,13 +63,13 @@ export function buildUserQuery(
 }
 
 export interface CPNotificationFilterParams {
-  status?: 'READ' | 'UNREAD' | 'ALL';
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  type?: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
-  kind?: 'SYSTEM' | 'USER';
-  fromDate?: string;
-  endDate?: string;
-  clientPortalId?: string;
+  status?: string | null;
+  priority?: string | null;
+  type?: string | null;
+  kind?: string | null;
+  fromDate?: string | null;
+  endDate?: string | null;
+  clientPortalId?: string | null;
 }
 
 export function buildCPNotificationQuery(

@@ -1,11 +1,11 @@
 export const types = `
     type Log {
-      _id: String
-      createdAt: Date
+      _id: String!
+      createdAt: Date!
       payload:JSON,
       source:String,
       action:String,
-      status:String,
+      status:String!,
       userId:String,
       cursor:String,
       processId:String,
@@ -17,9 +17,9 @@ export const types = `
     }
 
     type MainLogsList {
-        list:[Log]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[Log!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
 
     type LogContentType {
@@ -30,23 +30,23 @@ export const types = `
     }
 
     type ActivityLogsList {
-        list:[ActivityLog]
-        totalCount: Int
-        pageInfo: PageInfo
+        list:[ActivityLog!]!
+        totalCount: Int!
+        pageInfo: PageInfo!
     }
     type ActivityLog {
-        _id: String
-        createdAt: Date
-        activityType: String
+        _id: String!
+        createdAt: Date!
+        activityType: String!
         sourcePlugin: String
-        actorType: String
-        actor: JSON
-        targetType: String
-        target: JSON
-        action: JSON
+        actorType: String!
+        actor: JSON!
+        targetType: String!
+        target: JSON!
+        action: JSON!
         context: JSON
         contextType: String
-        changes: JSON
+        changes: JSON!
         metadata: JSON
     }
 
@@ -93,8 +93,8 @@ const activityLogQueryParams = `
 `;
 
 export const queries = `
-    activityLogs(${activityLogQueryParams}):ActivityLogsList
-    logsMainList(${commonQueryParams}):MainLogsList
+    activityLogs(${activityLogQueryParams}):ActivityLogsList!
+    logsMainList(${commonQueryParams}):MainLogsList!
     logsGetContentTypes: [LogContentType!]!
     logDetail(_id:String!):Log
 `;

@@ -11,12 +11,12 @@ export const types = `
     name:String,
     description:String,
     icon:String,
-    events:[NotificationModuleEvent]
+    events:[NotificationModuleEvent!]
   }
 
   type NotificationPluginType {
-    pluginName:String,
-    modules:[NotificationModule]
+    pluginName:String!,
+    modules:[NotificationModule!]!
   }
 
   type NotificationConfig {
@@ -35,33 +35,33 @@ export const types = `
   }
 
   type NotificationConfigListResponse {
-    list: [NotificationConfig]
-    totalCount: Int
+    list: [NotificationConfig!]!
+    totalCount: Int!
   }
 
   type Notification {
-    _id: String,
-    title: String,
-    message: String,
-    type: String,
+    _id: String!,
+    title: String!,
+    message: String!,
+    type: String!,
     fromUserId: String,
     fromUser:User,
     contentType: String,
     contentTypeId: String,
-    priority: String,
+    priority: String!,
     metadata: JSON,
-    createdAt: Date,
-    isRead: Boolean
+    createdAt: Date!,
+    isRead: Boolean!
     action:String
     emailDelivery:EmailDelivery
-    kind:String
-    updatedAt: Date
+    kind:String!
+    updatedAt: Date!
   }
 
   type NotificationsList {
-    list:[Notification]
-    totalCount: Int
-    pageInfo: PageInfo
+    list:[Notification!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   """
@@ -70,24 +70,24 @@ export const types = `
   no webhooks.
   """
   type EmailDelivery {
-    _id: String
-    createdAt: Date
-    updatedAt: Date
+    _id: String!
+    createdAt: Date!
+    updatedAt: Date!
 
     from: String
-    toEmails: [String]
-    ccEmails: [String]
-    subject: String
+    toEmails: [String!]!
+    ccEmails: [String!]!
+    subject: String!
     content: String
 
-    provider: String
+    provider: String!
     messageId: String
     providerResponse: String
 
-    status: String
+    status: String!
     sentAt: Date
     error: String
-    rejected: [String]
+    rejected: [String!]!
 
     source: String
     sourceId: String
@@ -96,22 +96,22 @@ export const types = `
 
     deliveryStatus: String
     deliveryStatusAt: Date
-    bounced: [String]
-    complained: [String]
-    opened: [String]
-    clicked: [String]
+    bounced: [String!]!
+    complained: [String!]!
+    opened: [String!]!
+    clicked: [String!]!
   }
 
   type EmailAddress {
-    _id: String
-    email: String
-    lane: String
+    _id: String!
+    email: String!
+    lane: String!
 
     lastSentAt: Date
     lastDeliveredAt: Date
-    deliveredCount: Int
+    deliveredCount: Int!
 
-    softBounceCount: Int
+    softBounceCount: Int!
     lastSoftBounceAt: Date
 
     suppressedAt: Date
@@ -122,44 +122,44 @@ export const types = `
     releasedBy: String
     releaseNote: String
 
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type EmailRampStatus {
-    tier: Int
-    tiers: [Int]
-    dailyBudget: Int
-    usedToday: Int
+    tier: Int!
+    tiers: [Int!]!
+    dailyBudget: Int!
+    usedToday: Int!
     haltedAt: Date
     haltReason: String
     lastRate: Float
     lastEvaluatedAt: Date
-    advanceRate: Float
-    dropRate: Float
-    haltRate: Float
-    windowDays: Int
+    advanceRate: Float!
+    dropRate: Float!
+    haltRate: Float!
+    windowDays: Int!
   }
 
   type EmailAddressesList {
-    list:[EmailAddress]
-    totalCount: Int
-    pageInfo: PageInfo
+    list:[EmailAddress!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   type EmailDeliveriesList {
-    list:[EmailDelivery]
-    totalCount: Int
-    pageInfo: PageInfo
+    list:[EmailDelivery!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   type NotificationSettings {
-    userId: String
-    channels: JSON
-    events: JSON
+    userId: String!
+    channels: JSON!
+    events: JSON!
 
-    createdAt: String
-    updatedAt: String
+    createdAt: String!
+    updatedAt: String!
   }
 
   enum NotificationPriority {
@@ -232,27 +232,27 @@ const EMAIL_ADDRESSES_QUERY_PARAMS = `
 `;
 
 export const queries = `
-  pluginsNotifications: [NotificationPluginType]
-  notifications(${GQL_CURSOR_PARAM_DEFS},${NOTIFICATIONS_QUERIES_PARAMS}):NotificationsList
-  notificationDetail(_id:String!):Notification
-  unreadNotificationsCount:Int
+  pluginsNotifications: [NotificationPluginType!]!
+  notifications(${GQL_CURSOR_PARAM_DEFS},${NOTIFICATIONS_QUERIES_PARAMS}):NotificationsList!
+  notificationDetail(_id:String!):Notification!
+  unreadNotificationsCount:Int!
   notificationSettings: NotificationSettings
-  emailDeliveries(${GQL_CURSOR_PARAM_DEFS},${EMAIL_DELIVERIES_QUERY_PARAMS}):EmailDeliveriesList
+  emailDeliveries(${GQL_CURSOR_PARAM_DEFS},${EMAIL_DELIVERIES_QUERY_PARAMS}):EmailDeliveriesList!
   emailDeliveryDetail(_id:String!):EmailDelivery
-  emailAddresses(${GQL_CURSOR_PARAM_DEFS},${EMAIL_ADDRESSES_QUERY_PARAMS}):EmailAddressesList
-  emailRampStatus:EmailRampStatus
+  emailAddresses(${GQL_CURSOR_PARAM_DEFS},${EMAIL_ADDRESSES_QUERY_PARAMS}):EmailAddressesList!
+  emailRampStatus:EmailRampStatus!
 `;
 
 export const mutations = `
-  emailAddressRelease(email:String!, note:String!):String
-  emailRampRelease(note:String!):EmailRampStatus
-  archiveNotification(_id:String!):String
-  archiveNotifications(ids:[String], archiveAll:Boolean, filters:NotificationFilters):String
-  markNotificationAsRead(_id:String!):JSON
-  markAsReadNotifications(${NOTIFICATIONS_QUERIES_PARAMS}):JSON
+  emailAddressRelease(email:String!, note:String!):String!
+  emailRampRelease(note:String!):EmailRampStatus!
+  archiveNotification(_id:String!):String!
+  archiveNotifications(ids:[String], archiveAll:Boolean, filters:NotificationFilters):String!
+  markNotificationAsRead(_id:String!):JSON!
+  markAsReadNotifications(${NOTIFICATIONS_QUERIES_PARAMS}):JSON!
 
-  updateNotificationSettingsEvent(input: NotificationSettingsEventInput):JSON
-  updateNotificationSettingsChannel(input: NotificationSettingsChannelInput):JSON
+  updateNotificationSettingsEvent(input: NotificationSettingsEventInput):JSON!
+  updateNotificationSettingsChannel(input: NotificationSettingsChannelInput):JSON!
 `;
 
 export default { queries, mutations, types };

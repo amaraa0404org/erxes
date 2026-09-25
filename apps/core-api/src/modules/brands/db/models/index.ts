@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { brandSchema, IBrand, IBrandDocument } from '../definitions';
 import { IModels } from '~/connectionResolvers';
 
 export interface IBrandModel extends Model<IBrandDocument> {
-  getBrand(doc: any): IBrandDocument;
+  getBrand(doc: FilterQuery<IBrandDocument>): IBrandDocument;
   getBrandByCode(code: string): IBrandDocument;
   generateCode(code?: string): string;
   createBrand(doc: IBrand): IBrandDocument;
@@ -17,7 +17,7 @@ export const loadBrandClass = (models: IModels) => {
     /*
      * Get a Brand
      */
-    public static async getBrand(doc: any) {
+    public static async getBrand(doc: FilterQuery<IBrandDocument>) {
       const brand = await models.Brands.findOne(doc).lean();
 
       if (!brand) {

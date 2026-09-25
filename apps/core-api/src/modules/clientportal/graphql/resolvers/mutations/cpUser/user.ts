@@ -1,5 +1,10 @@
 import { IContext } from '~/connectionResolvers';
-import { ICompany, ICustomer, Resolver } from 'erxes-api-shared/core-types';
+import { ICompany, ICustomer } from 'erxes-api-shared/core-types';
+import {
+  MutationClientPortalCompanyEditArgs,
+  MutationClientPortalCustomerEditArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import {
   cpUserService,
   socialAuthService,
@@ -25,7 +30,7 @@ import type {
 } from '@/clientportal/types/cpUserParams';
 import { validatePassword } from '@/clientportal/services/helpers/validators';
 
-export const userMutations: Record<string, Resolver<any, any, IContext>> = {
+export const userMutations: MutationResolvers<IContext> = {
   async clientPortalUserEdit(
     _root: unknown,
     params: EditUserParams,
@@ -40,19 +45,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
 
   async clientPortalCustomerEdit(
     _root: unknown,
-    params: Pick<
-      ICustomer,
-      | 'firstName'
-      | 'lastName'
-      | 'avatar'
-      | 'primaryEmail'
-      | 'emails'
-      | 'primaryPhone'
-      | 'phones'
-      | 'primaryAddress'
-      | 'addresses'
-      | 'propertiesData'
-    >,
+    params: MutationClientPortalCustomerEditArgs,
     { models, cpUser }: IContext,
   ) {
     if (!cpUser) {
@@ -65,13 +58,19 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
 
     const updatedCustomer = await models.Customers.updateCustomer(
       cpUser.erxesCustomerId,
-      params,
+      params as unknown as ICustomer,
     );
 
     await contactService.syncCustomerContactToCPUsers(
       models,
       cpUser.erxesCustomerId,
-      params,
+      params as {
+        primaryEmail?: string;
+        primaryPhone?: string;
+        firstName?: string;
+        lastName?: string;
+        avatar?: string;
+      },
     );
 
     return updatedCustomer;
@@ -79,29 +78,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
 
   async clientPortalCompanyEdit(
     _root: unknown,
-    params: Pick<
-      ICompany,
-      | 'primaryName'
-      | 'names'
-      | 'primaryEmail'
-      | 'emails'
-      | 'primaryPhone'
-      | 'phones'
-      | 'primaryAddress'
-      | 'addresses'
-      | 'size'
-      | 'website'
-      | 'industry'
-      | 'ownerId'
-      | 'businessType'
-      | 'description'
-      | 'isSubscribed'
-      | 'links'
-      | 'tagIds'
-      | 'propertiesData'
-      | 'code'
-      | 'location'
-    >,
+    params: MutationClientPortalCompanyEditArgs,
     { models, cpUser }: IContext,
   ) {
     if (!cpUser) {
@@ -114,7 +91,7 @@ export const userMutations: Record<string, Resolver<any, any, IContext>> = {
 
     const updatedCompany = await models.Companies.updateCompany(
       cpUser.erxesCompanyId,
-      params,
+      params as unknown as ICompany,
     );
 
     return updatedCompany;

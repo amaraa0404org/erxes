@@ -3,10 +3,10 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 export const types = `
   type Document {
     _id: String!
-    tagIds: [String]
+    tagIds: [String!]
     code: String
 
-    createdAt: Date
+    createdAt: Date!
     createdUser: User
 
     contentType: String!
@@ -32,9 +32,9 @@ export const types = `
   }
 
   type DocumentListResponse {
-    list: [Document]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [Document!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
 `;
@@ -53,12 +53,12 @@ const queryParams = `
 `;
 
 export const queries = `
-  documents(${queryParams}): DocumentListResponse
-  documentsDetail(_id: String!): Document
-  documentsGetEditorAttributes(contentType: String!): [DocumentEditorAttribute]
-  documentsTypes:[DocumentsTypes]
-  documentsTotalCount(searchValue: String, contentType: String): Int
-  documentsProcess(_id: String, replacerIds: [String], config: JSON): String
+  documents(${queryParams}): DocumentListResponse!
+  documentsDetail(_id: String!): Document!
+  documentsGetEditorAttributes(contentType: String!): [DocumentEditorAttribute!]!
+  documentsTypes:[DocumentsTypes!]!
+  documentsTotalCount(searchValue: String, contentType: String): Int!
+  documentsProcess(_id: String!, replacerIds: [String], config: JSON): String!
 `;
 
 const mutationParams = `

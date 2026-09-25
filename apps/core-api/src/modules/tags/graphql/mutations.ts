@@ -1,12 +1,13 @@
-import { ITag, Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver, ITag } from 'erxes-api-shared/core-types';
+import { MutationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
+export const tagMutations: MutationResolvers<IContext> = {
   /**
    * Creates a new tag
    */
   async tagsAdd(
-    _parent: undefined,
+    _parent: unknown,
     doc: ITag,
     { models, checkPermission }: IContext,
   ) {
@@ -19,7 +20,7 @@ export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
    * Edits a tag
    */
   async tagsEdit(
-    _parent: undefined,
+    _parent: unknown,
     { _id, ...doc }: { _id: string } & ITag,
     { models, __, checkPermission }: IContext,
   ) {
@@ -32,7 +33,7 @@ export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
    * Attach a tag
    */
   async tagsTag(
-    _parent: undefined,
+    _parent: unknown,
     {
       type,
       targetIds,
@@ -42,24 +43,31 @@ export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
   ) {
     await checkPermission('tagsTag');
 
-    return await models.Tags.tagsTag(type, targetIds, tagIds, user);
+    return (await models.Tags.tagsTag(
+      type,
+      targetIds,
+      tagIds,
+      user,
+    )) as unknown as Record<string, unknown>;
   },
 
   /**
    * Removes a tag
    */
   async tagsRemove(
-    _parent: undefined,
+    _parent: unknown,
     { _id }: { _id: string },
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('tagsDelete');
 
-    return models.Tags.removeTag(_id);
+    return (await models.Tags.removeTag(
+      _id,
+    )) as unknown as Record<string, unknown>;
   },
 
   async cpTagsAdd(
-    _parent: undefined,
+    _parent: unknown,
     doc: ITag,
     { models, checkPermission }: IContext,
   ) {
@@ -72,7 +80,7 @@ export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
    * Attach a cp tag
    */
   async cpTagsTag(
-    _parent: undefined,
+    _parent: unknown,
     {
       type,
       targetIds,
@@ -80,14 +88,18 @@ export const tagMutations: Record<string, Resolver<any, any, IContext>> = {
     }: { type: string; targetIds: string[]; tagIds: string[] },
     { models }: IContext,
   ) {
-    return await models.Tags.tagsTag(type, targetIds, tagIds);
+    return (await models.Tags.tagsTag(
+      type,
+      targetIds,
+      tagIds,
+    )) as unknown as Record<string, unknown>;
   },
 };
 
-tagMutations.cpTagsTag.wrapperConfig = {
+(tagMutations.cpTagsTag as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };
 
-tagMutations.cpTagsAdd.wrapperConfig = {
+(tagMutations.cpTagsAdd as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

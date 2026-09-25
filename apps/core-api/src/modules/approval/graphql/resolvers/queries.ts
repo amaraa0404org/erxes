@@ -1,6 +1,11 @@
 import { ApprovalLockStatesInput } from 'erxes-api-shared/core-modules';
-import { ICursorPaginateParams } from 'erxes-api-shared/core-types';
 import { cursorPaginate, ExpectedError } from 'erxes-api-shared/utils';
+import { SortOrder } from 'mongoose';
+import {
+  QueryApprovalRequestsArgs,
+  QueryResolvers,
+  ResolversTypes,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IApprovalRequestDocument } from '../../db/definitions/approvalRequests';
 
@@ -13,14 +18,7 @@ type ApprovalLockStateArgs = {
 
 type ApprovalLockStatesArgs = ApprovalLockStatesInput;
 
-type ApprovalRequestsArgs = ICursorPaginateParams & {
-  status?: string;
-  contentType?: string;
-  contentId?: string;
-  kind?: string;
-  requesterIds?: string[];
-  approverIds?: string[];
-};
+type ApprovalRequestsArgs = Partial<QueryApprovalRequestsArgs>;
 
 const normalizeOwnerIdsByContentId = (
   ownerIdsByContentId?: Record<string, unknown>,
@@ -75,34 +73,38 @@ const generateApprovalRequestsFilter = (
   return filter;
 };
 
-export const approvalQueries = {
+export const approvalQueries: QueryResolvers<IContext> = {
   async approvalLockState(
-    _root: undefined,
+    _root: unknown,
     args: ApprovalLockStateArgs,
     { models, user }: IContext,
   ) {
-    return models.ApprovalLocks.getState({
+    const state = await models.ApprovalLocks.getState({
       user,
       ...args,
     });
+
+    return state as unknown as ResolversTypes['ApprovalLockState'];
   },
 
   async approvalLockStates(
-    _root: undefined,
+    _root: unknown,
     args: ApprovalLockStatesArgs,
     { models, user }: IContext,
   ) {
-    return models.ApprovalLocks.getStates({
+    const states = await models.ApprovalLocks.getStates({
       user,
       ...args,
       ownerIdsByContentId: normalizeOwnerIdsByContentId(
         args.ownerIdsByContentId,
       ),
     });
+
+    return states as unknown as Array<ResolversTypes['ApprovalLockState']>;
   },
 
   async approvalRequestDetail(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user }: IContext,
   ) {
@@ -113,7 +115,7 @@ export const approvalQueries = {
       request.requesterId === user._id ||
       request.requiredApproverIds.includes(user._id)
     ) {
-      return request;
+      return request as IApprovalRequestDocument;
     }
 
     const state = await models.ApprovalLocks.getState({
@@ -127,11 +129,11 @@ export const approvalQueries = {
       throw new ExpectedError('Approval request not found', 'NOT_FOUND');
     }
 
-    return request;
+    return request as IApprovalRequestDocument;
   },
 
   async approvalRequests(
-    _root: undefined,
+    _root: unknown,
     params: ApprovalRequestsArgs,
     { models, user }: IContext,
   ) {
@@ -139,8 +141,12 @@ export const approvalQueries = {
       await cursorPaginate<IApprovalRequestDocument>({
         model: models.ApprovalRequests,
         params: {
-          ...params,
-          orderBy: params.orderBy || { createdAt: -1 },
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
+          orderBy:
+            (params.orderBy as Record<string, SortOrder> | null | undefined) ||
+            { createdAt: -1 },
         },
         query: generateApprovalRequestsFilter(params, user),
       });

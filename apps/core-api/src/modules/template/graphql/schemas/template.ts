@@ -3,25 +3,25 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 export const types = `
   type Template {
     _id: String!
-    name: String
+    name: String!
     description: String
-    contentType: String
-    content: JSON
+    contentType: String!
+    content: JSON!
 
-    categoryIds: [String]
-    categories: [TemplateCategory]
+    categoryIds: [String!]
+    categories: [TemplateCategory!]!
 
-    createdAt: Date
+    createdAt: Date!
     createdBy: User
 
-    updatedAt: Date
+    updatedAt: Date!
     updatedBy: User
   }
 
   type TemplateListResponse {
-    list: [Template]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [Template!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 `;
 
@@ -39,8 +39,8 @@ const queryParams = `
 `;
 
 export const queries = `
-  templateList(${queryParams}): TemplateListResponse
-  templateDetail(_id: String!): Template
+  templateList(${queryParams}): TemplateListResponse!
+  templateDetail(_id: String!): Template!
 `;
 
 const mutationParams = `
@@ -54,9 +54,9 @@ const mutationParams = `
 `;
 
 export const mutations = `
-  templateAdd(${mutationParams}): Template
+  templateAdd(${mutationParams}): Template!
   templateEdit(_id: String!, ${mutationParams}): Template
-  templateRemove(_ids: [String!]): JSON
+  templateRemove(_ids: [String!]!): JSON!
 
   templateUse(_id: String!): JSON
 `;

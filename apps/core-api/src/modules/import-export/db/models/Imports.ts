@@ -1,9 +1,9 @@
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { importSchema } from '../definitions/import';
 import { IModels } from '~/connectionResolvers';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
 
-export interface IImportDocument {
+export interface IImportDocument extends Document {
   _id: string;
   entityType: string;
   pluginName: string;
@@ -124,8 +124,8 @@ export const loadImportClass = (
         errorFileUrl?: string;
       },
     ) {
-      const update: any = {};
-      const unset: Record<string, any> = {};
+      const update: Record<string, unknown> = {};
+      const unset: Record<string, unknown> = {};
 
       if (progress.processedRows !== undefined) {
         update.processedRows = progress.processedRows;

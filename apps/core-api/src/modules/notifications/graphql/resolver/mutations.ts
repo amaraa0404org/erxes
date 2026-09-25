@@ -1,11 +1,16 @@
 import { graphqlPubsub } from 'erxes-api-shared/utils';
+import {
+  MutationArchiveNotificationsArgs,
+  MutationMarkAsReadNotificationsArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { generateNotificationsFilter } from '~/modules/notifications/graphql/resolver/utils';
 import { release } from '~/utils/email/ramp';
 
-export const notificationMutations = {
+export const notificationMutations: MutationResolvers<IContext> = {
   async archiveNotification(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user }: IContext,
   ) {
@@ -29,17 +34,15 @@ export const notificationMutations = {
   },
 
   async archiveNotifications(
-    _root: undefined,
-    {
-      ids,
-      archiveAll,
-      filters,
-    }: { ids: string[]; archiveAll: boolean; filters: any },
+    _root: unknown,
+    { ids, archiveAll, filters }: MutationArchiveNotificationsArgs,
     { models, user }: IContext,
   ) {
+    const idList = (ids || []).filter((id): id is string => !!id);
+
     const selector = archiveAll
-      ? { ...generateNotificationsFilter(filters) }
-      : { _id: { $in: ids } };
+      ? { ...generateNotificationsFilter(filters ?? {}) }
+      : { _id: { $in: idList } };
 
     const notificationIds = await models.Notifications.find(
       { userId: user._id, ...selector },
@@ -58,7 +61,7 @@ export const notificationMutations = {
   },
 
   async markNotificationAsRead(
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models, user }: IContext,
   ) {
@@ -80,13 +83,15 @@ export const notificationMutations = {
   },
 
   async markAsReadNotifications(
-    _root: undefined,
-    { ids, ...filters }: { ids: string[]; [key: string]: any },
+    _root: unknown,
+    { ids, ...filters }: MutationMarkAsReadNotificationsArgs,
     { models, user }: IContext,
   ) {
-    const filter = ids.length
-      ? { _id: { $in: ids } }
-      : generateNotificationsFilter(filters as any);
+    const idList = (ids || []).filter((id): id is string => !!id);
+
+    const filter = idList.length
+      ? { _id: { $in: idList } }
+      : generateNotificationsFilter(filters);
 
     const notificationIds = await models.Notifications.find(filter, {
       _id: 1,
@@ -107,7 +112,7 @@ export const notificationMutations = {
   },
 
   async updateNotificationSettingsEvent(
-    _root: undefined,
+    _root: unknown,
     {
       input,
     }: { input: { event: string; enabled: boolean; channels: string[] } },
@@ -125,7 +130,7 @@ export const notificationMutations = {
   },
 
   async updateNotificationSettingsChannel(
-    _root: undefined,
+    _root: unknown,
     {
       input,
     }: {
@@ -149,7 +154,7 @@ export const notificationMutations = {
   },
 
   async emailAddressRelease(
-    _root: undefined,
+    _root: unknown,
     { email, note }: { email: string; note: string },
     { models, user, checkPermission }: IContext,
   ) {
@@ -161,7 +166,7 @@ export const notificationMutations = {
   },
 
   async emailRampRelease(
-    _root: undefined,
+    _root: unknown,
     { note }: { note: string },
     { models, user, checkPermission }: IContext,
   ) {

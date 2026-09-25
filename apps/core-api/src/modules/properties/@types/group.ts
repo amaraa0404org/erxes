@@ -31,5 +31,5 @@ export interface IFieldGroupParams extends IListParams {
   codes?: string[];
 }
 
-export interface IFieldGroupCursorParams extends ICursorPaginateParams {}
-export interface IFieldGroupOffsetParams extends IOffsetPaginateParams {}
+export type IFieldGroupCursorParams = ICursorPaginateParams;
+export type IFieldGroupOffsetParams = IOffsetPaginateParams;

@@ -29,7 +29,7 @@ export const loadCommentClass = (models: IModels, subdomain: string) => {
       return comment;
     }
 
-    public static async createComment(doc: ICPCommentDocument) {
+    public static async createComment(doc: ICPComment) {
       const comment = await models.CPComments.create({
         ...doc,
         createdAt: new Date(),

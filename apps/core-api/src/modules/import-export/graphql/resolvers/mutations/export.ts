@@ -1,4 +1,8 @@
 import { sendWorkerQueue } from 'erxes-api-shared/utils';
+import {
+  MutationExportStartArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import {
   splitType,
@@ -6,6 +10,7 @@ import {
 } from 'erxes-api-shared/core-modules';
 import { validateExportConfig } from '~/modules/import-export/utils/validateConfig';
 import { getRequiredImportExportPermissions } from '~/modules/import-export/utils/getRequiredPermissions';
+import { IExportDocument } from '~/modules/import-export/db/models/Exports';
 
 async function getJobIdFromQueue(
   subdomain: string,
@@ -20,20 +25,10 @@ async function getJobIdFromQueue(
   return job ? String(job.id) : null;
 }
 
-export const exportMutations = {
+export const exportMutations: MutationResolvers<IContext> = {
   async exportStart(
-    _root: undefined,
-    {
-      entityType,
-      filters,
-      ids,
-      selectedFields,
-    }: {
-      entityType: string;
-      filters?: Record<string, any>;
-      ids?: string[];
-      selectedFields?: string[];
-    },
+    _root: unknown,
+    { entityType, filters, ids, selectedFields }: MutationExportStartArgs,
     { models, subdomain, user, checkPermission }: IContext,
   ) {
     const [pluginName, moduleName, collectionName] = splitType(entityType);
@@ -64,8 +59,8 @@ export const exportMutations = {
       fileName,
       status: 'pending',
       filters: filters || {},
-      ids: ids || [],
-      selectedFields: selectedFields || [],
+      ids: (ids || []) as string[],
+      selectedFields: (selectedFields || []) as string[],
       userId: user._id,
       subdomain,
     });
@@ -91,11 +86,11 @@ export const exportMutations = {
       { $set: { jobId: String(job.id) } },
     );
 
-    return { ...exportDoc, jobId: String(job.id) };
+    return { ...exportDoc, jobId: String(job.id) } as unknown as IExportDocument;
   },
 
   async exportCancel(
-    _root: undefined,
+    _root: unknown,
     { exportId }: { exportId: string },
     { models, subdomain, user, checkPermission }: IContext,
   ) {
@@ -139,11 +134,13 @@ export const exportMutations = {
       },
     );
 
-    return models.Exports.getExport(exportId);
+    return models.Exports.getExport(
+      exportId,
+    ) as Promise<IExportDocument>;
   },
 
   async exportRetry(
-    _root: undefined,
+    _root: unknown,
     { exportId }: { exportId: string },
     { models, subdomain, user, checkPermission }: IContext,
   ) {
@@ -199,6 +196,8 @@ export const exportMutations = {
       { $set: { jobId: String(job.id) } },
     );
 
-    return models.Exports.getExport(exportId);
+    return models.Exports.getExport(
+      exportId,
+    ) as Promise<IExportDocument>;
   },
 };

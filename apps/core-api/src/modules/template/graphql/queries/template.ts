@@ -1,5 +1,6 @@
 import { cursorPaginate } from 'erxes-api-shared/utils';
 import { FilterQuery } from 'mongoose';
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { ITemplateDocument, ITemplateParams } from '../../@types';
 
@@ -20,15 +21,15 @@ const generateFilter = async (params: ITemplateParams) => {
   }
 
   if (categoryIds?.length) {
-    filter.categoryIds = { $in: categoryIds };
+    filter.categoryIds = { $in: categoryIds as string[] };
   }
 
   if (contentType?.length) {
-    filter.contentType = { $in: contentType };
+    filter.contentType = { $in: contentType as string[] };
   }
 
   if (contentType?.length) {
-    filter.contentType = { $in: contentType };
+    filter.contentType = { $in: contentType as string[] };
   }
 
   if (createdBy) {
@@ -66,9 +67,9 @@ const generateFilter = async (params: ITemplateParams) => {
   return filter;
 };
 
-const templateQueries = {
+const templateQueries: QueryResolvers<IContext> = {
   templateList: async (
-    _root: undefined,
+    _root: unknown,
     params: ITemplateParams,
     { models }: IContext,
   ) => {
@@ -76,13 +77,18 @@ const templateQueries = {
 
     return await cursorPaginate({
       model: models.Template,
-      params: { ...params, orderBy: { createdAt: -1 } },
+      params: {
+        limit: params.limit ?? undefined,
+        cursor: params.cursor ?? undefined,
+        direction: params.direction ?? undefined,
+        orderBy: { createdAt: -1 },
+      },
       query: filter,
     });
   },
 
   templateDetail: async (
-    _root: undefined,
+    _root: unknown,
     { _id }: { _id: string },
     { models }: IContext,
   ) => {

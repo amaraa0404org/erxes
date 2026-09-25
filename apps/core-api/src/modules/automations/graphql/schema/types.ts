@@ -1,6 +1,6 @@
 const commonNodeTypes = `
-  id: String
-  type: String
+  id: String!
+  type: String!
   style: JSON
   config: JSON
   icon: String
@@ -23,8 +23,8 @@ const commonActionTypes = `
 `;
 
 const noteTypes = `
-  id: String
-  content: String
+  id: String!
+  content: String!
   position: JSON
   width: Float
   height: Float
@@ -32,16 +32,16 @@ const noteTypes = `
 `;
 
 const workflowTypes = `
-  id:String
-  automationId:String
-  templateId:String
-  nextActionId:String
-  name:String
-  description:String
-  config:JSON
-  actions: [JSON]
+  id: String!
+  automationId: String
+  templateId: String
+  nextActionId: String
+  name: String!
+  description: String
+  config: JSON
+  actions: [JSON!]
   icon: String
-  position:JSON
+  position: JSON
 `;
 
 const types = `
@@ -61,22 +61,22 @@ const types = `
 
   type Automation {
     _id: String!
-    name: String
-    status: String
+    name: String!
+    status: String!
     edgeType: String
     flowDirection: String
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
     createdBy: String
     updatedBy: String
     ownerId: String
     activatedBy: String
     activatedAt: Date
-    tagIds:[String]
-    triggers: [Trigger]
-    actions: [Action]
-    workflows: [Workflow]
-    notes: [AutomationNote]
+    tagIds:[String!]!
+    triggers: [Trigger!]!
+    actions: [Action!]!
+    workflows: [Workflow!]!
+    notes: [AutomationNote!]!
     ownedBy: String
     ownerContentId: String
 
@@ -86,7 +86,7 @@ const types = `
     createdUser: User
     updatedUser: User
     ownerUser: User
-    approvalLockState(action: String): ApprovalLockState
+    approvalLockState(action: String): ApprovalLockState!
 
   }
 
@@ -95,9 +95,9 @@ const types = `
   }
 
   type AutomationsListResponse {
-    list: [Automation],
-    totalCount: Float,
-    pageInfo: PageInfo
+    list: [Automation!]!
+    totalCount: Float!
+    pageInfo: PageInfo!
   }
 
   type automationsTotalCountResponse {
@@ -106,77 +106,77 @@ const types = `
   }
 
   type AutomationHistory {
-    _id: String
-    createdAt: Date
-    modifiedAt: Date
-    automationId: String
-    triggerId: String
+    _id: String!
+    createdAt: Date!
+    modifiedAt: Date!
+    automationId: String!
+    triggerId: String!
     triggerType: String
     triggerConfig: JSON
     nextActionId: String
-    targetId: String
+    targetId: String!
     target: JSON
-    status: String
-    description: String
-    actions: [JSON]
+    status: String!
+    description: String!
+    actions: [JSON!]!
     failedActionId: String
     failedActionType: String
     errorCode: String
-    handledFailureActionIds: [String]
+    handledFailureActionIds: [String!]!
     startWaitingDate: Date
     waitingActionId: String
     parentExecutionId: String
     workflowId: String
     inputs: JSON
-    depth: Int
+    depth: Int!
   }
 
   type AutomationHistories {
-    list:[AutomationHistory]
-    totalCount: Int
-    pageInfo: PageInfo
+    list:[AutomationHistory!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   type AutomationStatsCount {
-    key: String
-    count: Int
+    key: String!
+    count: Int!
   }
 
   type AutomationStatsBucket {
-    date: String
-    total: Int
-    complete: Int
-    error: Int
-    waiting: Int
+    date: String!
+    total: Int!
+    complete: Int!
+    error: Int!
+    waiting: Int!
   }
 
   type AutomationStatsNode {
-    actionId: String
+    actionId: String!
     actionType: String
-    total: Int
-    success: Int
-    error: Int
-    waiting: Int
+    total: Int!
+    success: Int!
+    error: Int!
+    waiting: Int!
     avgDurationMs: Float
     maxDurationMs: Float
-    errorCodes: [AutomationStatsCount]
+    errorCodes: [AutomationStatsCount!]!
   }
 
   type AutomationStatsErrorMessage {
     message: String
-    errorCode: String
-    actionTypes: [String]
-    count: Int
+    errorCode: String!
+    actionTypes: [String!]!
+    count: Int!
     lastAt: Date
   }
 
   type AutomationStats {
-    total: Int
-    byStatus: [AutomationStatsCount]
-    byErrorCode: [AutomationStatsCount]
-    timeSeries: [AutomationStatsBucket]
-    nodes: [AutomationStatsNode]
-    errorMessages: [AutomationStatsErrorMessage]
+    total: Int!
+    byStatus: [AutomationStatsCount!]!
+    byErrorCode: [AutomationStatsCount!]!
+    timeSeries: [AutomationStatsBucket!]!
+    nodes: [AutomationStatsNode!]!
+    errorMessages: [AutomationStatsErrorMessage!]!
   }
 
   input TriggerInput {
@@ -211,8 +211,8 @@ const types = `
     actions: JSON
     inputs: JSON
     createdBy: String
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 `;
 

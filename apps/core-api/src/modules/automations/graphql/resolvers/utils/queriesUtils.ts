@@ -1,6 +1,8 @@
 import {
   AUTOMATION_STATUSES,
   AutomationConstants,
+  IAutomation,
+  IAutomationExecution,
   IAutomationsActionConfig,
   IAutomationsTriggerConfig,
   TAutomationOutputDefinition,
@@ -14,7 +16,8 @@ import {
   splitType,
   TAutomationBuiltInTemplate,
 } from 'erxes-api-shared/core-modules';
-import { IListArgs, IStatsParams } from '../queries';
+import { FilterQuery } from 'mongoose';
+import { IHistoriesParams, IListArgs, IStatsParams } from '../queries';
 import { getPlugin, getPlugins } from 'erxes-api-shared/utils';
 import { CORE_AUTOMATION_CONSTANTS } from '~/meta/automations/constants';
 import { CORE_REFERENCE_TYPES } from '~/meta/references/referenceTypes';
@@ -57,7 +60,7 @@ export const generateAutomationsFilter = (params: IListArgs) => {
     tagIds,
     triggerTypes,
     ids,
-    excludeIds = [],
+    excludeIds,
     createdByIds,
     updatedByIds,
     actionTypes,
@@ -67,7 +70,7 @@ export const generateAutomationsFilter = (params: IListArgs) => {
     updatedAtTo,
   } = params;
 
-  const filter: any = {
+  const filter: Record<string, unknown> = {
     status: { $nin: [AUTOMATION_STATUSES.ARCHIVED, 'template'] },
     // Automations another module owns are driven from that module's own UI.
     ownedBy: { $exists: false },
@@ -96,7 +99,7 @@ export const generateAutomationsFilter = (params: IListArgs) => {
   if (ids?.length) {
     filter._id = { $in: ids };
   }
-  if (excludeIds.length) {
+  if (excludeIds?.length) {
     filter._id = { $nin: excludeIds };
   }
   if (createdByIds?.length) {
@@ -109,19 +112,27 @@ export const generateAutomationsFilter = (params: IListArgs) => {
     filter.createdAt = { $gte: createdAtFrom };
   }
   if (createdAtTo) {
-    filter.createdAt = { ...(filter.createdAt || {}), $lte: createdAtTo };
+    filter.createdAt = {
+      ...((filter.createdAt as Record<string, unknown>) || {}),
+      $lte: createdAtTo,
+    };
   }
   if (updatedAtFrom) {
     filter.updatedAt = { $gte: updatedAtFrom };
   }
   if (updatedAtTo) {
-    filter.updatedAt = { ...(filter.updatedAt || {}), $lte: updatedAtTo };
+    filter.updatedAt = {
+      ...((filter.updatedAt as Record<string, unknown>) || {}),
+      $lte: updatedAtTo,
+    };
   }
 
-  return filter;
+  return filter as FilterQuery<IAutomation>;
 };
 
-export const generateAutomationHistoriesFilter = (params: any) => {
+export const generateAutomationHistoriesFilter = (
+  params: IHistoriesParams,
+) => {
   const {
     automationId,
     triggerType,
@@ -132,7 +143,7 @@ export const generateAutomationHistoriesFilter = (params: any) => {
     targetId,
     targetIds,
   } = params;
-  const filter: any = { automationId };
+  const filter: Record<string, unknown> = { automationId };
 
   if (status) {
     filter.status = status;
@@ -182,7 +193,7 @@ export const generateAutomationHistoriesFilter = (params: any) => {
     filter.parentExecutionId = { $exists: false };
   }
 
-  return filter;
+  return filter as FilterQuery<IAutomationExecution>;
 };
 
 /**
@@ -195,17 +206,20 @@ export const generateAutomationStatsFilter = ({
   beginDate,
   endDate,
 }: IStatsParams) => {
-  const filter: any = { automationId };
+  const filter: Record<string, unknown> = { automationId };
 
   if (beginDate) {
     filter.createdAt = { $gte: beginDate };
   }
 
   if (endDate) {
-    filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
+    filter.createdAt = {
+      ...((filter.createdAt as Record<string, unknown>) || {}),
+      $lte: endDate,
+    };
   }
 
-  return filter;
+  return filter as FilterQuery<IAutomationExecution>;
 };
 
 export const getAutomationConstants =

@@ -1,23 +1,18 @@
-import { INotificationDocument } from 'erxes-api-shared/core-modules';
+import { NotificationResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
-export default {
-  __resolveReference({ _id }: INotificationDocument, { models }: IContext) {
+const notificationResolvers: NotificationResolvers<IContext> = {
+  __resolveReference({ _id }, { models }) {
     return models.Notifications.findOne({ _id });
   },
-  async fromUser(
-    { fromUserId }: INotificationDocument,
-    _: undefined,
-    { models }: IContext,
-  ) {
+
+  async fromUser({ fromUserId }, _args, { models }) {
     return await models.Users.findOne({ _id: fromUserId });
   },
 
-  async emailDelivery(
-    { _id }: INotificationDocument,
-    _: undefined,
-    { models }: IContext,
-  ) {
+  async emailDelivery({ _id }, _args, { models }) {
     return await models.EmailDeliveries.findOne({ notificationId: _id });
   },
 };
+
+export default notificationResolvers;

@@ -17,26 +17,26 @@ export const types = `
     contentJson: JSON
     contentFormat: String
     createdBy: String!
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
     createdUser: User
   }
 
   type EmailTemplatesListResponse {
-    list: [EmailTemplate]
-    totalCount: Float
-    pageInfo: PageInfo
+    list: [EmailTemplate!]!
+    totalCount: Float!
+    pageInfo: PageInfo!
   }
 `;
 
 export const queries = `
-  emailTemplates(searchValue: String, ${GQL_CURSOR_PARAM_DEFS}): EmailTemplatesListResponse
-  emailTemplateDetail(_id: String!): EmailTemplate
-  emailContentPreview(content: String, contentFormat: String, replacerId: String): String
+  emailTemplates(searchValue: String, ${GQL_CURSOR_PARAM_DEFS}): EmailTemplatesListResponse!
+  emailTemplateDetail(_id: String!): EmailTemplate!
+  emailContentPreview(content: String, contentFormat: String, replacerId: String): String!
 `;
 
 export const mutations = `
-  emailTemplateAdd(${templateFields}): EmailTemplate
+  emailTemplateAdd(${templateFields}): EmailTemplate!
   emailTemplateEdit(_id: String!, ${templateFields}): EmailTemplate
-  emailTemplateRemove(_id: String!): JSON
+  emailTemplateRemove(_id: String!): JSON!
 `;

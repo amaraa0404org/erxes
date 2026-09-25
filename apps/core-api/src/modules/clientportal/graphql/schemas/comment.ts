@@ -14,14 +14,14 @@ export const types = `
     parentId: String
     userId: String
     userType: CPCommentUserType
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type CPCommentListResponse {
-    list: [CPComment]
-    pageInfo: PageInfo
-    totalCount: Int
+    list: [CPComment!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
   }
 
   input CPCommentInput {
@@ -47,12 +47,12 @@ export const types = `
 `;
 
 export const queries = `
-  clientPortalComment(_id: String!): CPComment
-  clientPortalComments(filter: CPCommentFilter): CPCommentListResponse
+  clientPortalComment(_id: String!): CPComment!
+  clientPortalComments(filter: CPCommentFilter): CPCommentListResponse!
 `;
 
 export const mutations = `
-  clientPortalCommentAdd(comment: CPCommentInput!): CPComment
-  clientPortalCommentUpdate(_id: String!, comment: CPCommentUpdateInput!): CPComment
-  clientPortalCommentDelete(_id: String!): JSON
+  clientPortalCommentAdd(comment: CPCommentInput!): CPComment!
+  clientPortalCommentUpdate(_id: String!, comment: CPCommentUpdateInput!): CPComment!
+  clientPortalCommentDelete(_id: String!): JSON!
 `;

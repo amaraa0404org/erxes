@@ -1,11 +1,15 @@
 import { ApprovalLockState } from 'erxes-api-shared/core-modules';
+import {
+  DocumentResolvers,
+  ResolversTypes,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import {
   DOCUMENT_APPROVAL_CONTENT_TYPE,
   IDocumentDocument,
 } from '~/modules/documents/types';
 
-export default {
+const documentResolvers: DocumentResolvers<IContext> = {
   async __resolveReference(
     { _id }: { _id: string },
     { models, user, checkPermission }: IContext,
@@ -16,9 +20,12 @@ export default {
 
   approvalLockState(
     document: IDocumentDocument & { approvalLockState?: ApprovalLockState },
-    _args: undefined,
+    _args,
     { models, user }: IContext,
-  ): ApprovalLockState | Promise<ApprovalLockState> {
+  ) {
+    // The shared ApprovalLockState is a plain-object shape; the generated
+    // mapper type carries Mongoose documents for lock/pendingRequest. The
+    // GraphQL layer only serializes the declared fields.
     return (
       document.approvalLockState ||
       models.ApprovalLocks.getState({
@@ -28,14 +35,16 @@ export default {
         ownerId: document.createdUserId,
         action: 'view',
       })
-    );
+    ) as unknown as ResolversTypes['ApprovalLockState'];
   },
 
   async createdUser(
     document: IDocumentDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) {
     return models.Users.findOne({ _id: document.createdUserId });
   },
 };
+
+export default documentResolvers;

@@ -1,10 +1,11 @@
+import { TemplateCategoryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { ITemplateCategoryDocument } from '../../@types';
 
-export default {
+const templateCategoryResolvers: TemplateCategoryResolvers<IContext> = {
   templateCount: async (
     { _id }: ITemplateCategoryDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) => {
     return await models.Template.find({
@@ -16,7 +17,7 @@ export default {
   },
   parent: async (
     { parentId }: ITemplateCategoryDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) => {
     if (!parentId) {
@@ -33,7 +34,7 @@ export default {
   },
   createdBy: async (
     { createdBy }: ITemplateCategoryDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) => {
     if (!createdBy) {
@@ -50,7 +51,7 @@ export default {
   },
   updatedBy: async (
     { updatedBy }: ITemplateCategoryDocument,
-    _args: undefined,
+    _args,
     { models }: IContext,
   ) => {
     if (!updatedBy) {
@@ -66,3 +67,5 @@ export default {
     return user;
   },
 };
+
+export default templateCategoryResolvers;

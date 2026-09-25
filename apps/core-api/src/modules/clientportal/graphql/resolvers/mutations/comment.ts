@@ -1,5 +1,5 @@
 import { IContext } from '~/connectionResolvers';
-import { Resolver } from 'erxes-api-shared/core-types';
+import { MutationResolvers } from '~/__generated__/graphql';
 import { markResolvers } from 'erxes-api-shared/utils';
 import { ICPComment } from '@/clientportal/types/comment';
 import { AuthenticationError } from '@/clientportal/services/errorHandler';
@@ -25,7 +25,7 @@ interface DeleteCommentParams {
   _id: string;
 }
 
-export const commentMutations: Record<string, Resolver<any, any, IContext>> = {
+export const commentMutations: MutationResolvers<IContext> = {
   async clientPortalCommentAdd(
     _root: unknown,
     { comment }: CreateCommentParams,

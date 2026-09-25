@@ -3,7 +3,7 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 export const types = `
   type CPUser {
     _id: String!
-    type: String
+    type: String!
     email: String
     phone: String
     username: String
@@ -23,8 +23,8 @@ export const types = `
     isVerified: Boolean!
     isPhoneVerified: Boolean!
     isEmailVerified: Boolean!
-    fcmTokens: [FcmDevice]
-    socialAuthProviders: [SocialAuthProviderInfo]
+    fcmTokens: [FcmDevice!]!
+    socialAuthProviders: [SocialAuthProviderInfo!]!
     failedLoginAttempts: Int
     accountLockedUntil: Date
     lastLoginAt: Date
@@ -33,22 +33,22 @@ export const types = `
     otpResendLastAttempt: Date
     customer: Customer
     company: Company
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type VerificationRequest {
-    status: String
-    attachments: [Attachment]
+    status: String!
+    attachments: [Attachment!]!
     description: String
     verifiedBy: String
   }
 
 
   type ActionCode {
-    code: String
-    expires: Date
-    type: ActionCodeType
+    code: String!
+    expires: Date!
+    type: ActionCodeType!
   }
 
   enum ActionCodeType {
@@ -61,12 +61,12 @@ export const types = `
   }
 
   type RefreshToken {
-    token: String
+    token: String!
     deviceId: String
     userAgent: String
     ipAddress: String
-    createdAt: Date
-    expiresAt: Date
+    createdAt: Date!
+    expiresAt: Date!
   }
 
   enum CPUserType {
@@ -87,10 +87,10 @@ export const types = `
   }
 
   type SocialAuthProviderInfo {
-    provider: SocialAuthProvider
-    providerId: String
+    provider: SocialAuthProvider!
+    providerId: String!
     email: String
-    linkedAt: Date
+    linkedAt: Date!
   }
 
   enum FcmPlatform {
@@ -106,9 +106,9 @@ export const types = `
   }
 
   type CPUserListResponse {
-    list: [CPUser]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [CPUser!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   type CPUserRemoveResponse {
@@ -209,41 +209,41 @@ const cpUsersEditParams = `
 `;
 
 export const mutations = `
-  cpUsersAdd(${cpUsersAddParams}): CPUser
-  cpUsersEdit(${cpUsersEditParams}): CPUser
-  cpUsersRemove(ids: [String!]!): [String]
-  cpUsersSetPassword(_id: String!, newPassword: String!): CPUser
-  clientPortalUserRegister(${userRegisterParams}): CPUser
-  clientPortalUserEdit(${userEditParams}): CPUser
-  clientPortalCustomerEdit(${clientPortalCustomerEditParams}): Customer
-  clientPortalCompanyEdit(${clientPortalCompanyEditParams}): Company
-  clientPortalUserVerify(userId: String, code: String!, email: String, phone: String): CPUser
-  clientPortalUserLoginWithCredentials(email: String, phone: String, password: String): JSON
-  clientPortalLogout: String
-  clientPortalUserForgotPassword(identifier: String!): String
-  clientPortalUserResetPassword(token: String, identifier: String, code: String, newPassword: String!): JSON
-  clientPortalUserRequestOTP(identifier: String!): String
-  clientPortalUserLoginWithOTP(identifier: String!, otp: String!): JSON
-  clientPortalUserRegisterWithSocial(provider: SocialAuthProvider!, token: String!): CPUser
-  clientPortalUserLoginWithSocial(provider: SocialAuthProvider!, token: String!): String
-  clientPortalUserLinkSocialAccount(provider: SocialAuthProvider!, token: String!): CPUser
-  clientPortalUserUnlinkSocialAccount(provider: SocialAuthProvider!): CPUser
-  clientPortalUserRefreshToken(refreshToken: String!): String
-  clientPortalUserAddFcmToken(deviceId: String!, token: String!, platform: FcmPlatform!): CPUser
-  clientPortalUserRemoveFcmToken(deviceId: String!): CPUser
-  clientPortalUserRequestChangeEmail(newEmail: String!): String
-  clientPortalUserConfirmChangeEmail(code: String!): CPUser
-  clientPortalUserRequestChangePhone(newPhone: String!): String
-  clientPortalUserConfirmChangePhone(code: String!): CPUser
-  clientPortalUserDelete: CPUserRemoveResponse
-  clientPortalUserChangePassword(currentPassword: String!, newPassword: String!): CPUser
-  clientPortalUserLoginWithToki(token: String!): JSON
-  checkTokiUserLegalAge(token: String!): Boolean
+  cpUsersAdd(${cpUsersAddParams}): CPUser!
+  cpUsersEdit(${cpUsersEditParams}): CPUser!
+  cpUsersRemove(ids: [String!]!): [String!]!
+  cpUsersSetPassword(_id: String!, newPassword: String!): CPUser!
+  clientPortalUserRegister(${userRegisterParams}): CPUser!
+  clientPortalUserEdit(${userEditParams}): CPUser!
+  clientPortalCustomerEdit(${clientPortalCustomerEditParams}): Customer!
+  clientPortalCompanyEdit(${clientPortalCompanyEditParams}): Company!
+  clientPortalUserVerify(userId: String, code: String!, email: String, phone: String): CPUser!
+  clientPortalUserLoginWithCredentials(email: String, phone: String, password: String): JSON!
+  clientPortalLogout: String!
+  clientPortalUserForgotPassword(identifier: String!): String!
+  clientPortalUserResetPassword(token: String, identifier: String, code: String, newPassword: String!): JSON!
+  clientPortalUserRequestOTP(identifier: String!): String!
+  clientPortalUserLoginWithOTP(identifier: String!, otp: String!): JSON!
+  clientPortalUserRegisterWithSocial(provider: SocialAuthProvider!, token: String!): CPUser!
+  clientPortalUserLoginWithSocial(provider: SocialAuthProvider!, token: String!): String!
+  clientPortalUserLinkSocialAccount(provider: SocialAuthProvider!, token: String!): CPUser!
+  clientPortalUserUnlinkSocialAccount(provider: SocialAuthProvider!): CPUser!
+  clientPortalUserRefreshToken(refreshToken: String!): String!
+  clientPortalUserAddFcmToken(deviceId: String!, token: String!, platform: FcmPlatform!): CPUser!
+  clientPortalUserRemoveFcmToken(deviceId: String!): CPUser!
+  clientPortalUserRequestChangeEmail(newEmail: String!): String!
+  clientPortalUserConfirmChangeEmail(code: String!): CPUser!
+  clientPortalUserRequestChangePhone(newPhone: String!): String!
+  clientPortalUserConfirmChangePhone(code: String!): CPUser!
+  clientPortalUserDelete: CPUserRemoveResponse!
+  clientPortalUserChangePassword(currentPassword: String!, newPassword: String!): CPUser!
+  clientPortalUserLoginWithToki(token: String!): JSON!
+  checkTokiUserLegalAge(token: String!): Boolean!
 
 `;
 
 export const queries = `
   clientPortalCurrentUser: CPUser
-  getClientPortalUsers(filter: IClientPortalUserFilter): CPUserListResponse
+  getClientPortalUsers(filter: IClientPortalUserFilter): CPUserListResponse!
   getClientPortalUser(_id: String!): CPUser
 `;

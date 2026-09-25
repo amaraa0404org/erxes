@@ -1,25 +1,14 @@
-import { Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import { cursorPaginate, escapeRegExp } from 'erxes-api-shared/utils';
+import {
+  QueryGetClientPortalUsersArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
 import { SortOrder } from 'mongoose';
 import { IContext } from '~/connectionResolvers';
 import { ICPUserDocument } from '@/clientportal/types/cpUser';
-import { getTokiConnection } from '~/modules/clientportal/utils';
 
-interface IClientPortalUserFilterParams {
-  clientPortalId?: string;
-  searchValue?: string;
-  type?: 'customer' | 'company';
-  isVerified?: boolean;
-  limit?: number;
-  cursor?: string;
-  direction?: 'forward' | 'backward';
-  orderBy?: Record<string, number>;
-  cursorMode?: string;
-  sortMode?: string;
-  aggregationPipeline?: unknown[];
-}
-
-export const cpUserQueries: Record<string, Resolver<any, any, IContext>> = {
+export const cpUserQueries: QueryResolvers<IContext> = {
   async clientPortalCurrentUser(
     _root: unknown,
     _args: unknown,
@@ -34,7 +23,7 @@ export const cpUserQueries: Record<string, Resolver<any, any, IContext>> = {
 
   async getClientPortalUsers(
     _root: unknown,
-    args: { filter?: IClientPortalUserFilterParams },
+    args: QueryGetClientPortalUsersArgs,
     { models }: IContext,
   ) {
     const filter = args.filter || {};
@@ -68,13 +57,15 @@ export const cpUserQueries: Record<string, Resolver<any, any, IContext>> = {
     const orderBy: Record<string, SortOrder> = (filter.orderBy as Record<
       string,
       SortOrder
-    >) || { createdAt: -1 };
+    > | null | undefined) || { createdAt: -1 };
 
     const { list, totalCount, pageInfo } =
       await cursorPaginate<ICPUserDocument>({
         model: models.CPUser,
         params: {
-          ...filter,
+          limit: filter.limit ?? undefined,
+          cursor: filter.cursor ?? undefined,
+          direction: filter.direction ?? undefined,
           orderBy,
         },
         query,
@@ -92,6 +83,6 @@ export const cpUserQueries: Record<string, Resolver<any, any, IContext>> = {
   },
 };
 
-cpUserQueries.clientPortalCurrentUser.wrapperConfig = {
+(cpUserQueries.clientPortalCurrentUser as AnyResolver).wrapperConfig = {
   forClientPortal: true,
 };

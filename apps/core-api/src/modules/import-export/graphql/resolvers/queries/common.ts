@@ -1,10 +1,19 @@
+import { QueryResolvers } from '~/__generated__/graphql';
+import { IContext } from '~/connectionResolvers';
 import { getImportExportTypes } from '~/modules/import-export/utils/getImportExportTypes';
 
-export const importExportCommonQueries = {
+export const importExportCommonQueries: QueryResolvers<IContext> = {
   async importExportTypes(
-    _root: undefined,
+    _root: unknown,
     { operation }: { operation: 'IMPORT' | 'EXPORT' },
   ) {
-    return getImportExportTypes(operation.toLowerCase() as 'import' | 'export');
+    const types = await getImportExportTypes(
+      operation.toLowerCase() as 'import' | 'export',
+    );
+
+    return types.map((type) => ({
+      ...type,
+      permissions: type.permissions ?? [],
+    }));
   },
 };

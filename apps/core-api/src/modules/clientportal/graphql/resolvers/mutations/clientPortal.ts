@@ -1,14 +1,15 @@
+import {
+  MutationClientPortalAddArgs,
+  MutationClientPortalUpdateArgs,
+  MutationResolvers,
+} from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 import { IClientPortal } from '@/clientportal/types/clientPortal';
-import { Resolver } from 'erxes-api-shared/core-types';
 
- export const clientPortalMutations: Record<
-   string,
-   Resolver<any, any, IContext>
- > = {
+export const clientPortalMutations: MutationResolvers<IContext> = {
   async clientPortalAdd(
     _root: unknown,
-    { name }: { name: string },
+    { name }: MutationClientPortalAddArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('clientPortalManage');
@@ -17,12 +18,16 @@ import { Resolver } from 'erxes-api-shared/core-types';
   },
   async clientPortalUpdate(
     _root: unknown,
-    { _id, clientPortal }: { _id: string; clientPortal: IClientPortal },
+    { _id, clientPortal }: MutationClientPortalUpdateArgs,
     { models, checkPermission }: IContext,
   ) {
     await checkPermission('clientPortalManage');
 
-    return models.ClientPortal.updateClientPortal(_id, clientPortal);
+    await models.ClientPortal.updateClientPortal(
+      _id,
+      clientPortal as IClientPortal,
+    );
+    return null;
   },
 
   async clientPortalDelete(
@@ -32,7 +37,9 @@ import { Resolver } from 'erxes-api-shared/core-types';
   ) {
     await checkPermission('clientPortalManage');
 
-    return models.ClientPortal.findOneAndDelete({ _id });
+    const deleted = await models.ClientPortal.findOneAndDelete({ _id });
+
+    return deleted as unknown as Record<string, unknown> | null;
   },
 
   async clientPortalChangeToken(

@@ -1,9 +1,9 @@
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { exportSchema } from '../definitions/export';
 import { IModels } from '~/connectionResolvers';
 import { EventDispatcherReturn } from 'erxes-api-shared/core-modules';
 
-export interface IExportDocument {
+export interface IExportDocument extends Document {
   _id: string;
   entityType: string;
   pluginName: string;
@@ -25,7 +25,7 @@ export interface IExportDocument {
     retryable?: boolean;
   };
   fileKey?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   ids: string[];
   selectedFields?: string[];
   startedAt?: Date;
@@ -117,8 +117,8 @@ export const loadExportClass = (
         lastCursor?: string;
       },
     ) {
-      const update: Record<string, any> = {};
-      const unset: Record<string, any> = {};
+      const update: Record<string, unknown> = {};
+      const unset: Record<string, unknown> = {};
 
       if (progress.processedRows !== undefined) {
         update.processedRows = progress.processedRows;

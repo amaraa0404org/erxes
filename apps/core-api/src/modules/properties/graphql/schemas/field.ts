@@ -3,8 +3,8 @@ import { GQL_CURSOR_PARAM_DEFS } from 'erxes-api-shared/utils';
 export const types = `
 
     type FieldOption {
-        label: String
-        value: String
+        label: String!
+        value: String!
         coordinates: JSON
     }
 
@@ -15,29 +15,29 @@ export const types = `
     }
 
     type Field {
-        _id: String
-        name: String
-        code: String
-        type: String
+        _id: String!
+        name: String!
+        code: String!
+        type: String!
         order: Float
-        groupId: String
-        options: [FieldOption]
+        groupId: String!
+        options: [FieldOption!]
         validations: JSON
         logics: JSON
         configs: JSON
         icon: String
-        isVisible: Boolean
-        isVisibleToCreate: Boolean
-        isRequired: Boolean
-        isVisibleInCard: Boolean
-        createdAt: Date
-        updatedAt: Date
+        isVisible: Boolean!
+        isVisibleToCreate: Boolean!
+        isRequired: Boolean!
+        isVisibleInCard: Boolean!
+        createdAt: Date!
+        updatedAt: Date!
     }
 
     type FieldListResponse {
-        list: [Field]
-        pageInfo: PageInfo
-        totalCount: Int
+        list: [Field!]!
+        pageInfo: PageInfo!
+        totalCount: Int!
     }
 
     input FieldsParams {
@@ -58,11 +58,11 @@ export const types = `
 `;
 
 export const queries = `
-    fields(params: FieldsParams): FieldListResponse
-    fieldDetail(_id: String!): Field
+    fields(params: FieldsParams): FieldListResponse!
+    fieldDetail(_id: String!): Field!
 
-    cpFields(params: CpFieldsParams): [Field]
-    cpFieldDetail(_id: String!): Field
+    cpFields(params: CpFieldsParams): [Field!]!
+    cpFieldDetail(_id: String!): Field!
 `;
 
 const mutationParams = `
@@ -85,7 +85,7 @@ const mutationParams = `
 `;
 
 export const mutations = `
-    fieldAdd(${mutationParams}): Field
+    fieldAdd(${mutationParams}): Field!
     fieldEdit(_id: String!, order: Float, ${mutationParams}): Field
     fieldRemove(_id: String!): Field
 `;

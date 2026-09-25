@@ -30,9 +30,9 @@ export const types = `
   }
 
   type CPNotificationListResponse {
-    list: [CPNotification]
-    totalCount: Int
-    pageInfo: PageInfo
+    list: [CPNotification!]!
+    totalCount: Int!
+    pageInfo: PageInfo!
   }
 
   enum CPNotificationPriority {
@@ -89,16 +89,16 @@ const CP_NOTIFICATIONS_QUERIES_PARAMS = `
 `;
 
 export const queries = `
-    clientPortalNotifications(${CP_NOTIFICATIONS_QUERIES_PARAMS}, clientPortalId: String): CPNotificationListResponse
-    getClientPortalNotificationsByCpUserId(cpUserId: String!, ${CP_NOTIFICATIONS_QUERIES_PARAMS}, clientPortalId: String): CPNotificationListResponse
-    clientPortalNotificationDetail(_id: String!): CPNotification
-    clientPortalUnreadNotificationCount(clientPortalId: String): Int
+    clientPortalNotifications(${CP_NOTIFICATIONS_QUERIES_PARAMS}, clientPortalId: String): CPNotificationListResponse!
+    getClientPortalNotificationsByCpUserId(cpUserId: String!, ${CP_NOTIFICATIONS_QUERIES_PARAMS}, clientPortalId: String): CPNotificationListResponse!
+    clientPortalNotificationDetail(_id: String!): CPNotification!
+    clientPortalUnreadNotificationCount(clientPortalId: String): Int!
 `;
 
 export const mutations = `
-    clientPortalMarkNotificationAsRead(_id: String!): JSON
-    clientPortalMarkAllNotificationsAsRead(clientPortalId: String): JSON
-    clientPortalSendNotification(cpUserId: String!, clientPortalId: String!, input: CPNotificationSendInput!): CPNotification
+    clientPortalMarkNotificationAsRead(_id: String!): JSON!
+    clientPortalMarkAllNotificationsAsRead(clientPortalId: String): JSON!
+    clientPortalSendNotification(cpUserId: String!, clientPortalId: String!, input: CPNotificationSendInput!): CPNotification!
 `;
 
 export default { queries, mutations, types };

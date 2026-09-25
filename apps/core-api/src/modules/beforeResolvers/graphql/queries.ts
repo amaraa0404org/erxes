@@ -1,4 +1,5 @@
 import { checkBeforeResolvers } from 'erxes-api-shared/utils';
+import { QueryResolvers } from '~/__generated__/graphql';
 import { IContext } from '~/connectionResolvers';
 
 type TBeforeResolverAvailableArgs = {
@@ -6,9 +7,9 @@ type TBeforeResolverAvailableArgs = {
   args?: Record<string, unknown> | null;
 };
 
-export const beforeResolverQueries = {
+export const beforeResolverQueries: QueryResolvers<IContext> = {
   async beforeResolverAvailable(
-    _root: undefined,
+    _root: unknown,
     { resolver, args }: TBeforeResolverAvailableArgs,
     { subdomain, user, req, requestInfo }: IContext,
   ) {

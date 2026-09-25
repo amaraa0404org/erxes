@@ -10,6 +10,7 @@ import {
 import {
   QueryPermissionGroupDetailArgs,
   QueryResolvers,
+  ResolversTypes,
 } from '~/__generated__/graphql';
 
 interface IMergedPermission {
@@ -58,7 +59,10 @@ const getPermissionsConfig = (config: {
 
 export const permissionQueries: QueryResolvers<IContext> = {
   async permissionModules() {
-    const grouped: { plugin: string; modules: IPermissionModule[] }[] = [];
+    const grouped: {
+      plugin: string;
+      modules: (IPermissionModule & { plugin: string })[];
+    }[] = [];
     const services = await getPlugins();
 
     for (const name of services) {
@@ -77,7 +81,7 @@ export const permissionQueries: QueryResolvers<IContext> = {
   },
 
   async permissionDefaultGroups() {
-    const groups: IDefaultPermissionGroup[] = [];
+    const groups: (IDefaultPermissionGroup & { plugin: string })[] = [];
     const services = await getPlugins();
 
     for (const name of services) {
@@ -90,7 +94,8 @@ export const permissionQueries: QueryResolvers<IContext> = {
       }
     }
 
-    return groups;
+    // `members` is filled in by the DefaultPermissionGroup field resolver.
+    return groups as unknown as ResolversTypes['DefaultPermissionGroup'][];
   },
 
   async permissionGroups(_root, _args: {}, { models }: IContext) {

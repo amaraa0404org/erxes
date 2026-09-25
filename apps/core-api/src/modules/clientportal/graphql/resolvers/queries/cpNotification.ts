@@ -1,23 +1,19 @@
-import { Resolver } from 'erxes-api-shared/core-types';
+import { AnyResolver } from 'erxes-api-shared/core-types';
 import { IContext } from '~/connectionResolvers';
 import { cursorPaginate } from 'erxes-api-shared/utils';
-import { ICPNotificationDocument } from '@/clientportal/types/cpNotification';
+import { FilterQuery } from 'mongoose';
 import {
-  buildCPNotificationQuery,
-  CPNotificationFilterParams,
-} from '@/clientportal/services/helpers/queryBuilders';
+  QueryClientPortalNotificationsArgs,
+  QueryGetClientPortalNotificationsByCpUserIdArgs,
+  QueryResolvers,
+} from '~/__generated__/graphql';
+import { ICPNotificationDocument } from '@/clientportal/types/cpNotification';
+import { buildCPNotificationQuery } from '@/clientportal/services/helpers/queryBuilders';
 
-export const cpNotificationQueries: Record<
-  string,
-  Resolver<any, any, IContext>
-> = {
+export const cpNotificationQueries: QueryResolvers<IContext> = {
   async getClientPortalNotificationsByCpUserId(
     _root: unknown,
-    params: {
-      cpUserId: string;
-      cursor?: string;
-      limit?: number;
-    } & CPNotificationFilterParams,
+    params: QueryGetClientPortalNotificationsByCpUserIdArgs,
     { models }: IContext,
   ) {
     const query = buildCPNotificationQuery(
@@ -29,7 +25,9 @@ export const cpNotificationQueries: Record<
       await cursorPaginate<ICPNotificationDocument>({
         model: models.CPNotifications,
         params: {
-          ...params,
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
           orderBy: { createdAt: -1 },
         },
         query,
@@ -40,10 +38,7 @@ export const cpNotificationQueries: Record<
 
   async clientPortalNotifications(
     _root: unknown,
-    params: {
-      cursor?: string;
-      limit?: number;
-    } & CPNotificationFilterParams,
+    params: QueryClientPortalNotificationsArgs,
     { models, cpUser }: IContext,
   ) {
     if (!cpUser) {
@@ -56,7 +51,9 @@ export const cpNotificationQueries: Record<
       await cursorPaginate<ICPNotificationDocument>({
         model: models.CPNotifications,
         params: {
-          ...params,
+          limit: params.limit ?? undefined,
+          cursor: params.cursor ?? undefined,
+          direction: params.direction ?? undefined,
           orderBy: { createdAt: -1 },
         },
         query,
@@ -95,7 +92,7 @@ export const cpNotificationQueries: Record<
       throw new Error('User is not logged in');
     }
 
-    const query: any = {
+    const query: FilterQuery<ICPNotificationDocument> = {
       cpUserId: cpUser._id,
       isRead: false,
     };
@@ -108,14 +105,19 @@ export const cpNotificationQueries: Record<
   },
 };
 
-cpNotificationQueries.clientPortalNotifications.wrapperConfig = {
+(cpNotificationQueries.clientPortalNotifications as AnyResolver).wrapperConfig =
+  {
+    forClientPortal: true,
+  };
+
+(
+  cpNotificationQueries.clientPortalNotificationDetail as AnyResolver
+).wrapperConfig = {
   forClientPortal: true,
 };
 
-cpNotificationQueries.clientPortalNotificationDetail.wrapperConfig = {
-  forClientPortal: true,
-};
-
-cpNotificationQueries.clientPortalUnreadNotificationCount.wrapperConfig = {
+(
+  cpNotificationQueries.clientPortalUnreadNotificationCount as AnyResolver
+).wrapperConfig = {
   forClientPortal: true,
 };
