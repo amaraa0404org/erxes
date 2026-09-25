@@ -7,7 +7,6 @@ import {
   Separator,
   ScrollArea,
   SkeletonArray,
-  useQueryState,
   fixNum,
 } from 'erxes-ui';
 import { useState } from 'react';
@@ -268,7 +267,6 @@ const ProductsList = ({
   const [debouncedSearch] = useDebounce(search, 500);
   const [companyId, setCompanyId] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [pipelineId] = useQueryState<string>('pipelineId');
 
   const { products, handleFetchMore, totalCount, loading, fetchingMore } =
     useProducts({
@@ -277,7 +275,6 @@ const ProductsList = ({
         searchValue: debouncedSearch,
         vendorId: companyId || undefined,
         categoryIds: categoryId ? [categoryId] : undefined,
-        pipelineId: pipelineId || undefined,
       },
     });
 
@@ -307,13 +304,9 @@ const ProductsList = ({
   ).length;
   const availableTotalCount = Math.max(totalCount - selectedResultCount, 0);
 
-  // with a pipeline the server already orders its initial categories first,
-  // so re-sorting here would scatter them back into the rest of the list
-  const availableProducts = pipelineId
-    ? unselectedProducts
-    : [...unselectedProducts].sort(
-        (a, b) => (b.remainder?.remainder ?? 0) - (a.remainder?.remainder ?? 0),
-      );
+  const availableProducts = [...unselectedProducts].sort(
+    (a, b) => (b.remainder?.remainder ?? 0) - (a.remainder?.remainder ?? 0),
+  );
 
   return (
     <div className="flex overflow-hidden flex-col border-r">

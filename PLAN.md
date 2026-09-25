@@ -447,7 +447,7 @@ over.
   - `'sales:deal'` in `documents/constants.ts`;
   - the legacy `tickets:ticket` map in `useManagePropertySidebarContent.ts`;
   - `.sales-description` in `styles.css`.
-- [ ] 3.5 ui-modules: remove `pipelineId` from the products queries and
+- [x] 3.5 ui-modules: remove `pipelineId` from the products queries and
   `SelectProductsBulk`. The `sales` module, the loyalty hook in `payments` and
   `useCompanyNameByRegister` are removed in Milestone 4, after extraction.
   Confirm now that core-ui does not import them. If it does, stop and record
@@ -633,6 +633,9 @@ _Append one line per removed or changed core contract:
 - 3.4 `useManagePropertySidebarContent` drops the legacy `tickets:ticket` →
   `frontline:tickets.tickets` source-type remap — owner: frontline
 - 3.4 `styles.css` drops the `.sales-description .bn-editor` rule —
+  owner: sales
+- 3.5 products queries (`SelectProduct` / `productsMain`) drop `pipelineId`;
+  `SelectProductsBulk` no longer reads the `pipelineId` query param —
   owner: sales
 - 3.2 import template `frontline:ticket.ticket` removed from
   `importTemplates` — owner: frontline
