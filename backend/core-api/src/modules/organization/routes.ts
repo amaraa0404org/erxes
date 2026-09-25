@@ -1,4 +1,5 @@
 import {
+  getAvailablePlugins,
   getEnv,
   getPlugin,
   getSaasOrganizationDetail,
@@ -8,7 +9,6 @@ import { Request, Response, Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { generateModels } from '~/connectionResolvers';
 import { handleCoreLogin, magiclinkCallback, ssocallback } from '~/utils/saas';
-import { IOrganizationCharge } from './types';
 
 // Rate limiter for /ml-callback route: max 100 requests per 15 minutes per IP
 const callbackLimiter = rateLimit({
@@ -64,80 +64,43 @@ router.get('/initial-setup', async (req: Request, res: Response) => {
   return res.json(organizationInfo);
 });
 
-router.get('/get-frontend-plugins', async (_req: Request, res: Response) => {
-  const ENABLED_PLUGINS = getEnv({ name: 'ENABLED_PLUGINS' });
-  const VERSION = getEnv({ name: 'VERSION', defaultValue: 'os' });
+router.get('/get-frontend-plugins', async (req: Request, res: Response) => {
+  const subdomain = getSubdomain(req);
 
-  const getPluginVersion = async (pluginName: string): Promise<string> => {
-    try {
-      const pluginInfo = await getPlugin(pluginName);
-      return pluginInfo?.config?.releaseVersion || 'latest';
-    } catch {
-      return 'latest';
-    }
-  };
+  // OS mode: every live plugin. SaaS mode: organization charges
+  // intersected with live plugins (handled inside getAvailablePlugins).
+  const plugins = await getAvailablePlugins(subdomain);
 
   // Module-federation container names cannot contain dashes — Nx builds
-  // "erxes-agent_ui" as global `erxes_agent_ui` — so the runtime remote name
-  // must use underscores while the CDN path keeps the plugin's real name.
+  // "erxes-agent_ui" as global `erxes_agent_ui` — so the runtime remote
+  // name must use underscores while the plugin keeps its real name.
   const remoteName = (pluginName: string): string =>
     `${pluginName.replace(/-/g, '_')}_ui`;
 
-  if (VERSION === 'saas') {
-    const remotes: { name: string; entry: string }[] = [];
-    const subdomain = getSubdomain(_req);
+  const remotes: { name: string; entry: string }[] = [];
 
-    const organizationInfo = await getSaasOrganizationDetail({
-      subdomain,
-    });
-
-    const charges = organizationInfo.charge as IOrganizationCharge;
-
-    const enabledPluginsArray = ENABLED_PLUGINS.split(',');
-
-    for (const key of Object.keys(charges)) {
-      if (
-        (charges[key].purchased && charges[key].purchased > 0) ||
-        (charges[key].free && charges[key].free > 0)
-      ) {
-        const pluginName = key.split(':')[0];
-
-        if (enabledPluginsArray.includes(pluginName)) {
-          const version = await getPluginVersion(pluginName);
-          remotes.push({
-            name: remoteName(pluginName),
-            entry: `https://plugins.erxes.io/${version}/${pluginName}_ui/remoteEntry.js`,
-          });
-        }
-      }
+  for (const pluginName of plugins) {
+    if (pluginName === 'core') {
+      continue;
     }
 
-    const hasAgentUi = remotes.some((remote) => remote.name === 'agent_ui');
+    let entry: string | undefined;
 
-    if (!hasAgentUi) {
-      const agentVersion = await getPluginVersion('agent');
-      remotes.push({
-        name: 'agent_ui',
-        entry: `https://plugins.erxes.io/${agentVersion}/agent_ui/remoteEntry.js`,
-      });
+    try {
+      const plugin = await getPlugin(pluginName);
+      entry = plugin?.config?.uiRemoteEntry;
+    } catch {
+      entry = undefined;
     }
 
-    return res.json(remotes);
-  } else {
-    const remotes: { name: string; entry: string }[] = [];
-
-    if (ENABLED_PLUGINS) {
-      for (const plugin of ENABLED_PLUGINS.split(',')) {
-        const version = await getPluginVersion(plugin);
-        remotes.push({
-          name: remoteName(plugin),
-          entry: `https://plugins.erxes.io/${version}/${plugin}_ui/remoteEntry.js`,
-        });
-      }
+    if (!entry) {
+      continue;
     }
 
-    return res.json(remotes);
+    remotes.push({ name: remoteName(pluginName), entry });
   }
+
+  return res.json(remotes);
 });
 
 router.get('/sso-callback', callbackLimiter, ssocallback);

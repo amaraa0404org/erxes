@@ -396,7 +396,7 @@ test.
 
 ### Milestone 2: Frontend runtime remotes (D2)
 
-- [ ] 2.1 core-api `GET /get-frontend-plugins` per D2.
+- [x] 2.1 core-api `GET /get-frontend-plugins` per D2.
 - [ ] 2.2 core-ui:
   - `init()` in every environment; delete the static remotes and the
     `ENABLED_PLUGINS` define;
@@ -594,6 +594,10 @@ _Append one line per removed or changed core contract:
 - 1.3 `ENABLED_PLUGINS` / `ENABLED_PLUGINS_ONLY_API` no longer feed service
   discovery; `getPlugins()` returns `['core', ...alive members of
   erxes:plugins]` — owner: core
+- 2.1 `GET /get-frontend-plugins` builds the remote list from
+  `getAvailablePlugins(subdomain)` and uses each plugin manifest's
+  `uiRemoteEntry` as `entry`; the `plugins.erxes.io` CDN URL construction
+  and the SaaS `agent_ui` append are gone — owner: core/plugins
 
 ## Open issues
 
