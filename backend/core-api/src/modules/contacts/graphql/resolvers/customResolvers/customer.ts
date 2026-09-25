@@ -1,5 +1,4 @@
 import { ICustomerDocument } from 'erxes-api-shared/core-types';
-import { sendTRPCMessage } from 'erxes-api-shared/utils';
 import { IContext } from '~/connectionResolvers';
 
 export default {
@@ -13,23 +12,6 @@ export default {
       return null;
     }
     return { __typename: 'Integration', _id: customer.integrationId };
-  },
-
-  conversations: async (
-    customer: ICustomerDocument,
-    _params: undefined,
-    { subdomain }: IContext,
-  ) => {
-    return await sendTRPCMessage({
-      subdomain,
-
-      pluginName: 'frontline',
-      method: 'query',
-      module: 'inbox',
-      action: 'getConversations',
-      input: { query: { customerId: customer._id } },
-      defaultValue: [],
-    });
   },
 
   companies: async (

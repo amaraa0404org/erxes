@@ -1,5 +1,4 @@
 import { IProductDocument } from 'erxes-api-shared/core-types';
-import { sendTRPCMessage } from 'erxes-api-shared/utils';
 import { PRODUCT_SIMILARITY_STATUSES } from '@/products/constants';
 import { IContext } from '~/connectionResolvers';
 import { IProductParams } from '~/modules/products/@types';
@@ -15,61 +14,6 @@ type ProductDiscount = {
 };
 
 const inventoryKey = (id?: string) => id || '_';
-
-type PipelineInventoryScope = {
-  branchIds?: string[];
-  departmentIds?: string[];
-  initialCategoryIds?: string[];
-  excludeCategoryIds?: string[];
-  excludeProductIds?: string[];
-};
-
-const pipelineInventoryScopeByRequest = new WeakMap<
-  IContext,
-  Map<string, Promise<PipelineInventoryScope>>
->();
-
-export const getPipelineInventoryScope = (
-  context: IContext,
-  pipelineId: string,
-) => {
-  const { subdomain } = context;
-  const cacheKey = `${subdomain}:${pipelineId}`;
-  let requestCache = pipelineInventoryScopeByRequest.get(context);
-
-  if (!requestCache) {
-    requestCache = new Map();
-    pipelineInventoryScopeByRequest.set(context, requestCache);
-  }
-
-  const cachedScope = requestCache.get(cacheKey);
-
-  if (cachedScope) {
-    return cachedScope;
-  }
-
-  const scope = sendTRPCMessage({
-    subdomain,
-    pluginName: 'sales',
-    module: 'pipeline',
-    action: 'findOne',
-    input: {
-      query: { _id: pipelineId },
-      fields: {
-        branchIds: 1,
-        departmentIds: 1,
-        initialCategoryIds: 1,
-        excludeCategoryIds: 1,
-        excludeProductIds: 1,
-      },
-    },
-    defaultValue: {},
-  });
-
-  requestCache.set(cacheKey, scope);
-
-  return scope;
-};
 
 const compactDiscountConditions = (conditions: DiscountConditions = {}) =>
   Object.entries(conditions).reduce<DiscountConditions>(
@@ -91,7 +35,6 @@ const getDiscountConditions = (
     ...params.discountConditions,
     branchId: params.branchId,
     departmentId: params.departmentId,
-    pipelineId: params.pipelineId,
   });
 
 const isRangeCondition = (
@@ -207,11 +150,11 @@ export default {
   remainder: async (
     product: IProductDocument,
     _args: undefined,
-    context: IContext,
+    _context: IContext,
     info: any,
   ) => {
-    const { branchId, departmentId, pipelineId } = info?.variableValues || {};
-    let { branchIds, departmentIds } = info?.variableValues || {};
+    const { branchId, departmentId } = info?.variableValues || {};
+    const { branchIds, departmentIds } = info?.variableValues || {};
 
     if (branchId || departmentId) {
       const branchKey = inventoryKey(branchId);
@@ -219,15 +162,6 @@ export default {
       const { remainder, cost, soonIn, soonOut } =
         product?.inventories?.[branchKey]?.[departmentKey] || {};
       return { remainder, cost, soonIn, soonOut };
-    }
-
-    if (pipelineId && !branchIds?.length && !departmentIds?.length) {
-      const pipeline = await getPipelineInventoryScope(context, pipelineId);
-
-      branchIds = pipeline?.branchIds?.length ? pipeline?.branchIds : ['_'];
-      departmentIds = pipeline?.departmentIds?.length
-        ? pipeline?.departmentIds
-        : ['_'];
     }
 
     const result = { remainder: 0, cost: 0, soonIn: 0, soonOut: 0 };

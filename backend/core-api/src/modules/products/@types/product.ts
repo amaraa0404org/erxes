@@ -16,7 +16,6 @@ export interface IProductParams extends IListParams, ICursorPaginateParams {
   tagWithRelated?: boolean;
   sortField?: string;
   sortDirection?: number;
-  pipelineId?: string;
   boardId?: string;
   segment?: string;
   segmentIds?: string[];

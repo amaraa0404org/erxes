@@ -18,10 +18,7 @@ import {
   getSimilaritiesProducts,
   getSimilaritiesProductsCount,
 } from '@/products/utils';
-import {
-  getMatchingBaseDiscount,
-  getPipelineInventoryScope,
-} from '@/products/graphql/resolvers/customResolvers/product';
+import { getMatchingBaseDiscount } from '@/products/graphql/resolvers/customResolvers/product';
 
 const inventoryKey = (id?: string) => id || '_';
 type DiscountField = 'discount' | 'discountPercent';
@@ -56,7 +53,6 @@ const getDiscountConditions = (params: IProductParams): DiscountConditions =>
     ...params.discountConditions,
     branchId: params.branchId,
     departmentId: params.departmentId,
-    pipelineId: params.pipelineId,
   });
 
 const getSortField = (params: IProductParams) => {
@@ -66,7 +62,7 @@ const getSortField = (params: IProductParams) => {
 const getBasePrice = (product: BasePricedProduct, params: IProductParams) => {
   const conditions = getDiscountConditions(params);
 
-  if (!params.branchId && !params.departmentId && !params.pipelineId) {
+  if (!params.branchId && !params.departmentId) {
     return undefined;
   }
 
@@ -92,7 +88,7 @@ const applyBasePrice = <T extends BasePricedProduct>(
 };
 
 const applyBasePrices = <T>(result: T, params: IProductParams): T => {
-  if (!params.branchId && !params.departmentId && !params.pipelineId) {
+  if (!params.branchId && !params.departmentId) {
     return result;
   }
 
@@ -293,45 +289,6 @@ const buildDiscountSortPipeline = (
   ];
 };
 
-/**
- * Categories configured as a pipeline's initial ones, expanded with their
- * descendants. Products of these categories are listed before the rest.
- */
-const getPipelineInitialCategoryIds = async (
-  context: IContext,
-  pipelineId?: string,
-): Promise<string[]> => {
-  if (!pipelineId) {
-    return [];
-  }
-
-  const pipeline = await getPipelineInventoryScope(context, pipelineId);
-
-  if (!pipeline?.initialCategoryIds?.length) {
-    return [];
-  }
-
-  const categories = await context.models.ProductCategories.getChildCategories(
-    pipeline.initialCategoryIds,
-  );
-
-  return categories.map((category) => category._id);
-};
-
-const withInitialCategoryPriority = (
-  pipeline: PipelineStage[],
-  initialCategoryIds: string[],
-): PipelineStage[] => [
-  ...pipeline,
-  {
-    $addFields: {
-      initialCategoryOrder: {
-        $cond: [{ $in: ['$categoryId', initialCategoryIds] }, 0, 1],
-      },
-    },
-  },
-];
-
 const paginateDiscountSortedProducts = async (
   models: IModels,
   filter: FilterQuery<IProductDocument>,
@@ -373,7 +330,6 @@ const generateFilter = async (
     ids,
     excludeIds,
     image,
-    pipelineId,
     segment,
     segmentIds,
     propertiesData,
@@ -499,27 +455,6 @@ const generateFilter = async (
       { name: { $in: [regex] } },
       { barcodes: { $in: [searchValue] } },
     ];
-  }
-
-  if (pipelineId) {
-    const pipeline = await getPipelineInventoryScope(context, pipelineId);
-
-    if (pipeline?.excludeCategoryIds?.length) {
-      const excludedCategories =
-        await models.ProductCategories.getChildCategories(
-          pipeline.excludeCategoryIds,
-        );
-
-      if (excludedCategories.length) {
-        andFilters.push({
-          categoryId: { $nin: excludedCategories.map((c) => c._id) },
-        });
-      }
-    }
-
-    if (pipeline?.excludeProductIds?.length) {
-      andFilters.push({ _id: { $nin: pipeline.excludeProductIds } });
-    }
   }
 
   if (branchId || departmentId) {
@@ -671,27 +606,15 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
 
     const sortField = getSortField(params);
 
-    const initialCategoryIds = await getPipelineInitialCategoryIds(
-      context,
-      params.pipelineId,
-    );
-
-    const priorityOrder: Record<string, SortOrder> = initialCategoryIds.length
-      ? { initialCategoryOrder: 1 }
-      : {};
-
     if (isDiscountSortField(params.sortField)) {
       const discountPipeline = buildDiscountSortPipeline(filter, params);
 
       const result = await cursorPaginateAggregation({
         model: models.Products,
-        pipeline: initialCategoryIds.length
-          ? withInitialCategoryPriority(discountPipeline, initialCategoryIds)
-          : discountPipeline,
+        pipeline: discountPipeline,
         params: {
           ...params,
           orderBy: {
-            ...priorityOrder,
             discountSortValue: (params.sortDirection || 1) as SortOrder,
             _id: 1,
           },
@@ -709,26 +632,6 @@ export const productQueries: Record<string, Resolver<any, any, IContext>> = {
 
     if (!params.orderBy) {
       params.orderBy = { code: 1 };
-    }
-
-    if (initialCategoryIds.length) {
-      const result = await cursorPaginateAggregation({
-        model: models.Products,
-        pipeline: withInitialCategoryPriority(
-          [{ $match: filter }],
-          initialCategoryIds,
-        ),
-        params: {
-          ...params,
-          orderBy: {
-            ...priorityOrder,
-            ...params.orderBy,
-            _id: params.orderBy._id ?? 1,
-          },
-        },
-      });
-
-      return applyBasePrices(result, params);
     }
 
     const result = await cursorPaginate({

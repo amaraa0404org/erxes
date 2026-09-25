@@ -55,7 +55,6 @@ export const types = `
     discount(
       branchId: String
       departmentId: String
-      pipelineId: String
       discountConditions: JSON
     ): JSON
   }
@@ -91,7 +90,6 @@ const queryParams = `
   excludeIds: Boolean,
   excludeTagIds: [String]
   tagWithRelated: Boolean
-  pipelineId: String,
   boardId: String,
   segment: String,
   segmentIds: [String],
