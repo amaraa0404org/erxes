@@ -350,7 +350,7 @@ they are marked as independent.
 
 ### Milestone 0: Baseline
 
-- [ ] 0.1 Run `build` (and `test`, where the target exists) for `erxes-api-shared`,
+- [x] 0.1 Run `build` (and `test`, where the target exists) for `erxes-api-shared`,
   `core-api`, `gateway`, `automations-service`, `logs-service`, `core-ui`,
   `erxes-ui` and `ui-modules`. Record pass or fail and the pre-existing
   failures in the *Baseline* table below. Later milestones must not add
@@ -558,10 +558,22 @@ over.
 
 ## Baseline
 
-_Filled in by task 0.1._
+Recorded 2026-09-25 on `refactor/phase-1` at `6c1d515a73`.
 
 | Project | build | test | Pre-existing failures |
 | --- | --- | --- | --- |
+| erxes-api-shared | PASS | PASS (30 suites / 268 tests) | — |
+| core-api | PASS | no test target | — |
+| gateway | PASS | no test target | — |
+| automations-service | PASS | no test target | — |
+| logs-service | PASS | no test target | — |
+| core-ui | PASS | PASS (6 suites / 26 tests) | — |
+| erxes-ui | no build target | FAIL — placeholder script `echo "Error: no test specified" && exit 1` | package.json `test` script is a stub; the one real spec file never runs |
+| ui-modules | no build target | FAIL — same placeholder script | same |
+
+Notes: backend projects have inferred `lint` targets that stub `eslint .` with no
+eslint config (would fail if run — fixed in 6.6). `erxes-ui`/`ui-modules` have
+no `build` target.
 
 ## Contract changes log
 
