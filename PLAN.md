@@ -488,7 +488,7 @@ over.
     example plugin replaces the generator)
   - the plugin references in root `tsconfig.json`, `.gitignore` and
     `.nxignore`
-- [ ] 4.4 Run `pnpm install` so the lockfile drops the plugin importers. Build
+- [x] 4.4 Run `pnpm install` so the lockfile drops the plugin importers. Build
   and test every core project against the baseline. Repeat the Milestone 1
   and 2 end-to-end checks with `plugin-hello`.
 
@@ -641,6 +641,22 @@ _Append one line per removed or changed core contract:
   `importTemplates` — owner: frontline
 - 3.2 import template `accounting:account.account` removed from
   `importTemplates` — owner: accounting
+- 4.3 ui-modules `modules/sales` removed (`BoardSelect`, `PipelineSelect`,
+  `StageSelect`, `DealSelect`, `SelectStages`, `SelectPipelines`, board/
+  pipeline/stage contexts, hooks, queries, types); extracted to
+  `erxes-plugin-sales/shared-ui/sales` — owner: sales (also consumed by
+  accounting and frontline UIs)
+- 4.3 ui-modules `payments` loyalty parts removed (`useLoyaltyScoreCampaign`,
+  `SCORE_CAMPAIGNS_SIMPLE_QUERY`); `PaymentIcon`/`paymentIconOptions` kept —
+  owner: loyalty
+- 4.3 ui-modules `useCompanyNameByRegister` and the `ebarimtGetCompany` query
+  removed; `AddCompanyForm` no longer auto-fills the company name from a
+  register number — owner: mongolian
+- 4.3 gateway no longer ships plugin locale namespaces; plugins serve their
+  own via `localesDir` — owner: plugins
+- 4.3 `scripts/create-plugin.js` / `create-backend-plugin.js` and the
+  `create-plugin` npm script removed; `examples/plugin-hello` is the
+  reference plugin — owner: core
 
 ## Open issues
 
@@ -654,6 +670,12 @@ _Append problems that block following this plan as written:
 - 2026-09-25 task 1.7: plugin GraphQL resolvers are wrapped in `checkLogin`
   by default; `helloPing` requires an authenticated request. Expected, but
   remember it for 2.5. — noted
+- 2026-09-25 task 4.4: `<service>:build:packageJson` (core-api,
+  automations-service) has no `dependsOn` on the upstream
+  `erxes-api-shared` build, so it races ahead on a cold cache and fails with
+  `Cannot find module 'erxes-api-shared/utils'` / missing exported members.
+  Passes on rerun once `erxes-api-shared` dist exists — pre-existing flake,
+  not caused by the deletions — open
 
 ## Carry-over to the next phase
 
