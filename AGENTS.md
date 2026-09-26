@@ -1,5 +1,12 @@
 # erxes — Agent & Contributor Guide
 
+> **Read [`PLAN.md`](PLAN.md) first.** It defines the single active phase of
+> work. Follow its milestones in order, its settled design decisions, and its
+> working agreement (branch, commits, progress checkboxes, when to stop and
+> ask). Where `PLAN.md` explicitly grants repository-level scope, it takes
+> precedence over the scope rules below; all other rules here still apply.
+> Do not start work outside the active phase.
+
 Operating rules and codebase reference for anyone (human or AI) changing code in
 this repository. Preserve existing architecture, local patterns, and product
 behavior. Keep changes small and scoped to the request.

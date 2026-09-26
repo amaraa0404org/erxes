@@ -1,0 +1,35 @@
+import {
+  ICursorPaginateParams,
+  IListParams,
+  IOffsetPaginateParams,
+} from 'erxes-api-shared/core-types';
+import { Document } from 'mongoose';
+
+export interface IFieldGroup {
+  name: string;
+  code: string;
+  description: string;
+  contentType: string;
+  contentTypeId: string;
+
+  order: number;
+
+  logics: string;
+  configs?: { isMultiple?: boolean };
+}
+
+export interface IFieldGroupDocument extends IFieldGroup, Document {
+  _id: string;
+
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface IFieldGroupParams extends IListParams {
+  contentType: string;
+  contentTypeId?: string;
+  codes?: string[];
+}
+
+export type IFieldGroupCursorParams = ICursorPaginateParams;
+export type IFieldGroupOffsetParams = IOffsetPaginateParams;

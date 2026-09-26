@@ -1,0 +1,5 @@
+{
+  "hello.title": "Hello plugin",
+  "hello.description": "Reference backend plugin for the erxes runtime.",
+  "hello.ping": "Ping"
+}

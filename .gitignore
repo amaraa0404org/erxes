@@ -53,20 +53,18 @@ Thumbs.db
 .claude
 
 storybook-static
-backend/plugins/payment_api/src/public/widget/
 
 # Redis dump file
 dump.rdb
 
 # Local runtime upload artifacts
-backend/core-api/src/utils/private/uploads/
+apps/core-api/src/utils/private/uploads/
+
+# pnpm content-addressable store cache (tracked by accident)
+.pnpm-store
 
 # Sentry CLI local auth (token set via SENTRY_AUTH_TOKEN env var)
 .sentryclirc
-cloudflare/mail-worker/bridge.config
-cloudflare/mail-worker/.dev.vars
-cloudflare/mail-worker/node_modules/
-cloudflare/mail-worker/.wrangler/
 
 # Agent tool session state
 .agents/
